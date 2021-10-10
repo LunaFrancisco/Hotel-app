@@ -22,7 +22,7 @@ import {
     CardText,
     Pagination,
     PaginationItem,
-    PaginationLink
+    PaginationLink,
 } from "reactstrap";
 import { Link, useHistory } from "react-router-dom";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -38,6 +38,22 @@ export default () => {
     const history = useHistory();
 
     const [view, setView] = useState(1)
+    const [dropdownOpen, setDropdownOpen] = useState(false)
+    const [currentFilter, setCurrentFilter] = useState(null)
+    const states = [
+        {
+            id: 1,
+            state: 'Disponible'
+        },
+        {
+            id: 2,
+            state: 'Ocupado'
+        },
+        {
+            id: 3,
+            state: 'En limpieza'
+        },
+    ]
 
     const [rooms, setRooms] = useState([
         {
@@ -76,14 +92,46 @@ export default () => {
                 title="Habitaciones"
                 breadcrumbItems={breadcrumbItems}
             />
-            <Pagination aria-label="Page navigation example" className="pagination-rounded">
-                <PaginationItem onClick={() => setView(1)} active={view == 1}><PaginationLink href="#">Cuadrícula</PaginationLink></PaginationItem>
-                <PaginationItem onClick={() => setView(2)} active={view == 2}><PaginationLink href="#">Tabla</PaginationLink></PaginationItem>
-            </Pagination>
+            <div className="position-relative" style={{ height: 50 }}>
+                <Pagination aria-label="Page navigation example" className="pagination-rounded position-absolute left-0 top-0" style={{ gap: 10 }}>
+                    <PaginationItem onClick={() => setView(1)} active={view == 1}><PaginationLink href="#">Cuadrícula</PaginationLink></PaginationItem>
+                    <PaginationItem onClick={() => setView(2)} active={view == 2}><PaginationLink href="#">Tabla</PaginationLink></PaginationItem>
+                </Pagination>
+                <div aria-label="Page navigation example" className="pagination-rounded position-absolute top-0" style={{ right: 0 }}>
+                    <Dropdown
+                        isOpen={dropdownOpen}
+                        direction="left"
+                        toggle={() =>
+                            setDropdownOpen(!dropdownOpen)
+                        }
+                    >
+                        <DropdownToggle color="light" caret>
+                            Filtrar{" "}
+                            <i className="mdi mdi-chevron-down"></i>
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <DropdownItem
+                                onClick={() => setCurrentFilter(null)}
+                                active={currentFilter == null}>
+                                Todo
+                            </DropdownItem>
+                            {
+                                states.map(state => (
+                                    <DropdownItem
+                                        onClick={() => setCurrentFilter(state.id)}
+                                        active={state.id == currentFilter}>
+                                        {state.state}
+                                    </DropdownItem>
+                                ))
+                            }
+                        </DropdownMenu>
+                    </Dropdown>
+                </div>
+            </div>
             {
                 view == 1 ?
-                    <Cuadricula rooms={rooms} onCheckout={onCheckout} />
-                    : <Tabla rooms={rooms} onCheckout={onCheckout} />
+                    <Cuadricula rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)} onCheckout={onCheckout} />
+                    : <Tabla rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)} onCheckout={onCheckout} />
             }
         </Container>
     </div>
