@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import {
     Container,
     Row,
@@ -22,8 +22,10 @@ import classnames from "classnames";
 import img1 from "../../../assets/images/product/img-1.png";
 import img6 from "../../../assets/images/product/img-6.png";
 
-import ClientInfo from './ClientInfo/index'
-import ServiceInfo from './ServiceInfo/index'
+import ClientInfo from './ClientInfo'
+import ServiceInfo from './ServiceInfo'
+import ExtrasInfo from './ExtrasInfo'
+import SummaryContext from './SummaryContext'
 
 export default () => {
     const { id } = useParams();
@@ -34,25 +36,20 @@ export default () => {
         { title: `Chekout`, link: "/#" },
     ])
 
-    const [orderSummary, setOrderSummary] = useState([
-        {
-            id: 1,
-            img: img1,
-            productTitle: "Full sleeve T-shirt",
-            price: 240,
-            qty: 2,
-        },
-        {
-            id: 2,
-            img: img6,
-            productTitle: "Half sleeve T-shirt",
-            price: 225,
-            qty: 1,
-        },
-    ])
+    const [orderSummary, setOrderSummary] = useState({
+        promotions: [],
+        extras: []
+    })
+    const [total, setTotal] = useState(0)
 
-    const [activeTab, setActiveTab] = useState(1)
-    const [selectedGroup, setSelectedGroup] = useState(null)
+    const [activeTab, setActiveTab] = useState(3)
+
+    useEffect(() => {
+        setTotal(
+            orderSummary.promotions.reduce((carry, value) => carry + value.price, 0)
+            + orderSummary.extras.reduce((carry, value) => carry + value.price, 0)
+        )
+    }, [orderSummary])
 
     return <React.Fragment>
         <div className="page-content">
@@ -108,6 +105,19 @@ export default () => {
                                                 }}
                                             >
                                                 <span className="step-number">03</span>
+                                                <span className="step-title">Extras</span>
+                                            </NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink
+                                                className={classnames({
+                                                    active: activeTab === 4,
+                                                })}
+                                                onClick={() => {
+                                                    setActiveTab(4);
+                                                }}
+                                            >
+                                                <span className="step-number">04</span>
                                                 <span className="step-title">Métodos de pago</span>
                                             </NavLink>
                                         </NavItem>
@@ -126,9 +136,21 @@ export default () => {
                                             role="tabpanel"
                                             aria-labelledby="v-pills-payment-tab"
                                         >
-                                            <ServiceInfo />
+                                            <SummaryContext.Provider value={{ orderSummary, setOrderSummary }}>
+                                                <ServiceInfo />
+                                            </SummaryContext.Provider>
                                         </TabPane>
-                                        <TabPane tabId={3} id="v-pills-confir" role="tabpanel">
+                                        <TabPane
+                                            tabId={3}
+                                            id="v-pills-payment"
+                                            role="tabpanel"
+                                            aria-labelledby="v-pills-payment-tab"
+                                        >
+                                            <SummaryContext.Provider value={{ orderSummary, setOrderSummary }}>
+                                                <ExtrasInfo />
+                                            </SummaryContext.Provider>
+                                        </TabPane>
+                                        <TabPane tabId={4} id="v-pills-confir" role="tabpanel">
                                             <CardTitle className="h5">Payment information</CardTitle>
                                             <p className="card-title-desc">It will be as simple as occidental in fact</p>
                                             <div>
@@ -271,8 +293,8 @@ export default () => {
                                         </TabPane>
                                     </TabContent>
                                     <ul className="pager wizard twitter-bs-wizard-pager-link">
-                                        <li className={activeTab === 1 ? "previous disabled" : "previous"}><Link to="#" onClick={() => { setActiveTab(activeTab - 1); }}>Previous</Link></li>
-                                        <li className={activeTab === 3 ? "next disabled" : "next"}><Link to="#" onClick={() => { setActiveTab(activeTab + 1); }}>Next</Link></li>
+                                        <li className={activeTab === 1 ? "previous disabled" : "previous"}><Link to="#" onClick={() => { setActiveTab(activeTab - 1); }}>Anterior</Link></li>
+                                        <li className={activeTab === 4 ? "next disabled" : "next"}><Link to="#" onClick={() => { setActiveTab(activeTab + 1); }}>Siguiente</Link></li>
                                     </ul>
                                 </div>
                             </CardBody>
@@ -283,8 +305,8 @@ export default () => {
                             <CardBody>
                                 <div className="p-3 bg-light mb-4">
                                     <h5 className="font-size-14 mb-0">
-                                        Order Summary{" "}
-                                        <span className="float-end ms-2">#SK2356</span>
+                                        Resumen de orden{" "}
+                                        {/* <span className="float-end ms-2">#SK2356</span> */}
                                     </h5>
                                 </div>
                                 <div className="table-responsive">
@@ -292,61 +314,68 @@ export default () => {
                                         <thead className="table-light">
                                             <tr>
                                                 <th style={{ width: "110px" }} scope="col">
-                                                    Product
+                                                    Promoción
                                                 </th>
-                                                <th scope="col">Product Desc</th>
-                                                <th scope="col">Price</th>
+                                                <th scope="col">Descripción</th>
+                                                <th scope="col" width="100px">Precio</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {orderSummary.map((orderitem, key) => (
-                                                <tr key={"_orderSummary_" + key}>
+                                            {orderSummary.promotions.map((orderitem, key) => (
+                                                <tr key={"_orderSummary_" + orderitem.id}>
                                                     <th scope="row">
-                                                        <img
-                                                            src={orderitem.img}
-                                                            alt="product-img"
-                                                            title="product-img"
-                                                            className="avatar-md"
-                                                        />
+                                                        Promoción {orderitem.hours} {orderitem.hours > 1 ? `horas` : `hora`}
                                                     </th>
                                                     <td>
-                                                        <h5 className="font-size-14 text-truncate">
-                                                            <Link
-                                                                to="/ecommerce-product-details/1"
-                                                                className="text-dark"
-                                                            >
-                                                                {orderitem.productTitle}{" "}
-                                                            </Link>
-                                                        </h5>
-                                                        <p className="text-muted mb-0">
-                                                            $ {orderitem.price} x {orderitem.qty}
-                                                        </p>
+                                                        {orderitem.beberages.map((item, idx) => <p className="text-muted mb-0">
+                                                            Bebestible {idx + 1}: {item.value} {idx > 0 ? <br /> : ''}
+                                                        </p>)}
                                                     </td>
-                                                    <td>$ {orderitem.price * orderitem.qty}</td>
+                                                    <td>$ {orderitem.price.toLocaleString("es-CL")}</td>
                                                 </tr>
                                             ))}
                                             <tr>
                                                 <td colSpan="2">
                                                     <h6 className="m-0 text-end">Sub Total:</h6>
                                                 </td>
-                                                <td>$ 705</td>
+                                                <td>$ {orderSummary.promotions.reduce((carry, value) => carry + value.price, 0).toLocaleString("es-CL")}</td>
                                             </tr>
+                                        </tbody>
+                                    </Table>
+                                    <Table className="align-middle mb-0 table-nowrap">
+                                        <thead className="table-light">
                                             <tr>
-                                                <td colSpan="3">
-                                                    <div className="bg-soft-primary p-3 rounded">
-                                                        <h5 className="font-size-14 text-primary mb-0">
-                                                            <i className="fas fa-shipping-fast me-2" />{" "}
-                                                            Shipping{" "}
-                                                            <span className="float-end">Free</span>
-                                                        </h5>
-                                                    </div>
+                                                <th colSpan="2" style={{ width: "110px" }} scope="col">
+                                                    Extras
+                                                </th>
+                                                <th scope="col" width="100px">Precio</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {orderSummary.extras.map((orderitem, key) => (
+                                                <tr key={"_orderSummaryExtras_" + key}>
+                                                    <th scope="row" colSpan="2">
+                                                        {orderitem.label}
+                                                    </th>
+                                                    {/* <td>
+                                                        {orderitem.beberages.map((item, idx) => <p className="text-muted mb-0">
+                                                            Bebestible {idx + 1}: {item.value} {idx > 0 ? <br /> : ''}
+                                                        </p>)}
+                                                    </td> */}
+                                                    <td>$ {orderitem.price.toLocaleString("es-CL")}</td>
+                                                </tr>
+                                            ))}
+                                            <tr>
+                                                <td colSpan="2">
+                                                    <h6 className="m-0 text-end">Sub Total:</h6>
                                                 </td>
+                                                <td>$ {orderSummary.extras.reduce((carry, value) => carry + value.price, 0).toLocaleString("es-CL")}</td>
                                             </tr>
                                             <tr>
                                                 <td colSpan="2">
                                                     <h6 className="m-0 text-end">Total:</h6>
                                                 </td>
-                                                <td>$ 705</td>
+                                                <td>$ {total.toLocaleString("es-CL")}</td>
                                             </tr>
                                         </tbody>
                                     </Table>

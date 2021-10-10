@@ -1,19 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
-    Container,
-    Row,
-    Col,
-    Button,
-
-    Table,
     Input,
-    Nav,
-    NavItem,
-    NavLink,
-    TabContent,
-    TabPane,
     Card,
-    Form,
     Label,
     CardBody,
     CardTitle,
@@ -27,6 +15,17 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
     const [addPopup, setAddPopup] = useState(false)
     const [editPopup, setEditPopup] = useState(false)
     const { id, hours, price, description, included } = promotion
+    const [beberages, setBeberages] = useState(Array(included.length).fill({}))
+    const beberageChange = (idx, value) => {
+        console.log(idx, value)
+        let temp = beberages
+        temp[idx] = {
+            id: value.target.id,
+            value: value.target.value
+        }
+        setBeberages(temp)
+        console.log(temp)
+    }
 
     const options = {
         1: [
@@ -78,10 +77,12 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
                 confirmBtnText="Añadir"
                 cancelBtnText="Cancelar"
                 onConfirm={() => {
-                    addPromotions(promotion)
+                    addPromotions({
+                        ...promotion,
+                        beberages
+                    })
                     setAddPopup(false)
-                }
-                }
+                }}
                 onCancel={() => setAddPopup(false)}
             >
                 {
@@ -98,10 +99,10 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
                                         </p>
                                         <div className="mx-4">
                                             {
-                                                options[type.id].map(option => (
+                                                options[type.id].map((option, sub_idx) => (
                                                     <div className="form-check">
-                                                        <Input className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} id="exampleRadios2" value="option2" />
-                                                        <Label className="form-check-label" htmlFor="exampleRadios2">
+                                                        <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option} onChange={(value) => beberageChange(idx, value)} />
+                                                        <Label className="form-check-label" id={sub_idx}>
                                                             {option}
                                                         </Label>
                                                     </div>

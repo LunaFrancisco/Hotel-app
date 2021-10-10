@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     Container,
     Row,
@@ -18,8 +18,10 @@ import {
 } from "reactstrap";
 import { Link } from 'react-router-dom'
 import CardPromocion from '../../../../components/Common/CardPromocion'
+import SummaryContext from '../SummaryContext'
 
 export default () => {
+    const { orderSummary, setOrderSummary } = useContext(SummaryContext)
     const [promotions, setPromotions] = useState([
         {
             price: 5500,
@@ -102,9 +104,10 @@ export default () => {
         },
     ])
 
-    const [addedPromotions, setAddedPromotions] = useState([])
-
-    const addPromotions = (promotion) => setAddedPromotions([...addedPromotions, promotion])
+    const addPromotions = (promotion) => setOrderSummary({
+        ...orderSummary,
+        promotions: [...orderSummary.promotions, promotion]
+    })
 
     return <div>
         <CardTitle className="h4">
@@ -133,7 +136,7 @@ export default () => {
         </p>
         <Row>
             {
-                addedPromotions.map((promotion) => (<Col lg={4} sm={6}>
+                orderSummary.promotions.map((promotion) => (<Col lg={4} sm={6}>
                     <CardPromocion
                         promotion={promotion}
                         addPromotions={addPromotions}
