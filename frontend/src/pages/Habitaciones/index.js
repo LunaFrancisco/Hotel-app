@@ -40,6 +40,8 @@ export default () => {
     const [view, setView] = useState(1)
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [currentFilter, setCurrentFilter] = useState(null)
+    const [rerender, setRerender] = useState(false);
+
     const states = [
         {
             id: 1,
@@ -86,6 +88,19 @@ export default () => {
         history.push(`/habitaciones/${id}/check-out`)
     }
 
+    const onEnable = (id) => {
+        const temp = rooms
+        const idx = temp.findIndex(item => item.id === id)
+        temp[idx] = {
+            ...temp[idx],
+            state: 1,
+            paid: false,
+        }
+        setRooms(temp)
+
+        setRerender(!rerender)
+    }
+
     return <div className="page-content">
         <Container fluid>
             <Breadcrumbs
@@ -106,7 +121,7 @@ export default () => {
                         }
                     >
                         <DropdownToggle color="light" caret>
-                            Filtrar{" "}
+                            Filtro: {currentFilter == null ? 'Todo' : states.find(item => item.id == currentFilter).state}
                             <i className="mdi mdi-chevron-down"></i>
                         </DropdownToggle>
                         <DropdownMenu>
@@ -118,6 +133,7 @@ export default () => {
                             {
                                 states.map(state => (
                                     <DropdownItem
+                                        key={`dropdown-item-${state.id}`}
                                         onClick={() => setCurrentFilter(state.id)}
                                         active={state.id == currentFilter}>
                                         {state.state}
@@ -130,8 +146,14 @@ export default () => {
             </div>
             {
                 view == 1 ?
-                    <Cuadricula rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)} onCheckout={onCheckout} />
-                    : <Tabla rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)} onCheckout={onCheckout} />
+                    <Cuadricula
+                        rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)}
+                        onCheckout={onCheckout}
+                        onEnable={onEnable} />
+                    : <Tabla
+                        rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)}
+                        onCheckout={onCheckout}
+                        onEnable={onEnable} />
             }
         </Container>
     </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import {
     Container,
     Row,
@@ -19,7 +19,7 @@ import {
 
 export default () => {
 
-    return <React.Fragment>
+    return <Fragment>
         <CardTitle className="h5">
             Información del cliente
         </CardTitle>
@@ -139,5 +139,5 @@ export default () => {
                 </div>
             </div>
         </Form>
-    </React.Fragment>
+    </Fragment>
 }

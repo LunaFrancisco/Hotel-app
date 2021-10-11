@@ -8,8 +8,9 @@ import {
     Button,
 } from "reactstrap";
 import { Link } from "react-router-dom";
+import Tooltip from './Tooltip'
 
-export default ({ img, room: { paid, state, number, id }, onCheckout }) => {
+export default ({ img, room: { paid, state, number, id }, onCheckout, onEnable }) => {
     const states = {
         1: 'bg-color-success',
         2: 'bg-color-warning',
@@ -64,27 +65,33 @@ export default ({ img, room: { paid, state, number, id }, onCheckout }) => {
                 justifyContent: 'space-evenly'
             }}>
                 {
-                    state == 1 && <ButtonHabitacion onClick={() => onCheckout(id)} color="success">
-                        <i className="ri-add-fill"></i>
-                    </ButtonHabitacion>
+                    state == 1 && <Tooltip id={'cuadricula-' + id + '-add-button'} title="Reservar habitación" center>
+                        <ButtonHabitacion onClick={() => onCheckout(id)} color="success">
+                            <i className="ri-add-fill"></i>
+                        </ButtonHabitacion>
+                    </Tooltip>
                 }
                 {
                     state == 2 && <React.Fragment>
-                        <ButtonHabitacion color="warning">
-                            <i className="ri-pencil-fill"></i>
-                        </ButtonHabitacion>
+                        <Tooltip id={'cuadricula-' + id + '-edit-button'} title="Editar reserva" center>
+                            <ButtonHabitacion color="warning">
+                                <i className="ri-pencil-fill"></i>
+                            </ButtonHabitacion>
+                        </Tooltip>
 
-                        <ButtonHabitacion color="danger">
-                            <i className="ri-delete-bin-5-fill"></i>
-                        </ButtonHabitacion>
+                        <Tooltip id={'cuadricula-' + id + '-cancel-button'} title="Cancelar Reserva" center>
+                            <ButtonHabitacion color="danger">
+                                <i className="ri-delete-bin-5-fill"></i>
+                            </ButtonHabitacion>
+                        </Tooltip>
                     </React.Fragment>
                 }
                 {
-                    state == 3 && <React.Fragment>
-                        <ButtonHabitacion color="success">
+                    state == 3 && <Tooltip id={'cuadricula-' + id + '-enable-button'} title="Habilitar habitación" center>
+                        <ButtonHabitacion onClick={() => onEnable(id)} color="success">
                             <i className="ri-refresh-fill"></i>
                         </ButtonHabitacion>
-                    </React.Fragment>
+                    </Tooltip>
                 }
             </div>
         </CardBody>

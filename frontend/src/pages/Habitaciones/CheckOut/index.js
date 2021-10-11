@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import {
     Container,
     Row,
@@ -19,12 +19,11 @@ import {
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import { Link, useParams } from "react-router-dom";
 import classnames from "classnames";
-import img1 from "../../../assets/images/product/img-1.png";
-import img6 from "../../../assets/images/product/img-6.png";
 
 import ClientInfo from './ClientInfo'
 import ServiceInfo from './ServiceInfo'
 import ExtrasInfo from './ExtrasInfo'
+import PaymentInfo from './PaymentInfo'
 import SummaryContext from './SummaryContext'
 
 export default () => {
@@ -41,8 +40,9 @@ export default () => {
         extras: []
     })
     const [total, setTotal] = useState(0)
+    const [payment, setPayment] = useState(null)
 
-    const [activeTab, setActiveTab] = useState(3)
+    const [activeTab, setActiveTab] = useState(1)
 
     useEffect(() => {
         setTotal(
@@ -51,7 +51,8 @@ export default () => {
         )
     }, [orderSummary])
 
-    return <React.Fragment>
+    const summaryContext = { orderSummary, setOrderSummary, payment, setPayment }
+    return <Fragment>
         <div className="page-content">
             <Container fluid>
                 {/* Render Breadcrumb */}
@@ -136,7 +137,7 @@ export default () => {
                                             role="tabpanel"
                                             aria-labelledby="v-pills-payment-tab"
                                         >
-                                            <SummaryContext.Provider value={{ orderSummary, setOrderSummary }}>
+                                            <SummaryContext.Provider value={summaryContext}>
                                                 <ServiceInfo />
                                             </SummaryContext.Provider>
                                         </TabPane>
@@ -146,155 +147,19 @@ export default () => {
                                             role="tabpanel"
                                             aria-labelledby="v-pills-payment-tab"
                                         >
-                                            <SummaryContext.Provider value={{ orderSummary, setOrderSummary }}>
+                                            <SummaryContext.Provider value={summaryContext}>
                                                 <ExtrasInfo />
                                             </SummaryContext.Provider>
                                         </TabPane>
                                         <TabPane tabId={4} id="v-pills-confir" role="tabpanel">
-                                            <CardTitle className="h5">Payment information</CardTitle>
-                                            <p className="card-title-desc">It will be as simple as occidental in fact</p>
-                                            <div>
-                                                <h5 className="font-size-14">Payment method :</h5>
-
-                                                <Row>
-                                                    <Col lg={4} sm={6}>
-                                                        <div>
-                                                            <Label className="form-label card-radio-label mb-3">
-                                                                <Input
-                                                                    type="radio"
-                                                                    name="pay-method"
-                                                                    id="pay-methodoption1"
-                                                                    className="card-radio-input"
-                                                                />
-
-                                                                <div className="card-radio">
-                                                                    <i className="fab fa-cc-mastercard font-size-24 align-middle me-2"></i>
-                                                                    <span>Credit / Debit Card</span>
-                                                                </div>
-                                                            </Label>
-                                                        </div>
-                                                    </Col>
-
-                                                    <Col lg={4} sm={6}>
-                                                        <div>
-                                                            <Label className="form-label card-radio-label mb-3">
-                                                                <Input
-                                                                    type="radio"
-                                                                    name="pay-method"
-                                                                    id="pay-methodoption2"
-                                                                    className="card-radio-input"
-                                                                />
-
-                                                                <div className="card-radio">
-                                                                    <i className="fab fa-cc-paypal font-size-24 align-middle me-2"></i>
-                                                                    <span>Paypal</span>
-                                                                </div>
-                                                            </Label>
-                                                        </div>
-                                                    </Col>
-
-                                                    <Col lg={4} sm={6}>
-                                                        <div>
-                                                            <Label className="form-label card-radio-label mb-3">
-                                                                <Input
-                                                                    type="radio"
-                                                                    name="pay-method"
-                                                                    id="pay-methodoption3"
-                                                                    className="card-radio-input"
-                                                                />
-
-                                                                <div className="card-radio">
-                                                                    <i className="far fa-money-bill-alt font-size-24 align-middle me-2"></i>
-                                                                    <span>Cash on Delivery</span>
-                                                                </div>
-                                                            </Label>
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-
-                                                <h5 className="my-3 font-size-14">
-                                                    For card Payment
-                                                </h5>
-                                                <div className="p-4 border">
-                                                    <form>
-                                                        <div className="mb-3">
-                                                            <Label
-                                                                className="form-label"
-                                                                for="cardnameInput"
-                                                            >
-                                                                Name on card
-                                                            </Label>
-                                                            <Input
-                                                                type="text"
-                                                                className="form-control"
-                                                                id="cardnameInput"
-                                                                placeholder="Name on Card"
-                                                            />
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <Col lg={4} sm={6}>
-                                                                <div className="mb-3 mb-lg-0">
-                                                                    <Label
-                                                                        className="form-label"
-                                                                        for="cardnumberInput"
-                                                                    >
-                                                                        Card Number
-                                                                    </Label>
-                                                                    <Input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        id="cardnumberInput"
-                                                                        placeholder="0000 0000 0000 0000"
-                                                                    />
-                                                                </div>
-                                                            </Col>
-                                                            <Col lg={4} sm={6}>
-                                                                <div className="mb-3 mb-lg-0">
-                                                                    <Label
-                                                                        className="form-label"
-                                                                        for="expirydateInput"
-                                                                    >
-                                                                        Expiry date
-                                                                    </Label>
-                                                                    <Input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        id="expirydateInput"
-                                                                        placeholder="MM/YY"
-                                                                    />
-                                                                </div>
-                                                            </Col>
-                                                            <Col lg={4} sm={6}>
-                                                                <div className="mb-3 mb-lg-0">
-                                                                    <Label
-                                                                        className="form-label"
-                                                                        for="cvvcodeInput"
-                                                                    >
-                                                                        CVV Code
-                                                                    </Label>
-                                                                    <Input
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        id="cvvcodeInput"
-                                                                        placeholder="Enter CVV Code"
-                                                                    />
-                                                                </div>
-                                                            </Col>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div className="mt-4 text-end">
-                                                    <Link to="#" className="btn btn-success">
-                                                        Complete order
-                                                    </Link>
-                                                </div>
-                                            </div>
+                                            <SummaryContext.Provider value={summaryContext}>
+                                                <PaymentInfo />
+                                            </SummaryContext.Provider>
                                         </TabPane>
                                     </TabContent>
                                     <ul className="pager wizard twitter-bs-wizard-pager-link">
                                         <li className={activeTab === 1 ? "previous disabled" : "previous"}><Link to="#" onClick={() => { setActiveTab(activeTab - 1); }}>Anterior</Link></li>
-                                        <li className={activeTab === 4 ? "next disabled" : "next"}><Link to="#" onClick={() => { setActiveTab(activeTab + 1); }}>Siguiente</Link></li>
+                                        <li className={activeTab === 4 ? "next disabled" : "next"}><Link to="#" onClick={() => { activeTab === 4 || setActiveTab(activeTab + 1); }}>Siguiente</Link></li>
                                     </ul>
                                 </div>
                             </CardBody>
@@ -386,5 +251,5 @@ export default () => {
                 </Row>
             </Container>
         </div>
-    </React.Fragment>
+    </Fragment>
 }
