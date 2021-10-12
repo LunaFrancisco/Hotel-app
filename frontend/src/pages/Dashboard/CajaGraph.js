@@ -57,8 +57,15 @@ export default () => {
         legend: {
             show: true,
         },
+        tooltip: {
+            y: {
+                formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                    return `$ ${value.toLocaleString("es-CL")}`
+                }
+            }
+        },
         colors: ['#5664d2', '#1cbb8c', '#ff3d60', '#fcb92c'],
-        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+        labels: ['Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
     }
 
     return (

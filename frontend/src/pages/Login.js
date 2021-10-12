@@ -19,7 +19,7 @@ class Login extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { username: "admin@themesdesign.in", password: "123456" }
+        this.state = { username: "usuario@mail.cl", password: "123456" }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -50,11 +50,11 @@ class Login extends Component {
                                             <Col lg={9}>
                                                 <div>
                                                     <div className="text-center">
-                                                        {/* <div>
+                                                        <div>
                                                             <Link to="/" class="">
-                                                                <img src={logoImg} alt="" height="20" class="auth-logo logo-dark mx-auto" />
+                                                                <img src={logoImg} alt="" height="150" class="auth-logo logo-dark mx-auto" />
                                                             </Link>
-                                                        </div> */}
+                                                        </div>
 
                                                         <h4 className="font-size-18 mt-4">Motel los troncos</h4>
                                                         <p className="text-muted">Escriba sus credenciales para ingresar a la plataforma</p>

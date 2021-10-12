@@ -1,13 +1,14 @@
-import React, { Component } from "react"
-import { Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap"
+import React, { Component, useState } from "react"
+import { Row, Col, Card, CardBody, CardTitle, Button, Input, Label } from "reactstrap"
 import Tooltip from "../../components/Common/Tooltip";
-
+import SweetAlert from "react-bootstrap-sweetalert";
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 import Table from '../../components/Common/InventarioTable'
 
 export default () => {
+    const [addPopup, setAddPopup] = useState(false)
     const breadcrumbItems = [
         { title: "Inventario", link: "#" },
     ]
@@ -106,9 +107,77 @@ export default () => {
                     <Breadcrumbs title="Inventario" breadcrumbItems={breadcrumbItems} />
                     <div className="position-relative" style={{ height: 50 }}>
                         <div aria-label="Page navigation example" className="pagination-rounded position-absolute top-0" style={{ right: 0 }}>
-                            <Button color="success">Agregar Producto</Button>
+                            <Button onClick={() => setAddPopup(true)} color="success">Agregar Producto</Button>
                         </div>
                     </div>
+                    {addPopup ? (
+                        <SweetAlert
+                            showCancel
+                            title="Añadir un producto"
+                            cancelBtnBsStyle="danger"
+                            confirmBtnBsStyle="success"
+                            confirmBtnText="Añadir"
+                            cancelBtnText="Cancelar"
+                            onConfirm={() => {
+
+                            }}
+                            onCancel={() => setAddPopup(false)}
+                        >
+                            <Row>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="product"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Producto
+                                        </Label>
+                                        <Input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Ingrese el nombre del producto"
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="categoria"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Categoría
+                                        </Label>
+                                        <select className="form-select">
+                                            <option defaultValue>Seleccion una categoría</option>
+                                            <option value="1">Tragos</option>
+                                            <option value="2">Bebidas</option>
+                                            <option value="3">Comidas</option>
+                                        </select>
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="precio"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Precio
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            className="form-control"
+                                            id="billing-name"
+                                            placeholder="Ingrese el precio del producto"
+                                        />
+                                    </div>
+                                </Col>
+                            </Row>
+                        </SweetAlert>
+                    ) : null
+                    }
                     <Row>
                         <Col className="col-6">
                             <Card>

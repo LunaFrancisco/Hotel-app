@@ -112,7 +112,7 @@ class Header extends Component {
                                         <img src={logo} alt="" height="10" />
                                     </span>
                                     <span className="logo-lg">
-                                        <img src={logo} alt="" height="75" />
+                                        <img src={logo} alt="" height="75" style={{ marginLeft: 15 }} />
                                     </span>
                                 </Link>
                             </div>

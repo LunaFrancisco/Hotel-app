@@ -10,11 +10,19 @@ export default () => {
         return this[Math.floor(Math.random() * this.length)];
     }
 
+    const [userForm, setUserForm] = useState({
+        id: null,
+        firstname: '',
+        lastname: '',
+        phone: '',
+        rol: ''
+    })
+
     const roles = ['Administrador', 'Cajero', 'Camarera']
 
     const acciones = (id) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
         <Tooltip id={'user-' + id + '-edit-button'} title="Editar Usuario">
-            <Button color="link" className="text-warning">
+            <Button onClick={() => onEdit(id)} color="link" className="text-warning">
                 <i className="ri-pencil-fill"></i>
             </Button>
         </Tooltip>
@@ -28,8 +36,8 @@ export default () => {
     const data = Array(12).fill(null).map((item, idx) => ({
         id: idx + 1,
         firstname: ['Fulano', 'Mengano', 'Juanito', 'Marcela', 'Marisol', 'Jose', 'Alberto'].sample(),
-        lastname: ['De Tal', 'Rodriguez', 'Matamala', 'Oliveira', 'Castañeda', 'Araya'].sample(),
-        phone: Array(9).fill(null).map(item => Math.round(Math.round(Math.random() * 9))).join(''),
+        lastname: ['DeTal', 'Rodriguez', 'Matamala', 'Oliveira', 'Castañeda', 'Araya'].sample(),
+        phone: Array(8).fill(null).map(item => Math.round(Math.round(Math.random() * 9))).join(''),
         rol: roles.sample(),
         actions: acciones(idx + 1)
     }))
@@ -67,6 +75,13 @@ export default () => {
         },
     ];
 
+    const onEdit = (id) => {
+        const user = data.find(item => item.id === id)
+        console.log(user)
+        setUserForm(user)
+        setAddPopup(true)
+    }
+
     return (
         <Card>
             <CardBody>
@@ -90,7 +105,13 @@ export default () => {
                         confirmBtnText="Añadir"
                         cancelBtnText="Cancelar"
                         onConfirm={() => {
-
+                            setUserForm({
+                                id: null,
+                                firstname: '',
+                                lastname: '',
+                                phone: '',
+                                rol: ''
+                            })
                         }}
                         onCancel={() => setAddPopup(false)}
                     >
@@ -108,6 +129,7 @@ export default () => {
                                         type="text"
                                         className="form-control"
                                         placeholder="Ingrese el nombre del usuario"
+                                        value={userForm.firstname}
                                     />
                                 </div>
                             </Col>
@@ -125,6 +147,7 @@ export default () => {
                                         className="form-control"
                                         id="billing-name"
                                         placeholder="Ingrese el apellido del usuario"
+                                        value={userForm.lastname}
                                     />
                                 </div>
                             </Col>
@@ -141,6 +164,7 @@ export default () => {
                                         type="phone"
                                         className="form-control"
                                         placeholder="Ingrese el teléfono del usuario"
+                                        value={userForm.phone}
                                     />
                                 </div>
                             </Col>
@@ -153,7 +177,7 @@ export default () => {
                                     >
                                         Rol
                                     </Label>
-                                    <select className="form-select">
+                                    <select className="form-select" value={userForm.rol}>
                                         <option defaultValue>Seleccion un rol</option>
                                         {
                                             roles.map(item => <option value={item}>{item}</option>)
