@@ -25,7 +25,10 @@ export default () => {
 
     const onEdit = (item, isEdit = false) => {
         console.log(item)
-        setProduct(item)
+        setProduct({
+            ...item,
+            price: parseFloat(item.price.replaceAll('$ ', '').replaceAll('.', '').replaceAll(',', '.'))
+        })
         setEdit(isEdit)
         setEditPopup(true)
     }
@@ -38,17 +41,17 @@ export default () => {
     }
 
     const acciones = (item) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
-        <Tooltip id={'trago-' + item.id + '-take-button'} title="Retirar producto">
+        <Tooltip id={item.category + '-' + item.id + '-take-button'} title="Retirar producto">
             <Button onClick={() => onEdit(item)} color="link" className="text-info">
                 <i className="ri-close-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={'trago-' + item.id + '-edit-button'} title="Editar producto">
+        <Tooltip id={item.category + '-' + item.id + '-edit-button'} title="Editar producto">
             <Button onClick={() => onEdit(item, true)} color="link" className="text-warning">
                 <i className="ri-pencil-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={'trago-' + item.id + '-delete-button'} title="Eliminar producto">
+        <Tooltip id={item.category + '-' + item.id + '-delete-button'} title="Eliminar producto">
             <Button color="link" className="text-danger">
                 <i className="ri-delete-bin-5-fill"></i>
             </Button>
@@ -56,80 +59,75 @@ export default () => {
     </div>
 
     let licores = [
-        { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(1) },
-        { id: 2, product: 'Pisco', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(2) },
-        { id: 3, product: 'Gin', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(3) },
-        { id: 4, product: 'Sour', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(4) },
-        { id: 5, product: 'Cherry', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(5) },
+        { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
+        { id: 2, product: 'Pisco', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
+        { id: 3, product: 'Gin', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
+        { id: 4, product: 'Sour', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
+        { id: 5, product: 'Cherry', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
     ];
 
     licores = licores.map(item => ({
         ...item,
-        actions: acciones(item),
-        category: 'Licores'
+        actions: acciones(item)
     }))
 
     let bebidas = [
-        { id: 8, product: 'Coca Cola', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(8) },
-        { id: 9, product: 'Fanta', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(9) },
-        { id: 10, product: 'Sprite', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(10) },
-        { id: 11, product: 'Ginger Ale', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(1) },
-    ];
+        { id: 8, product: 'Coca Cola', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
+        { id: 9, product: 'Fanta', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
+        { id: 10, product: 'Sprite', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
+        { id: 11, product: 'Ginger Ale', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
+    ]
 
     bebidas = bebidas.map(item => ({
         ...item,
-        actions: acciones(item),
-        category: 'Bebidas'
+        actions: acciones(item)
     }))
 
+
     let comida = [
-        { id: 12, product: 'Papas Fritas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(12) },
-        { id: 13, product: 'Doritos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(13) },
-        { id: 13, product: 'Chicles', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(13) },
+        { id: 12, product: 'Papas Fritas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Comidas' },
+        { id: 13, product: 'Doritos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Comidas' },
+        { id: 13, product: 'Chicles', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Comidas' },
     ];
 
     comida = comida.map(item => ({
         ...item,
-        actions: acciones(item),
-        category: 'Comidas'
+        actions: acciones(item)
     }))
 
     let ropa = [
-        { id: 14, product: 'Sabanas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(14) },
-        { id: 15, product: 'Toallas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(15) },
+        { id: 14, product: 'Sabanas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Ropa' },
+        { id: 15, product: 'Toallas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Ropa' },
     ];
 
     ropa = ropa.map(item => ({
         ...item,
-        actions: acciones(item),
-        category: 'Ropa'
+        actions: acciones(item)
     }))
 
     let utencilios = [
-        { id: 16, product: 'Vasos grandes', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(16) },
-        { id: 17, product: 'Vasos chicos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(17) },
-        { id: 18, product: 'Bandejas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(18) },
+        { id: 16, product: 'Vasos grandes', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Utencilios' },
+        { id: 17, product: 'Vasos chicos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Utencilios' },
+        { id: 18, product: 'Bandejas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Utencilios' },
     ];
 
     utencilios = utencilios.map(item => ({
         ...item,
-        actions: acciones(item),
-        category: 'Utencilios'
+        actions: acciones(item)
     }))
 
     let otros = [
-        { id: 19, product: 'Espumas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(19) },
-        { id: 20, product: 'Shampoo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(20) },
-        { id: 21, product: 'Bálsamo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(21) },
-        { id: 22, product: 'Prestobarba', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(22) },
-        { id: 23, product: 'Peinetas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(23) },
-        { id: 24, product: 'Preservativos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(24) },
+        { id: 19, product: 'Espumas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
+        { id: 20, product: 'Shampoo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
+        { id: 21, product: 'Bálsamo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
+        { id: 22, product: 'Prestobarba', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
+        { id: 23, product: 'Peinetas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
+        { id: 24, product: 'Preservativos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
     ];
 
     otros = otros.map(item => ({
         ...item,
-        actions: acciones(item),
-        category: 'Otros'
+        actions: acciones(item)
     }))
 
     const columns = [
