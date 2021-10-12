@@ -18,9 +18,9 @@ export default ({ rooms, onCheckout, onEnable }) => {
 
     const renderState = (state) => {
         const color = {
-            1: 'bg-warning',
-            2: 'bg-danger',
-            3: 'bg-success',
+            1: 'bg-success',
+            2: 'bg-warning',
+            3: 'bg-danger',
         }
 
         const label = {
