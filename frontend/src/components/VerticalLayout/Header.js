@@ -109,10 +109,10 @@ class Header extends Component {
                             <div className="navbar-brand-box">
                                 <Link to="#" className="logo logo-light">
                                     <span className="logo-sm">
-                                        <img src={logo} alt="" height="10" />
+                                        <img src={logo} alt="" height="10" className="rounded" />
                                     </span>
                                     <span className="logo-lg">
-                                        <img src={logo} alt="" height="75" style={{ marginLeft: 15 }} />
+                                        <img src={logo} alt="" height="75" className="rounded p-2" style={{ marginLeft: 15 }} />
                                     </span>
                                 </Link>
                             </div>
