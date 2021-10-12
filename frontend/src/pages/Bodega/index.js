@@ -1,70 +1,120 @@
-import React, { Component } from "react"
-import { Row, Col, Card, CardBody, CardTitle, Button } from "reactstrap"
+import React, { Component, useState } from "react"
+import { Row, Col, Card, CardBody, CardTitle, Button, Label, Input } from "reactstrap"
 import Tooltip from "../../components/Common/Tooltip";
 
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 import Table from '../../components/Common/InventarioTable'
+import SweetAlert from "react-bootstrap-sweetalert";
 
 export default () => {
+    const [addPopup, setAddPopup] = useState(false)
+    const [product, setProduct] = useState({
+        id: '',
+        stock: '',
+        product: ''
+
+    })
     const breadcrumbItems = [
         { title: "Bodega", link: "#" },
     ]
 
-    const acciones = (id) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
-        <Tooltip id={'trago-' + id + '-take-button'} title="Editar stock">
-            <Button color="link" className="text-info">
+    const onEdit = (item) => {
+        setProduct(item)
+        setAddPopup(true)
+    }
+
+    const handleFormChange = (value, attr) => {
+        setProduct({
+            ...product,
+            [attr]: value.target.value
+        })
+    }
+
+    const acciones = (item) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
+        <Tooltip id={'trago-' + item.id + '-take-button'} title="Editar stock">
+            <Button onClick={() => onEdit(item)} color="link" className="text-info">
                 <i className="ri-close-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={'trago-' + id + '-delete-button'} title="Eliminar producto">
+        <Tooltip id={'trago-' + item.id + '-delete-button'} title="Eliminar producto">
             <Button color="link" className="text-danger">
                 <i className="ri-delete-bin-5-fill"></i>
             </Button>
         </Tooltip>
     </div>
 
-    const licores = [
-        { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(1) },
-        { id: 2, product: 'Pisco', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(2) },
-        { id: 3, product: 'Gin', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(3) },
-        { id: 4, product: 'Sour', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(4) },
-        { id: 5, product: 'Cherry', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(5) },
+    let licores = [
+        { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 2, product: 'Pisco', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 3, product: 'Gin', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 4, product: 'Sour', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 5, product: 'Cherry', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
     ];
 
-    const bebidas = [
-        { id: 8, product: 'Coca Cola', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(8) },
-        { id: 9, product: 'Fanta', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(9) },
-        { id: 10, product: 'Sprite', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(10) },
-        { id: 11, product: 'Ginger Ale', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(1) },
+    licores = licores.map(item => ({
+        ...item,
+        actions: acciones(item)
+    }))
+
+    let bebidas = [
+        { id: 8, product: 'Coca Cola', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 9, product: 'Fanta', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 10, product: 'Sprite', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 11, product: 'Ginger Ale', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
     ];
 
-    const comida = [
-        { id: 12, product: 'Papas Fritas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(12) },
-        { id: 13, product: 'Doritos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(13) },
-        { id: 13, product: 'Chicles', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(13) },
+    bebidas = bebidas.map(item => ({
+        ...item,
+        actions: acciones(item)
+    }))
+
+    let comida = [
+        { id: 12, product: 'Papas Fritas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 13, product: 'Doritos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 13, product: 'Chicles', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
     ];
 
-    const ropa = [
-        { id: 14, product: 'Sabanas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(14) },
-        { id: 15, product: 'Toallas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(15) },
+    comida = comida.map(item => ({
+        ...item,
+        actions: acciones(item)
+    }))
+
+    let ropa = [
+        { id: 14, product: 'Sabanas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 15, product: 'Toallas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
     ];
 
-    const utencilios = [
-        { id: 16, product: 'Vasos grandes', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(16) },
-        { id: 17, product: 'Vasos chicos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(17) },
-        { id: 18, product: 'Bandejas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(18) },
+    ropa = ropa.map(item => ({
+        ...item,
+        actions: acciones(item)
+    }))
+
+    let utencilios = [
+        { id: 16, product: 'Vasos grandes', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 17, product: 'Vasos chicos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 18, product: 'Bandejas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
     ];
 
-    const otros = [
-        { id: 19, product: 'Espumas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(19) },
-        { id: 20, product: 'Shampoo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(20) },
-        { id: 21, product: 'Bálsamo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(21) },
-        { id: 22, product: 'Prestobarba', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(22) },
-        { id: 23, product: 'Peinetas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(23) },
-        { id: 24, product: 'Preservativos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(24) },
+    utencilios = utencilios.map(item => ({
+        ...item,
+        actions: acciones(item)
+    }))
+
+    let otros = [
+        { id: 19, product: 'Espumas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 20, product: 'Shampoo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 21, product: 'Bálsamo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 22, product: 'Prestobarba', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 23, product: 'Peinetas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
+        { id: 24, product: 'Preservativos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
     ];
+
+    otros = otros.map(item => ({
+        ...item,
+        actions: acciones(item)
+    }))
 
     const columns = [
         {
@@ -181,6 +231,42 @@ export default () => {
                             </Card>
                         </Col>
                     </Row>
+                    {addPopup ? (
+                        <SweetAlert
+                            showCancel
+                            title={`Editar stock de ${product.product}`}
+                            cancelBtnBsStyle="danger"
+                            confirmBtnBsStyle="success"
+                            confirmBtnText="Aceptar"
+                            cancelBtnText="Cancelar"
+                            onConfirm={() => {
+                                setProduct({})
+                            }}
+                            onCancel={() => setAddPopup(false)}
+                        >
+                            <Row>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="firstname"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Stock
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            className="form-control"
+                                            placeholder="Ingrese la cantidad de stock"
+                                            value={product.stock}
+                                            onChange={(value) => handleFormChange(value, 'stock')}
+                                        />
+                                    </div>
+                                </Col>
+                            </Row>
+                        </SweetAlert>
+                    ) : null
+                    }
                 </div >
             </div >
         </React.Fragment >

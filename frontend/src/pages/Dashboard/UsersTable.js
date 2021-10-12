@@ -77,9 +77,15 @@ export default () => {
 
     const onEdit = (id) => {
         const user = data.find(item => item.id === id)
-        console.log(user)
         setUserForm(user)
         setAddPopup(true)
+    }
+
+    const handleFormChange = (value, attr) => {
+        setUserForm({
+            ...userForm,
+            [attr]: value.target.value
+        })
     }
 
     return (
@@ -129,7 +135,9 @@ export default () => {
                                         type="text"
                                         className="form-control"
                                         placeholder="Ingrese el nombre del usuario"
+                                        name="firstname"
                                         value={userForm.firstname}
+                                        onChange={(value) => handleFormChange(value, 'firstname')}
                                     />
                                 </div>
                             </Col>
@@ -146,8 +154,10 @@ export default () => {
                                         type="text"
                                         className="form-control"
                                         id="billing-name"
+                                        name="lastname"
                                         placeholder="Ingrese el apellido del usuario"
                                         value={userForm.lastname}
+                                        onChange={(value) => handleFormChange(value, 'lastname')}
                                     />
                                 </div>
                             </Col>
@@ -164,7 +174,9 @@ export default () => {
                                         type="phone"
                                         className="form-control"
                                         placeholder="Ingrese el teléfono del usuario"
+                                        name="phone"
                                         value={userForm.phone}
+                                        onChange={(value) => handleFormChange(value, 'phone')}
                                     />
                                 </div>
                             </Col>
@@ -177,7 +189,7 @@ export default () => {
                                     >
                                         Rol
                                     </Label>
-                                    <select className="form-select" value={userForm.rol}>
+                                    <select className="form-select" name="rol" value={userForm.rol} onChange={(value) => handleFormChange(value, 'rol')}>
                                         <option defaultValue>Seleccion un rol</option>
                                         {
                                             roles.map(item => <option value={item}>{item}</option>)

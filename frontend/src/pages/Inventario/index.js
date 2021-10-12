@@ -9,29 +9,53 @@ import Table from '../../components/Common/InventarioTable'
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
+    const [editPopup, setEditPopup] = useState(false)
+    const [edit, setEdit] = useState(false)
+    const [product, setProduct] = useState({
+        id: '',
+        stock: '',
+        product: '',
+        category: '',
+        price: '',
+
+    })
     const breadcrumbItems = [
         { title: "Inventario", link: "#" },
     ]
 
-    const acciones = (id) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
-        <Tooltip id={'trago-' + id + '-take-button'} title="Retirar producto">
-            <Button color="link" className="text-info">
+    const onEdit = (item, isEdit = false) => {
+        console.log(item)
+        setProduct(item)
+        setEdit(isEdit)
+        setEditPopup(true)
+    }
+
+    const handleFormChange = (value, attr) => {
+        setProduct({
+            ...product,
+            [attr]: value.target.value
+        })
+    }
+
+    const acciones = (item) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
+        <Tooltip id={'trago-' + item.id + '-take-button'} title="Retirar producto">
+            <Button onClick={() => onEdit(item)} color="link" className="text-info">
                 <i className="ri-close-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={'trago-' + id + '-edit-button'} title="Editar producto">
-            <Button color="link" className="text-warning">
+        <Tooltip id={'trago-' + item.id + '-edit-button'} title="Editar producto">
+            <Button onClick={() => onEdit(item, true)} color="link" className="text-warning">
                 <i className="ri-pencil-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={'trago-' + id + '-delete-button'} title="Eliminar producto">
+        <Tooltip id={'trago-' + item.id + '-delete-button'} title="Eliminar producto">
             <Button color="link" className="text-danger">
                 <i className="ri-delete-bin-5-fill"></i>
             </Button>
         </Tooltip>
     </div>
 
-    const licores = [
+    let licores = [
         { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(1) },
         { id: 2, product: 'Pisco', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(2) },
         { id: 3, product: 'Gin', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(3) },
@@ -39,31 +63,61 @@ export default () => {
         { id: 5, product: 'Cherry', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(5) },
     ];
 
-    const bebidas = [
+    licores = licores.map(item => ({
+        ...item,
+        actions: acciones(item),
+        category: 'Licores'
+    }))
+
+    let bebidas = [
         { id: 8, product: 'Coca Cola', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(8) },
         { id: 9, product: 'Fanta', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(9) },
         { id: 10, product: 'Sprite', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(10) },
         { id: 11, product: 'Ginger Ale', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(1) },
     ];
 
-    const comida = [
+    bebidas = bebidas.map(item => ({
+        ...item,
+        actions: acciones(item),
+        category: 'Bebidas'
+    }))
+
+    let comida = [
         { id: 12, product: 'Papas Fritas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(12) },
         { id: 13, product: 'Doritos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(13) },
         { id: 13, product: 'Chicles', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(13) },
     ];
 
-    const ropa = [
+    comida = comida.map(item => ({
+        ...item,
+        actions: acciones(item),
+        category: 'Comidas'
+    }))
+
+    let ropa = [
         { id: 14, product: 'Sabanas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(14) },
         { id: 15, product: 'Toallas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(15) },
     ];
 
-    const utencilios = [
+    ropa = ropa.map(item => ({
+        ...item,
+        actions: acciones(item),
+        category: 'Ropa'
+    }))
+
+    let utencilios = [
         { id: 16, product: 'Vasos grandes', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(16) },
         { id: 17, product: 'Vasos chicos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(17) },
         { id: 18, product: 'Bandejas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(18) },
     ];
 
-    const otros = [
+    utencilios = utencilios.map(item => ({
+        ...item,
+        actions: acciones(item),
+        category: 'Utencilios'
+    }))
+
+    let otros = [
         { id: 19, product: 'Espumas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(19) },
         { id: 20, product: 'Shampoo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(20) },
         { id: 21, product: 'Bálsamo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(21) },
@@ -71,6 +125,12 @@ export default () => {
         { id: 23, product: 'Peinetas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(23) },
         { id: 24, product: 'Preservativos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, actions: acciones(24) },
     ];
+
+    otros = otros.map(item => ({
+        ...item,
+        actions: acciones(item),
+        category: 'Otros'
+    }))
 
     const columns = [
         {
@@ -264,6 +324,102 @@ export default () => {
                             </Card>
                         </Col>
                     </Row>
+                    {editPopup ? (
+                        <SweetAlert
+                            showCancel
+                            title={edit ? 'Editar producto' : `Editar stock de ${product.product}`}
+                            cancelBtnBsStyle="danger"
+                            confirmBtnBsStyle="success"
+                            confirmBtnText="Aceptar"
+                            cancelBtnText="Cancelar"
+                            onConfirm={() => {
+                                setProduct({})
+                            }}
+                            onCancel={() => setEditPopup(false)}
+                        >
+                            <Row>
+                                {
+                                    edit ? <Row>
+                                        <Col lg={12}>
+                                            <div className="mb-4">
+                                                <Label
+                                                    htmlFor="product"
+                                                    className="form-label w-100"
+                                                    style={{ textAlign: 'left' }}
+                                                >
+                                                    Producto
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Ingrese el nombre del producto"
+                                                    value={product.product}
+                                                    onChange={(value) => handleFormChange(value, 'product')}
+                                                />
+                                            </div>
+                                        </Col>
+                                        <Col lg={12}>
+                                            <div className="mb-4">
+                                                <Label
+                                                    htmlFor="categoria"
+                                                    className="form-label w-100"
+                                                    style={{ textAlign: 'left' }}
+                                                >
+                                                    Categoría
+                                                </Label>
+                                                <select className="form-select" value={product.category} onChange={(value) => handleFormChange(value, 'category')}>
+                                                    <option defaultValue>Seleccion una categoría</option>
+                                                    <option value="Licores">Licores</option>
+                                                    <option value="Bebidas">Bebidas</option>
+                                                    <option value="Comidas">Comidas</option>
+                                                    <option value="Ropa">Ropa</option>
+                                                    <option value="Utencilios">Utencilios</option>
+                                                    <option value="Otros">Otros</option>
+                                                </select>
+                                            </div>
+                                        </Col>
+                                        <Col lg={12}>
+                                            <div className="mb-4">
+                                                <Label
+                                                    htmlFor="precio"
+                                                    className="form-label w-100"
+                                                    style={{ textAlign: 'left' }}
+                                                >
+                                                    Precio
+                                                </Label>
+                                                <Input
+                                                    type="number"
+                                                    className="form-control"
+                                                    id="billing-name"
+                                                    placeholder="Ingrese el precio del producto"
+                                                    value={product.price}
+                                                    onChange={(value) => handleFormChange(value, 'price')}
+                                                />
+                                            </div>
+                                        </Col>
+                                    </Row> : <Col lg={12}>
+                                        <div className="mb-4">
+                                            <Label
+                                                htmlFor="firstname"
+                                                className="form-label w-100"
+                                                style={{ textAlign: 'left' }}
+                                            >
+                                                Stock
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="Ingrese la cantidad de stock"
+                                                value={product.stock}
+                                                onChange={(value) => handleFormChange(value, 'stock')}
+                                            />
+                                        </div>
+                                    </Col>
+                                }
+                            </Row>
+                        </SweetAlert>
+                    ) : null
+                    }
                 </div >
             </div >
         </React.Fragment >
