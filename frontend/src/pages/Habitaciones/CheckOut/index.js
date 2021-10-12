@@ -4,17 +4,13 @@ import {
     Row,
     Col,
     Table,
-    Input,
     Nav,
     NavItem,
     NavLink,
     TabContent,
     TabPane,
     Card,
-    Form,
-    Label,
     CardBody,
-    CardTitle,
 } from "reactstrap";
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import { Link, useParams } from "react-router-dom";
@@ -30,7 +26,6 @@ export default () => {
     const { id } = useParams();
 
     const [breadcrumbItems, setBreadcrumbItems] = useState([
-        { title: "Dashboard", link: "/" },
         { title: "Habitaciones", link: "/habitaciones" },
         { title: `Chekout`, link: "/#" },
     ])
@@ -44,6 +39,18 @@ export default () => {
 
     const [activeTab, setActiveTab] = useState(1)
 
+    const setPaid = (id) => {
+        console.log(orderSummary.promotions)
+        let temp = orderSummary.promotions
+        const idx = temp.findIndex(item => item.id == id)
+        temp[idx].paid = true
+        console.log(temp)
+        setOrderSummary({
+            ...orderSummary,
+            promotions: temp
+        })
+    }
+
     useEffect(() => {
         setTotal(
             orderSummary.promotions.reduce((carry, value) => carry + value.price, 0)
@@ -51,7 +58,7 @@ export default () => {
         )
     }, [orderSummary])
 
-    const summaryContext = { orderSummary, setOrderSummary, payment, setPayment }
+    const summaryContext = { orderSummary, setOrderSummary, payment, setPayment, setPaid }
     return <Fragment>
         <div className="page-content">
             <Container fluid>

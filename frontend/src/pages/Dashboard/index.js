@@ -5,7 +5,11 @@ import { Container, Row, Col } from "reactstrap";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
 //Import Components
-import MiniWidgets from "./MiniWidgets";
+// import MiniWidgets from "./MiniWidgets";
+import MiniWidgets from "../../components/Common/MiniWidgets";
+import CajaGraph from "./CajaGraph";
+import UsersTable from "./UsersTable";
+import RecentlyRegistros from "./RecentlyRegistros";
 import RevenueAnalytics from "./RevenueAnalytics";
 import SalesAnalytics from "./SalesAnalytics";
 import EarningReports from "./EarningReports";
@@ -19,14 +23,13 @@ class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            breadcrumbItems : [
-                { title : "Nazox", link : "/" },
-                { title : "Dashboard", link : "#" },
+            breadcrumbItems: [
+                { title: "Dashboard", link: "#" },
             ],
-            reports : [
-                { icon : "ri-stack-line", title : "Number of Sales", value : "1452", rate : "2.4%", desc : "From previous period" },
-                { icon : "ri-store-2-line", title : "Sales Revenue", value : "$ 38452", rate : "2.4%", desc : "From previous period" },
-                { icon : "ri-briefcase-4-line", title : "Average Price", value : "$ 15.4", rate : "2.4%", desc : "From previous period" },
+            reports: [
+                { icon: "ri-stack-line", title: "Number of Sales", value: "1452", rate: "2.4%", desc: "From previous period" },
+                { icon: "ri-store-2-line", title: "Sales Revenue", value: "$ 38452", rate: "2.4%", desc: "From previous period" },
+                { icon: "ri-briefcase-4-line", title: "Average Price", value: "$ 15.4", rate: "2.4%", desc: "From previous period" },
             ]
         }
     }
@@ -37,50 +40,77 @@ class Dashboard extends Component {
                 <div className="page-content">
                     <Container fluid>
 
-                    <Breadcrumbs title="Dashboard" breadcrumbItems={this.state.breadcrumbItems} />
+                        <Breadcrumbs title="Dashboard" breadcrumbItems={this.state.breadcrumbItems} />
                         <Row>
+                            <MiniWidgets
+                                title="Caja"
+                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                                // icon="ri-stack-line"
+                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                desc="Desde el mes anterior"
+                            />
+                            <MiniWidgets
+                                title="Ventas"
+                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                                // icon="ri-stack-line"
+                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                desc="Desde el mes anterior"
+                            />
+                            <MiniWidgets
+                                title="Gastos"
+                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                                // icon="ri-add-fill"
+                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                desc="Desde el mes anterior"
+                                negative
+                            />
+                            <MiniWidgets
+                                title="Retiros"
+                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                                // icon=" ri-add-fill"
+                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                desc="Desde el mes anterior"
+                                negative
+                            />
+
+                            <Col xl={12}>
+                                <CajaGraph />
+                            </Col>
+
                             <Col xl={8}>
-                                <Row>
-                                    <MiniWidgets reports={this.state.reports} />
-                                </Row>
-                                
-                                {/* revenue Analytics */}
-                                <RevenueAnalytics/>
+                                <UsersTable />
                             </Col>
 
                             <Col xl={4}>
-
-                                {/* sales Analytics */}
-                                <SalesAnalytics/>
-
-                                {/* earning reports */}
-                                <EarningReports/>
-
+                                <RecentlyRegistros />
                             </Col>
+
+                            {/* <Col xl={4}>
+
+                                <SalesAnalytics />
+
+                                <EarningReports />
+
+                            </Col> */}
                         </Row>
-                        
+
+
+                        {/* <Row>
+                            <Sources />
+
+                            <RecentlyActivity />
+
+                            <RevenueByLocations />
+
+                        </Row>
 
                         <Row>
-                            {/* sources */}
-                            <Sources/>
+                            <ChatBox />
 
-                            {/* recent activity */}
-                            <RecentlyActivity/>
+                            <LatestTransactions />
+                        </Row> */}
 
-                            {/* revenue by locations */}
-                            <RevenueByLocations/>
-
-                        </Row>
-
-                        <Row>
-                            {/* chat box */}
-                            <ChatBox/>
-
-                            {/* latest transactions */}
-                            <LatestTransactions/>
-                        </Row>
-
-                    </Container> 
+                    </Container>
                 </div>
             </React.Fragment>
         );

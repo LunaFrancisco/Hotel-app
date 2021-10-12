@@ -36,6 +36,7 @@ import logosmdark from "../../assets/images/logo-sm-dark.png";
 import logodark from "../../assets/images/logo-dark.png";
 import logosmlight from "../../assets/images/logo-sm-light.png";
 import logolight from "../../assets/images/logo-light.png";
+import logo from "../../assets/images/logo.jpg";
 
 //Import Social Profile Images
 import github from "../../assets/images/brands/github.png";
@@ -106,21 +107,12 @@ class Header extends Component {
                         <div className="d-flex">
 
                             <div className="navbar-brand-box">
-                                <Link to="#" className="logo logo-dark">
-                                    <span className="logo-sm">
-                                        <img src={logosmdark} alt="" height="22" />
-                                    </span>
-                                    <span className="logo-lg">
-                                        <img src={logodark} alt="" height="20" />
-                                    </span>
-                                </Link>
-
                                 <Link to="#" className="logo logo-light">
                                     <span className="logo-sm">
-                                        <img src={logosmlight} alt="" height="22" />
+                                        <img src={logo} alt="" height="10" />
                                     </span>
                                     <span className="logo-lg">
-                                        <img src={logolight} alt="" height="20" />
+                                        <img src={logo} alt="" height="75" />
                                     </span>
                                 </Link>
                             </div>
@@ -130,19 +122,19 @@ class Header extends Component {
                             </Button>
 
 
-                            <Form className="app-search d-none d-lg-block">
+                            {/* <Form className="app-search d-none d-lg-block">
                                 <div className="position-relative">
                                     <Input type="text" className="form-control" placeholder={this.props.t('Search')} />
                                     <span className="ri-search-line"></span>
                                 </div>
-                            </Form>
+                            </Form> */}
 
-                            <MegaMenu />
+                            {/* <MegaMenu /> */}
                         </div>
 
                         <div className="d-flex">
 
-                            <div className="dropdown d-inline-block d-lg-none ms-2">
+                            {/* <div className="dropdown d-inline-block d-lg-none ms-2">
                                 <button type="button" onClick={() => { this.setState({ isSearch: !this.state.isSearch }); }} className="btn header-item noti-icon waves-effect" id="page-header-search-dropdown">
                                     <i className="ri-search-line"></i>
                                 </button>
@@ -221,15 +213,15 @@ class Header extends Component {
                                 </Button>
                             </div>
 
-                            <NotificationDropdown />
+                            <NotificationDropdown /> */}
 
                             <ProfileMenu />
 
-                            <div className="dropdown d-inline-block">
+                            {/* <div className="dropdown d-inline-block">
                                 <Button color="none" onClick={this.toggleRightbar} type="button" className="header-item noti-icon right-bar-toggle waves-effect">
                                     <i className="ri-settings-2-line"></i>
                                 </Button>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </header>

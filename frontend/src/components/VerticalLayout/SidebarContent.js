@@ -93,45 +93,62 @@ class SidebarContent extends Component {
                     <ul className="metismenu list-unstyled" id="side-menu">
                         <li className="menu-title">{this.props.t('Menu')}</li>
 
-                        {/* <li>
+                        <li>
                             <Link to="/dashboard" className="waves-effect">
-                                <i className="ri-dashboard-line"></i><span className="badge rounded-pill bg-success float-end">3</span>
+                                <i className="ri-dashboard-line"></i>
                                 <span className="ms-1">{this.props.t('Dashboard')}</span>
                             </Link>
-                        </li> */}
+                        </li>
 
-                        <li>
+                        {/* <li>
                             <Link to="/calendar" className=" waves-effect">
                                 <i className="ri-calendar-2-line"></i>
                                 <span className="ms-1">{this.props.t('Turnos')}</span>
                             </Link>
-                        </li>
+                        </li> */}
 
                         <li>
                             <Link to="/habitaciones" className=" waves-effect">
-                                <i className="ri-chat-1-line"></i>
+                                <i className="ri-home-heart-line"></i>
                                 <span className="ms-1">{this.props.t('Habitaciones')}</span>
                             </Link>
                         </li>
 
                         <li>
-                            <Link to="/#" className="waves-effect">
-                                <i className="ri-store-2-line"></i>
+                            <Link to="/inventario" className="waves-effect">
+                                <i className="ri-shopping-basket-2-line"></i>
                                 <span className="ms-1">{this.props.t('Inventario')}</span>
                             </Link>
-                            {/* <ul className="sub-menu">
-                                <li><Link to="/ecommerce-products">{this.props.t('Products')}</Link></li>
-                                <li><Link to="/ecommerce-product-detail/1">{this.props.t('Product Detail')}</Link></li>
-                                <li><Link to="/ecommerce-orders">{this.props.t('Orders')}</Link></li>
-                                <li><Link to="/ecommerce-customers">{this.props.t('Customers')}</Link></li>
-                                <li><Link to="/ecommerce-cart">{this.props.t('Cart')}</Link></li>
-                                <li><Link to="/ecommerce-checkout">{this.props.t('Checkout')}</Link></li>
-                                <li><Link to="/ecommerce-shops">{this.props.t('Shops')}</Link></li>
-                                <li><Link to="/ecommerce-add-product">{this.props.t('Add Product')}</Link></li>
-                            </ul> */}
                         </li>
 
                         <li>
+                            <Link to="/bodega" className="waves-effect">
+                                <i className="ri-safe-line"></i>
+                                <span className="ms-1">{this.props.t('Bodega')}</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/registros" className="waves-effect">
+                                <i className="ri-file-list-3-line"></i>
+                                <span className="ms-1">{this.props.t('Registros')}</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/caja" className="waves-effect">
+                                <i className="ri-coins-line"></i>
+                                <span className="ms-1">{this.props.t('Caja')}</span>
+                            </Link>
+                            {/* <ul className="sub-menu">
+                                <li><Link to="/caja/caja">{this.props.t('Caja')}</Link></li>
+                                <li><Link to="/caja/ventas">{this.props.t('Ventas')}</Link></li>
+                                <li><Link to="/caja/gastos">{this.props.t('Gastos')}</Link></li>
+                                <li><Link to="/caja/retiros">{this.props.t('Retiros')}</Link></li>
+                            </ul> */}
+                        </li>
+
+                        {/* <li>
                             <Link to="/#" className="has-arrow waves-effect">
                                 <i className="ri-store-2-line"></i>
                                 <span className="ms-1">{this.props.t('E-Commerce')}</span>
@@ -149,24 +166,13 @@ class SidebarContent extends Component {
                         </li>
 
                         <li>
-                            <Link to="/#" className="waves-effect">
-                                <i className="ri-mail-send-line"></i>
-                                <span className="ms-1">{this.props.t('Caja')}</span>
-                            </Link>
-                            {/* <ul className="sub-menu">
-                                <li><Link to="/email-inbox">{this.props.t('Inbox')}</Link></li>
-                                <li><Link to="/email-read">{this.props.t('Read Email')}</Link></li>
-                            </ul> */}
-                        </li>
-
-                        <li>
                             <Link to="/kanban-board" className=" waves-effect">
                                 <i className="ri-artboard-2-line"></i>
                                 <span className="ms-1">{this.props.t('Kanban Board')}</span>
                             </Link>
-                        </li>
+                        </li> */}
 
-                        <li className="menu-title">{this.props.t('Pages')}</li>
+                        {/* <li className="menu-title">{this.props.t('Pages')}</li>
 
                         <li>
                             <Link to="/#" className="has-arrow waves-effect">
@@ -196,9 +202,9 @@ class SidebarContent extends Component {
                                 <li><Link to="/404">{this.props.t('Error 404')}</Link></li>
                                 <li><Link to="/500">{this.props.t('Error 500')}</Link></li>
                             </ul>
-                        </li>
+                        </li> */}
 
-                        <li className="menu-title">{this.props.t('Components')}</li>
+                        {/* <li className="menu-title">{this.props.t('Components')}</li>
 
                         <li>
                             <Link to="/#" className="has-arrow waves-effect">
@@ -311,7 +317,7 @@ class SidebarContent extends Component {
                                     </ul>
                                 </li>
                             </ul>
-                        </li>
+                        </li> */}
 
                     </ul>
                 </div>

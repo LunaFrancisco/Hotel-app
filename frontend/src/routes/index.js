@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 
 // Authentication related pages
-import Login from "../pages/Authentication/Login";
+// import Login from "../pages/Authentication/Login";
 import Logout from "../pages/Authentication/Logout";
 import Register from "../pages/Authentication/Register";
 import ForgetPwd from "../pages/Authentication/ForgetPassword";
@@ -106,6 +106,11 @@ import KanbanBoard from "../pages/KanbanBoard/index";
 // MOTEL
 import Habitaciones from '../pages/Habitaciones'
 import HabitacionesCheckout from '../pages/Habitaciones/CheckOut'
+import Inventario from '../pages/Inventario'
+import Bodega from '../pages/Bodega'
+import Registros from '../pages/Registros'
+import Caja from '../pages/Caja'
+import Login from "../pages/Login";
 
 const authProtectedRoutes = [
 
@@ -113,6 +118,12 @@ const authProtectedRoutes = [
     { path: '/habitaciones/:id/check-out', component: HabitacionesCheckout },
     { path: '/habitaciones', component: Habitaciones },
 
+    { path: '/inventario', component: Inventario },
+    { path: '/bodega', component: Bodega },
+    { path: '/registros', component: Registros },
+    { path: '/caja', component: Caja },
+
+    { path: "/dashboard", component: Dashboard },
 
 
     //Kanban Board
@@ -199,26 +210,24 @@ const authProtectedRoutes = [
     //calendar
     { path: "/calendar", component: Calendar },
 
-    { path: "/dashboard", component: Dashboard },
-
     // this route should be at the end of all other routes
     { path: "/", exact: true, component: () => <Redirect to="/dashboard" /> }
 ];
 
 const publicRoutes = [
-    { path: "/logout", component: Logout },
+    // { path: "/logout", component: Logout },
     { path: "/login", component: Login },
-    { path: "/forgot-password", component: ForgetPwd },
-    { path: "/register", component: Register },
-    { path: "/lock-screen", component: AuthLockScreen },
+    // { path: "/forgot-password", component: ForgetPwd },
+    // { path: "/register", component: Register },
+    // { path: "/lock-screen", component: AuthLockScreen },
 
-    // Authentication Inner
-    { path: "/auth-login", component: Login1 },
-    { path: "/auth-register", component: Register1 },
-    { path: "/auth-recoverpw", component: ForgetPwd1 },
+    // // Authentication Inner
+    // { path: "/auth-login", component: Login1 },
+    // { path: "/auth-register", component: Register1 },
+    // { path: "/auth-recoverpw", component: ForgetPwd1 },
 
-    { path: "/maintenance", component: Maintenance },
-    { path: "/comingsoon", component: CommingSoon },
+    // { path: "/maintenance", component: Maintenance },
+    // { path: "/comingsoon", component: CommingSoon },
     { path: "/404", component: Error404 },
     { path: "/500", component: Error500 },
 ];

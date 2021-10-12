@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     Input,
     Card,
@@ -10,22 +10,42 @@ import {
 import { Link } from 'react-router-dom'
 import classnames from 'classnames'
 import SweetAlert from "react-bootstrap-sweetalert";
+import Switch from 'react-switch'
+import SummaryContext from '../../pages/Habitaciones/CheckOut/SummaryContext'
 
 export default ({ active, added, addPromotions, promotion, paid }) => {
+    const { setPaid } = useContext(SummaryContext)
     const [addPopup, setAddPopup] = useState(false)
     const [editPopup, setEditPopup] = useState(false)
     const { id, hours, price, description, included } = promotion
     const [beberages, setBeberages] = useState(Array(included.length).fill({}))
     const beberageChange = (idx, value) => {
-        console.log(idx, value)
         let temp = beberages
         temp[idx] = {
             id: value.target.id,
             value: value.target.value
         }
         setBeberages(temp)
-        console.log(temp)
     }
+
+    function DollarSymbol() {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    fontSize: 12,
+                    color: "#fff",
+                    paddingRight: 2
+                }}
+            >
+                {" "}
+                <i className="ri-money-dollar-circle-line"></i>
+            </div>
+        );
+    };
 
     const options = {
         1: [
@@ -45,6 +65,8 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
         ]
     }
 
+    console.log(paid)
+
     return <Card className={classnames("border rounded shipping-address", {
         'active': active
     })}>
@@ -55,6 +77,16 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
                         added ? 'Editar' : 'Añadir'
                     }
                 </Link>
+            }
+            {
+                added && <Switch
+                    uncheckedIcon={<DollarSymbol />}
+                    className="me-1 mb-sm-8 mb-2"
+                    checkedIcon={<DollarSymbol />}
+                    onColor="#38a4f8"
+                    onChange={() => setPaid(id)}
+                    checked={paid}
+                />
             }
             <h5 className="font-size-14 mb-4">
                 Promoción {hours} {hours > 1 ? `horas` : `hora`}

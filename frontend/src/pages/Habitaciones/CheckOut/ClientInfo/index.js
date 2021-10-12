@@ -24,7 +24,7 @@ export default () => {
             Información del cliente
         </CardTitle>
         <p className="card-title-desc">
-            Aquí va información algo, nose caca
+            Ingrese los datos de los clientes
         </p>
         <Form>
             <div>

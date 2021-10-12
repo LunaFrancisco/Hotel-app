@@ -1,40 +1,25 @@
 import { useState } from 'react'
+import { Row, Button } from 'reactstrap'
 import {
-    Button,
-    Col,
-    CardBody,
     Container,
     Dropdown,
     DropdownItem,
     DropdownMenu,
     DropdownToggle,
-    Form,
-    Input,
-    Nav,
-    NavItem,
-    NavLink,
-    Row,
-    TabContent,
-    TabPane,
-    Card,
-    CardTitle,
-    CardImg,
-    CardText,
     Pagination,
     PaginationItem,
     PaginationLink,
 } from "reactstrap";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import CardHabitacion from "../../components/Common/CardHabitacion";
 import Cuadricula from "./Cuadricula";
 import Tabla from "./Tabla";
+import MiniWidgets from "../../components/Common/MiniWidgets";
 
 export default () => {
-    const [breadcrumbItems, setBreadcrumbItems] = useState([
-        { title: "Dashboard", link: "/" },
+    const breadcrumbItems = [
         { title: "Habitaciones", link: "#" },
-    ])
+    ]
     const history = useHistory();
 
     const [view, setView] = useState(1)
@@ -107,10 +92,42 @@ export default () => {
                 title="Habitaciones"
                 breadcrumbItems={breadcrumbItems}
             />
+
+            <Row>
+                <MiniWidgets
+                    title="Disponibles"
+                    value={`${Math.round(Math.random() * 32).toLocaleString("es-CL")}`}
+                    icon={
+                        <Button color="success" style={{ pointerEvents: 'none', height: 50, width: 50 }}></Button>
+                    }
+                    rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                    desc="Desde el turno anterior"
+                />
+                <MiniWidgets
+                    title="Ocupado"
+                    value={`${Math.round(Math.random() * 32).toLocaleString("es-CL")}`}
+                    icon={
+                        <Button color="warning" style={{ pointerEvents: 'none', height: 50, width: 50 }}></Button>
+                    }
+                    rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                    desc="Desde el turno anterior"
+                />
+                <MiniWidgets
+                    title="En limpieza"
+                    value={`${Math.round(Math.random() * 32).toLocaleString("es-CL")}`}
+                    icon={
+                        <Button color="danger" style={{ pointerEvents: 'none', height: 50, width: 50 }}></Button>
+                    }
+                    rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                    desc="Desde el turno anterior"
+                    negative
+                />
+            </Row>
+
             <div className="position-relative" style={{ height: 50 }}>
                 <Pagination aria-label="Page navigation example" className="pagination-rounded position-absolute left-0 top-0" style={{ gap: 10 }}>
-                    <PaginationItem onClick={() => setView(1)} active={view == 1}><PaginationLink href="#">Cuadrícula</PaginationLink></PaginationItem>
-                    <PaginationItem onClick={() => setView(2)} active={view == 2}><PaginationLink href="#">Tabla</PaginationLink></PaginationItem>
+                    <PaginationItem onClick={() => setView(1)} active={view === 1}><PaginationLink href="#">Tabla</PaginationLink></PaginationItem>
+                    <PaginationItem onClick={() => setView(2)} active={view === 2}><PaginationLink href="#">Cuadrícula</PaginationLink></PaginationItem>
                 </Pagination>
                 <div aria-label="Page navigation example" className="pagination-rounded position-absolute top-0" style={{ right: 0 }}>
                     <Dropdown
@@ -121,13 +138,13 @@ export default () => {
                         }
                     >
                         <DropdownToggle color="light" caret>
-                            Filtro: {currentFilter == null ? 'Todo' : states.find(item => item.id == currentFilter).state}
+                            Filtro: {currentFilter == null ? 'Todo' : states.find(item => item.id === currentFilter).state}
                             <i className="mdi mdi-chevron-down"></i>
                         </DropdownToggle>
                         <DropdownMenu>
                             <DropdownItem
                                 onClick={() => setCurrentFilter(null)}
-                                active={currentFilter == null}>
+                                active={currentFilter === null}>
                                 Todo
                             </DropdownItem>
                             {
@@ -135,7 +152,7 @@ export default () => {
                                     <DropdownItem
                                         key={`dropdown-item-${state.id}`}
                                         onClick={() => setCurrentFilter(state.id)}
-                                        active={state.id == currentFilter}>
+                                        active={state.id === currentFilter}>
                                         {state.state}
                                     </DropdownItem>
                                 ))
@@ -145,13 +162,13 @@ export default () => {
                 </div>
             </div>
             {
-                view == 1 ?
-                    <Cuadricula
-                        rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)}
+                view === 1 ?
+                    <Tabla
+                        rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
                         onEnable={onEnable} />
-                    : <Tabla
-                        rooms={rooms.filter(item => currentFilter == null || currentFilter == item.state)}
+                    : <Cuadricula
+                        rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
                         onEnable={onEnable} />
             }

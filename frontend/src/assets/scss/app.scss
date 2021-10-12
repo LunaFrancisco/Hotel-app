@@ -82,3 +82,7 @@ File: Main Css File
 .border-color-success { border-color: $success;}
 .border-color-warning { border-color: $warning;}
 .border-color-danger { border-color: $danger;}
+.select2-dropdown {
+    z-index: 10060 !important;
+    /*1051;*/
+}
