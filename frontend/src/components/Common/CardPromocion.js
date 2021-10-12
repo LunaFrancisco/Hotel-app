@@ -79,7 +79,7 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
                 </Link>
             }
             {
-                added && <Switch
+                (added && false) && <Switch
                     uncheckedIcon={<DollarSymbol />}
                     className="me-1 mb-sm-8 mb-2"
                     checkedIcon={<DollarSymbol />}

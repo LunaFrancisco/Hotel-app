@@ -3,7 +3,8 @@ import {
     Card,
     CardBody,
     CardTitle,
-    Button
+    Button,
+    Badge
 } from 'reactstrap'
 import Tooltip from '../../components/Common/Tooltip'
 import Table from '../../components/Common/InventarioTable'
@@ -13,6 +14,22 @@ export default ({ rooms, onCheckout, onEnable }) => {
         1: 'Disponible',
         2: 'Ocupado',
         3: 'En limpieza'
+    }
+
+    const renderState = (state) => {
+        const color = {
+            1: 'bg-warning',
+            2: 'bg-danger',
+            3: 'bg-success',
+        }
+
+        const label = {
+            1: 'Disponible',
+            2: 'Ocupado',
+            3: 'En limpieza',
+        }
+
+        return <Badge className={`${color[state]} me-1`}>{label[state]}</Badge>
     }
 
     const renderActions = (room, idx) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
@@ -53,7 +70,9 @@ export default ({ rooms, onCheckout, onEnable }) => {
         ...item,
         checkin_time: `${Math.round(Math.round(Math.random() * 31))}-10-2021 ${Math.round(Math.round(Math.random() * 23))}:${Math.round(Math.round(Math.random() * 59))}`,
         checkout_time: `${Math.round(Math.round(Math.random() * 31))}-10-2021 ${Math.round(Math.round(Math.random() * 23))}:${Math.round(Math.round(Math.random() * 59))}`,
-        actions: renderActions(item, idx)
+        actions: renderActions(item, idx),
+        state: renderState(item.state),
+        paid: item.paid ? 'SI' : 'NO'
     }))
 
     const columns = [
