@@ -11,8 +11,8 @@ const validarJWT = (req, res = response, next) => {
         });
     }
     try {
-        const { email, tipo } = jwt.verify(token, process.env.SECRET_JWT_PASSWORD);
-        req.email = email;
+        const { rut, tipo } = jwt.verify(token, process.env.SECRET_JWT_PASSWORD);
+        req.rut = rut;
         req.tipo = tipo;
     } catch (error) {
         return res.status(401).json({
