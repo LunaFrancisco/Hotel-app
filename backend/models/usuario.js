@@ -26,6 +26,10 @@ const Usuario = sequelize.define('usuarios', {
     direccion: {
         type: Sequelize.TEXT
     },
+    
+    password: {
+        type: Sequelize.TEXT
+    },
     estado: {
         type: Sequelize.BOOLEAN
     }
