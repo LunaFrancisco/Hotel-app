@@ -6,7 +6,6 @@ const { Pool } = require('pg');
 const { generarJWT } = require('../helpers/jwt');
 const Usuario = require('../models/usuario');
 const Rol = require('../models/rol');
-const Rol_usuario = require('../models/rol_usuario');
 const Roles = require('../models/rol');
 
 // Conexion base de datos postgres
@@ -59,6 +58,7 @@ const crearUsuario = async (req, res = response) => {
                 telefono,
                 direccion,
                 password: passwordHash,
+                estado: TRUE
             }, {
                 fields: [
                     'nombre',
@@ -67,7 +67,8 @@ const crearUsuario = async (req, res = response) => {
                     'correo',
                     'telefono',
                     'direccion',
-                    'password'
+                    'password',
+                    'estado'
                 ]
             });
 
@@ -108,24 +109,30 @@ const loginUsuario = async (req, res) => {
     try {
         const { rut, password } = req.body;
         // Confirmar los passwords
-        const result = await pool.query('SELECT password as passwordhash, rol as tipo FROM usuarios, rol_usuario, roles WHERE rut = ($1) and usuarios.id = rol_usuario.usuarioId ', [rut]);
+        //const result = await pool.query('SELECT password as passwordhash, rol as tipo FROM usuarios, rol_usuario, roles WHERE rut = ($1) and usuarios.id = rol_usuario.usuarioId ', [rut]);
 
-        // const findUser = await Usuario.findOne({
-        //     where: {
-        //         rut
-        //     },
-
-        //     include: [Rol
-
-        //     ],
-
-        //     attributes: ['id', 'password']
-        // });
-        // console.log(findUser);
-        // const passwordhash = findUser.password;
-        // const tipo = 'admin';
-        const { passwordhash, tipo } = result.rows[0];
-        const validPassword = bcrypt.compareSync(password, passwordhash);
+        const findUser = await Usuario.findOne({
+            where: {
+                rut
+            },
+            attributes: ['id', 'rut', 'password'],
+            include: [Rol],
+            
+        });
+  
+        if(!findUser){
+            return res.status(500).json({
+                ok: false,
+                msg: 'Usuario o contraseña incorrecta'
+            });
+        }
+        console.log(findUser.dataValues.roles[0].dataValues.rol);
+        const passwordhash = findUser.dataValues.password;
+        
+        //const tipo = findUser.dataValues.roles[0].dataValues.rol;
+        const tipo = findUser.dataValues.roles[0].dataValues.rol;
+        //const { passwordhash, tipo } = result.rows[0];
+        const validPassword = bcrypt.compareSync(password,passwordhash);
         if (!validPassword) {
             return res.status(400).json({
                 ok: false,

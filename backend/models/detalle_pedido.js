@@ -1,21 +1,20 @@
 const { Sequelize } = require('sequelize');
 const sequelize = require('../database/database');
 
-const Rol_usuario = sequelize.define('rol_usuario', {
-    usuarioId: {
+const Detalle_pedido = sequelize.define('detalle_pedido', {
+    id: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    rolId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        primaryKey: true
+    
+    cantidad: {
+        type: Sequelize.INTEGER
     }
 }, {
+
     timestamps: false
 });
 
-module.exports = Rol_usuario;
-
-
+module.exports = Detalle_pedido;

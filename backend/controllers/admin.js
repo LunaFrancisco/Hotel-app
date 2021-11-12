@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
 const Usuario = require('../models/usuario');
 const Roles = require('../models/rol');
-const rol_usuario = require('../models/rol_usuario');
+
 
 const verUsuarios = async (req, res = response) => {
     try {
@@ -14,16 +14,11 @@ const verUsuarios = async (req, res = response) => {
             attributes: ['rut', 'correo'],
             include: [
                 Roles
-                // {
-                //     model: rol_usuario,
-                //     include:[Roles] 
-                //     }
                ]
             });
-            return res.json({
-                
+            return res.json({      
                 ok: true,
-                msg: allUsers
+                msg: allUsers 
             })
          
          
