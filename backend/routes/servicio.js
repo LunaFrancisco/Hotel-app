@@ -8,7 +8,7 @@ const { crearServicio, actualizarServicio, eliminarServicio, buscarServicio } = 
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
-router.get(
+router.post(
     '/new',
     [
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),

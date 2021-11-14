@@ -8,7 +8,7 @@ const { crearUsuario, loginUsuario, revalidarToken, eliminarUsuario, updateUsuar
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
-router.get(
+router.post(
     '/new',
     [
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),
@@ -34,7 +34,7 @@ router.post(
     loginUsuario
 );
 
-router.get(
+router.post(
     '/renew',
     [
         validarJWT
@@ -42,7 +42,7 @@ router.get(
     revalidarToken
 );
 
-router.get(
+router.delete(
     '/deleteUser',
     eliminarUsuario
 );

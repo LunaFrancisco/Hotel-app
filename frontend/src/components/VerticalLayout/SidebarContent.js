@@ -21,8 +21,14 @@ class SidebarContent extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
+        let tipo;
+        if (localStorage.getItem("authUser")) {
+            const obj = JSON.parse(localStorage.getItem("authUser"));
+            tipo = obj.tipo
+        }
 
+        this.state = {
+            tipo: tipo
         };
 
     }
@@ -93,60 +99,102 @@ class SidebarContent extends Component {
                     <ul className="metismenu list-unstyled" id="side-menu">
                         <li className="menu-title">{this.props.t('Menu')}</li>
 
-                        <li>
-                            <Link to="/dashboard" className="waves-effect">
-                                <i className="ri-dashboard-line"></i>
-                                <span className="ms-1">{this.props.t('Dashboard')}</span>
-                            </Link>
-                        </li>
+                        {this.state.tipo == 'admin' && <>
+                            <li>
+                                <Link to="/dashboard" className="waves-effect">
+                                    <i className="ri-dashboard-line"></i>
+                                    <span className="ms-1">{this.props.t('Dashboard')}</span>
+                                </Link>
+                            </li>
 
-                        {/* <li>
-                            <Link to="/calendar" className=" waves-effect">
-                                <i className="ri-calendar-2-line"></i>
-                                <span className="ms-1">{this.props.t('Turnos')}</span>
-                            </Link>
-                        </li> */}
+                            <li>
+                                <Link to="/habitaciones" className=" waves-effect">
+                                    <i className="ri-home-heart-line"></i>
+                                    <span className="ms-1">{this.props.t('Habitaciones')}</span>
+                                </Link>
+                            </li>
 
-                        <li>
-                            <Link to="/habitaciones" className=" waves-effect">
-                                <i className="ri-home-heart-line"></i>
-                                <span className="ms-1">{this.props.t('Habitaciones')}</span>
-                            </Link>
-                        </li>
+                            <li>
+                                <Link to="/inventario" className="waves-effect">
+                                    <i className="ri-shopping-basket-2-line"></i>
+                                    <span className="ms-1">{this.props.t('Inventario')}</span>
+                                </Link>
+                            </li>
 
-                        <li>
-                            <Link to="/inventario" className="waves-effect">
-                                <i className="ri-shopping-basket-2-line"></i>
-                                <span className="ms-1">{this.props.t('Inventario')}</span>
-                            </Link>
-                        </li>
+                            <li>
+                                <Link to="/bodega" className="waves-effect">
+                                    <i className="ri-safe-line"></i>
+                                    <span className="ms-1">{this.props.t('Bodega')}</span>
+                                </Link>
+                            </li>
 
-                        <li>
-                            <Link to="/bodega" className="waves-effect">
-                                <i className="ri-safe-line"></i>
-                                <span className="ms-1">{this.props.t('Bodega')}</span>
-                            </Link>
-                        </li>
+                            <li>
+                                <Link to="/registros" className="waves-effect">
+                                    <i className="ri-file-list-3-line"></i>
+                                    <span className="ms-1">{this.props.t('Registros')}</span>
+                                </Link>
+                            </li>
 
-                        <li>
-                            <Link to="/registros" className="waves-effect">
-                                <i className="ri-file-list-3-line"></i>
-                                <span className="ms-1">{this.props.t('Registros')}</span>
-                            </Link>
-                        </li>
+                            <li>
+                                <Link to="/caja" className="waves-effect">
+                                    <i className="ri-coins-line"></i>
+                                    <span className="ms-1">{this.props.t('Caja')}</span>
+                                </Link>
+                            </li>
+                        </>}
 
-                        <li>
-                            <Link to="/caja" className="waves-effect">
-                                <i className="ri-coins-line"></i>
-                                <span className="ms-1">{this.props.t('Caja')}</span>
-                            </Link>
-                            {/* <ul className="sub-menu">
-                                <li><Link to="/caja/caja">{this.props.t('Caja')}</Link></li>
-                                <li><Link to="/caja/ventas">{this.props.t('Ventas')}</Link></li>
-                                <li><Link to="/caja/gastos">{this.props.t('Gastos')}</Link></li>
-                                <li><Link to="/caja/retiros">{this.props.t('Retiros')}</Link></li>
-                            </ul> */}
-                        </li>
+                        {this.state.tipo == 'cajero' && <>
+                            <li>
+                                <Link to="/dashboard" className="waves-effect">
+                                    <i className="ri-dashboard-line"></i>
+                                    <span className="ms-1">{this.props.t('Dashboard')}</span>
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link to="/habitaciones" className=" waves-effect">
+                                    <i className="ri-home-heart-line"></i>
+                                    <span className="ms-1">{this.props.t('Habitaciones')}</span>
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link to="/inventario" className="waves-effect">
+                                    <i className="ri-shopping-basket-2-line"></i>
+                                    <span className="ms-1">{this.props.t('Inventario')}</span>
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link to="/bodega" className="waves-effect">
+                                    <i className="ri-safe-line"></i>
+                                    <span className="ms-1">{this.props.t('Bodega')}</span>
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link to="/registros" className="waves-effect">
+                                    <i className="ri-file-list-3-line"></i>
+                                    <span className="ms-1">{this.props.t('Registros')}</span>
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link to="/caja" className="waves-effect">
+                                    <i className="ri-coins-line"></i>
+                                    <span className="ms-1">{this.props.t('Caja')}</span>
+                                </Link>
+                            </li>
+                        </>}
+
+                        {this.state.tipo == 'camarera' && <>
+                            <li>
+                                <Link to="/habitaciones" className=" waves-effect">
+                                    <i className="ri-home-heart-line"></i>
+                                    <span className="ms-1">{this.props.t('Habitaciones')}</span>
+                                </Link>
+                            </li>
+                        </>}
 
                         {/* <li>
                             <Link to="/#" className="has-arrow waves-effect">

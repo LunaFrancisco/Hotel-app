@@ -7,7 +7,7 @@ const generarJWT = (rut, tipo) => {
             expiresIn: '1h'
         }, (err, token) => {
             if (err) {
-                console.log(error);
+                console.log(err);
                 reject('No se pudo generar el token correspondiente');
             }
             resolve(token);

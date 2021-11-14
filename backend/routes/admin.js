@@ -7,12 +7,12 @@ const router = Router();
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 const { verUsuarios, nuevoRol } = require('../controllers/admin');
-const { crearCliente,findClient, actualizarCliente } = require('../controllers/clientes');
+const { crearCliente, findClient, actualizarCliente } = require('../controllers/clientes');
 
 router.get('/verUsuarios', verUsuarios);
 router.post('/nuevoRol', nuevoRol);
 
-router.get('/crearClient', crearCliente);
+router.post('/crearClient', crearCliente);
 router.put('/updateClient', actualizarCliente);
 
 
