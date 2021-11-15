@@ -10,6 +10,7 @@ const getInventario = async (req, res = response) => {
     try {
         const findAllProducts = await Producto.findAll({
             attributes: [
+                'id',
                 'nombre',
                 'precio'
             ],
@@ -48,7 +49,7 @@ const crearProductoInventario = async (req, res = response) => {
         const producto = await Producto.findOne({
             where: { nombre }
         });
-        
+
         if (!producto) {
             return res.status(200).json({
                 ok: false,
@@ -58,7 +59,7 @@ const crearProductoInventario = async (req, res = response) => {
 
         // Descontamos la cantidad del producto en Bodega
         const productoBodega = await Bodega.findOne({
-            where: { id_producto: producto.dataValues.id}
+            where: { id_producto: producto.dataValues.id }
         });
         if (productoBodega.cantidad - cantidad < 0) {
             return res.status(200).json({

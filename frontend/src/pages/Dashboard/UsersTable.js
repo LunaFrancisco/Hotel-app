@@ -23,35 +23,28 @@ export default () => {
     })
 
     const [data, setData] = useState([])
-    // const data = Array(12).fill(null).map((item, idx) => ({
-    //     id: idx + 1,
-    //     firstname: ['Fulano', 'Mengano', 'Juanito', 'Marcela', 'Marisol', 'Jose', 'Alberto'].sample(),
-    //     lastname: ['DeTal', 'Rodriguez', 'Matamala', 'Oliveira', 'Castañeda', 'Araya'].sample(),
-    //     phone: Array(8).fill(null).map(item => Math.round(Math.round(Math.random() * 9))).join(''),
-    //     rol: roles.sample(),
-    //     actions: acciones(idx + 1)
-    // }))
 
     useEffect(async () => {
         setData([])
         const users = await get('api/admin/verUsuarios')
         setData(users.msg.map((item, idx) => ({
-            id: idx + 1,
-            firstname: ['Fulano', 'Mengano', 'Juanito', 'Marcela', 'Marisol', 'Jose', 'Alberto'].sample(),
-            lastname: ['DeTal', 'Rodriguez', 'Matamala', 'Oliveira', 'Castañeda', 'Araya'].sample(),
+            id: item.id,
+            firstname: item.nombre,
+            lastname: item.apellido,
             rut: item.rut,
-            phone: Array(8).fill(null).map(item => Math.round(Math.round(Math.random() * 9))).join(''),
+            phone: item.telefono,
             email: item.correo,
             rol: item.roles[0].rol,
-            actions: acciones(idx + 1)
+            actions: acciones(item.id)
         })))
+        console.log(data)
     }, [refresh])
 
     const roles = ['Administrador', 'Cajero', 'Camarera']
 
     const acciones = (id) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
         <Tooltip id={'user-' + id + '-edit-button'} title="Editar Usuario">
-            <Button onClick={() => onEdit(id)} color="link" className="text-warning">
+            <Button onClick={() => { onEdit(id) }} color="link" className="text-warning">
                 <i className="ri-pencil-fill"></i>
             </Button>
         </Tooltip>
@@ -101,8 +94,18 @@ export default () => {
     ];
 
     const onEdit = (id) => {
-        const user = data.find(item => item.id === id)
-        setUserForm(user)
+        console.log(data)
+        const user = data.find(item => item.id == id)
+        setUserForm(({
+            id: user.id,
+            firstname: user.nombre,
+            lastname: user.apellido,
+            rut: user.rut,
+            phone: user.telefono,
+            email: user.correo,
+            rol: user.roles[0].rol,
+            actions: acciones(user.id + 1)
+        }))
         setAddPopup(true)
     }
 
