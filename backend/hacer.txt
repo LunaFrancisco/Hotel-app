@@ -1,0 +1,4 @@
+editar producto (nombre, categoria, precio) listo
+editar stock en inventario listo
+    bodega () listo
+eliminar producto

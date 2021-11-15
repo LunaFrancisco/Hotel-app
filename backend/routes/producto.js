@@ -2,9 +2,9 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const router = Router();
 
-const { crearProducto, findAllProductos } = require('../controllers/productos');
-const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
+const { validarCampos } = require('../middlewares/validar-campos');
+const { crearProducto, findAllProductos, editarProducto, eliminarProducto } = require('../controllers/productos');
 
 router.post(
     '/createProduct',
@@ -52,5 +52,8 @@ router.get(
 //     '/updateUser',
 //     updateUsuario
 // );
+
+router.put('/editarProducto', editarProducto);
+router.delete('/eliminarProducto', eliminarProducto);
 
 module.exports = router;

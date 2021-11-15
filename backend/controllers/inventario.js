@@ -89,11 +89,17 @@ const crearProductoInventario = async (req, res = response) => {
     }
 };
 
-const descontarProductoInventario = (req, res = response) => {
+const actualizarStockInventario = async (req, res = response) => {
     try {
+        const { id_producto, stock } = req.body;
+        const productoInventario = await Inventario.findOne({
+            where: { id_producto }
+        });
+        productoInventario.cantidad = stock;
+        productoInventario.save();
         return res.status(500).json({
             ok: false,
-            msg: 'descontarProductoInventario'
+            msg: 'Stock en inventario actualizado correctamente'
         });
     } catch (error) {
         console.log(error);
@@ -107,5 +113,5 @@ const descontarProductoInventario = (req, res = response) => {
 module.exports = {
     getInventario,
     crearProductoInventario,
-    descontarProductoInventario
+    actualizarStockInventario
 };

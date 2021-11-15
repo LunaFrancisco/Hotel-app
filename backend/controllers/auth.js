@@ -12,7 +12,7 @@ const Roles = require('../models/rol');
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgres',
+    password: 'tics2',
     database: 'test',
     port: '5432'
 });
