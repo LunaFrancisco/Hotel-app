@@ -22,14 +22,12 @@ import Select from "react-select";
 import SummaryContext from '../SummaryContext'
 import { get } from '../../../../api'
 
-export default () => {
+export default ({ inventario }) => {
     const { orderSummary, setOrderSummary } = useContext(SummaryContext)
     const selectValue = null
     const [extras, setExtras] = useState([])
 
     useEffect(async () => {
-        const response = await get('api/inventario/getInventario')
-
         const map_products = (item) => ({
             id: item.id,
             price: item.precio,
@@ -41,30 +39,30 @@ export default () => {
         setExtras([
             {
                 label: 'Licores',
-                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Licores').map(map_products)
+                options: inventario.filter(item => item.tipo_producto.tipo === 'Licores').map(map_products)
             },
             {
                 label: 'Bebida',
-                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Bebida').map(map_products)
+                options: inventario.filter(item => item.tipo_producto.tipo === 'Bebida').map(map_products)
             },
             {
                 label: 'Comida',
-                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Comida').map(map_products)
+                options: inventario.filter(item => item.tipo_producto.tipo === 'Comida').map(map_products)
             },
             {
                 label: 'Ropa',
-                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Ropa').map(map_products)
+                options: inventario.filter(item => item.tipo_producto.tipo === 'Ropa').map(map_products)
             },
             {
                 label: 'Utencilios',
-                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Utencilios').map(map_products)
+                options: inventario.filter(item => item.tipo_producto.tipo === 'Utencilios').map(map_products)
             },
             {
                 label: 'Otros',
-                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Otros').map(map_products)
+                options: inventario.filter(item => item.tipo_producto.tipo === 'Otros').map(map_products)
             },
         ])
-    }, [])
+    }, [inventario])
 
     const addExtra = (value) => {
         if (value) {

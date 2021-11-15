@@ -15,7 +15,7 @@ import {
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import { Link, useParams } from "react-router-dom";
 import classnames from "classnames";
-
+import { get } from '../../../api'
 import ClientInfo from './ClientInfo'
 import ServiceInfo from './ServiceInfo'
 import ExtrasInfo from './ExtrasInfo'
@@ -37,6 +37,7 @@ export default () => {
     })
     const [total, setTotal] = useState(0)
     const [payment, setPayment] = useState(null)
+    const [inventario, setInventario] = useState([])
 
     const [activeTab, setActiveTab] = useState(1)
 
@@ -60,6 +61,12 @@ export default () => {
 
         console.log(orderSummary)
     }, [orderSummary])
+
+    useEffect(async () => {
+        const response = await get('api/inventario/getInventario')
+
+        setInventario(response.inventario)
+    }, [])
 
     const checkForm = (form) => {
         const element = document.getElementById(form.form)
@@ -181,7 +188,7 @@ export default () => {
                                             aria-labelledby="v-pills-payment-tab"
                                         >
                                             <SummaryContext.Provider value={summaryContext}>
-                                                <ServiceInfo />
+                                                <ServiceInfo inventario={inventario} />
                                             </SummaryContext.Provider>
                                         </TabPane>
                                         <TabPane
@@ -191,7 +198,7 @@ export default () => {
                                             aria-labelledby="v-pills-payment-tab"
                                         >
                                             <SummaryContext.Provider value={summaryContext}>
-                                                <ExtrasInfo />
+                                                <ExtrasInfo inventario={inventario} />
                                             </SummaryContext.Provider>
                                         </TabPane>
                                         <TabPane tabId={4} id="v-pills-confir" role="tabpanel">

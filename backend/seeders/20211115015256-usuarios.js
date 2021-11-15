@@ -1,4 +1,5 @@
 'use strict';
+const sequelize = require('../database/database');
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
@@ -83,6 +84,8 @@ module.exports = {
 
 
         ], {});
+
+        await sequelize.query('ALTER SEQUENCE usuarios_id_seq RESTART WITH 5;')
     },
 
     down: async (queryInterface, Sequelize) => {

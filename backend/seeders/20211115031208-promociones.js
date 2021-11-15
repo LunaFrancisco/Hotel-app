@@ -1,4 +1,5 @@
 'use strict';
+const sequelize = require('../database/database');
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
@@ -26,7 +27,7 @@ module.exports = {
                 precio: 16000,
                 bebida: true,
                 trago: false,
-                descripcion: 'Esta promoción include 1 bebida'
+                descripcion: 'Esta promoción include bebidas'
             },
             {
                 id: 3,
@@ -34,7 +35,7 @@ module.exports = {
                 precio: 19800,
                 bebida: true,
                 trago: true,
-                descripcion: 'Esta promoción include 1 bebida y un trago. 6 Horas'
+                descripcion: 'Esta promoción include bebidas y/o tragos. 6 Horas'
             },
             {
                 id: 4,
@@ -42,11 +43,13 @@ module.exports = {
                 precio: 26900,
                 bebida: true,
                 trago: true,
-                descripcion: 'Esta promoción include 1 bebida y un trago. 10 Horas'
+                descripcion: 'Esta promoción include bebidas y/o tragos. 10 Horas'
             }
 
 
         ], {});
+
+        await sequelize.query('ALTER SEQUENCE promociones_id_seq RESTART WITH 5;')
     },
 
     down: async (queryInterface, Sequelize) => {
