@@ -44,10 +44,10 @@ const getInventario = async (req, res = response) => {
 
 const crearProductoInventario = async (req, res = response) => {
     try {
-        const { nombre, categoria, cantidad, precio } = req.body;
+        const { id, categoria, cantidad, precio } = req.body;
 
         const producto = await Producto.findOne({
-            where: { nombre }
+            where: { id }
         });
 
         if (!producto) {
@@ -98,8 +98,8 @@ const actualizarStockInventario = async (req, res = response) => {
         });
         productoInventario.cantidad = stock;
         productoInventario.save();
-        return res.status(500).json({
-            ok: false,
+        return res.status(200).json({
+            ok: true,
             msg: 'Stock en inventario actualizado correctamente'
         });
     } catch (error) {

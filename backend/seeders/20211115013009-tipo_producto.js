@@ -14,28 +14,28 @@ module.exports = {
      await queryInterface.bulkInsert('tipo_producto', [
       {
           id:1,
-          tipo: 'licores'
+          tipo: 'Licores'
       },
       {
           id:2,
-          tipo: 'bebida'
+          tipo: 'Bebida'
       },
       
       {
           id:3,
-          tipo: 'comida'
+          tipo: 'Comida'
       },
       {
           id:4,
-          tipo: 'ropa'
+          tipo: 'Ropa'
       },
       {
           id:5,
-          tipo: 'utencilios'
+          tipo: 'Utencilios'
       },
       {
           id:6,
-          tipo: 'otros'
+          tipo: 'Otros'
       }
   ], {});
   },

@@ -118,6 +118,7 @@ const consultarProducto = async (req, res = response) => {
 const editarProducto = async (req, res = response) => {
     try {
         const { id, nombre, id_tipo, precio } = req.body;
+        console.log(req.body)
         const producto = await Producto.findOne({
             where: { id }
         });
@@ -126,8 +127,8 @@ const editarProducto = async (req, res = response) => {
         producto.precio = precio;
         producto.save();
 
-        return res.status(500).json({
-            ok: false,
+        return res.status(200).json({
+            ok: true,
             msg: 'editarProducto'
         });
     } catch (error) {
@@ -145,7 +146,7 @@ const eliminarProducto = async (req, res = response) => {
 
         // Buscamos cada registro de ese producto
         const producto = await Producto.findOne({
-            where: { id: id_producto} 
+            where: { id: id_producto }
         });
         const productoBodega = await Bodega.findOne({
             where: { id_producto }
@@ -153,14 +154,14 @@ const eliminarProducto = async (req, res = response) => {
         const productoInventario = await Inventario.findOne({
             where: { id_producto }
         });
-        
+
         // Borramos
         productoInventario?.destroy();
         productoBodega?.destroy();
         producto?.destroy();
 
-        return res.status(500).json({
-            ok: false,
+        return res.status(200).json({
+            ok: true,
             msg: 'Producto eliminado correctamente'
         });
     } catch (error) {
@@ -175,9 +176,8 @@ const eliminarProducto = async (req, res = response) => {
 const obtenerTiposProducto = async (req, res = response) => {
     try {
         const tiposProducto = await Tipo_producto.findAll();
-        console.log(tiposProducto);
-        return res.status(500).json({
-            ok: false,
+        return res.status(200).json({
+            ok: true,
             msg: tiposProducto
         });
     } catch (error) {

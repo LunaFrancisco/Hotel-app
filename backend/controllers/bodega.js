@@ -97,8 +97,8 @@ const actualizarStockBodega = async (req, res = response) => {
         });
         registroBodega.cantidad = cantidad;
         registroBodega.save();
-        return res.status(500).json({
-            ok: false,
+        return res.status(200).json({
+            ok: true,
             msg: 'Producto en bodega actualizado'
         });
     } catch (error) {
