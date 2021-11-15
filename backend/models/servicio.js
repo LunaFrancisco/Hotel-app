@@ -11,9 +11,6 @@ const Servicio = sequelize.define('servicios', {
     id_habitacion: {
         type: Sequelize.INTEGER
     },
-    id_promocion: {
-        type: Sequelize.INTEGER
-    },
     id_usuario: {
         type: Sequelize.INTEGER
     },
@@ -31,7 +28,13 @@ const Servicio = sequelize.define('servicios', {
     },
     total: {
         type: Sequelize.INTEGER
-    }
+    },
+    id_cliente1: {
+        type: Sequelize.INTEGER
+    },
+    id_cliente2: {
+        type: Sequelize.INTEGER
+    },
 }, {
 
     timestamps: false

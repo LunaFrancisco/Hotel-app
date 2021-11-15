@@ -25,6 +25,8 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/products', require('./routes/producto'));
 app.use('/api/inventario', require('./routes/inventario'));
 app.use('/api/bodega', require('./routes/bodega'));
+app.use('/api/services', require('./routes/servicio'));
+
 
 // Escuchar peticiones
 app.listen(process.env.PORT, async () => {

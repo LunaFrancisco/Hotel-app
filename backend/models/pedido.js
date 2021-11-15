@@ -9,15 +9,19 @@ const Pedido = sequelize.define('pedido', {
         primaryKey: true
     },
     id_tipo_pago: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
         
     },
     estado: {
-        type: Sequelize.TEXT,
+        type: Sequelize.TEXT
         
     },
     total: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
+       
+    },
+    id_servicio: {
+        type: Sequelize.INTEGER
        
     }
     
