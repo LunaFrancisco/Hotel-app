@@ -1,11 +1,13 @@
-import { Fragment, useState } from "react"
+import { Fragment, useState, useEffect } from "react"
 import { Button, Row, Col, Label, Input, Card, CardBody, CardTitle } from 'reactstrap'
 import Table from '../../components/Common/InventarioTable'
 import Tooltip from '../../components/Common/Tooltip'
 import SweetAlert from "react-bootstrap-sweetalert";
+import { get } from '../../api'
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     Array.prototype.sample = function () {
         return this[Math.floor(Math.random() * this.length)];
     }
@@ -15,8 +17,35 @@ export default () => {
         firstname: '',
         lastname: '',
         phone: '',
+        rut: '',
+        email: '',
         rol: ''
     })
+
+    const [data, setData] = useState([])
+    // const data = Array(12).fill(null).map((item, idx) => ({
+    //     id: idx + 1,
+    //     firstname: ['Fulano', 'Mengano', 'Juanito', 'Marcela', 'Marisol', 'Jose', 'Alberto'].sample(),
+    //     lastname: ['DeTal', 'Rodriguez', 'Matamala', 'Oliveira', 'Castañeda', 'Araya'].sample(),
+    //     phone: Array(8).fill(null).map(item => Math.round(Math.round(Math.random() * 9))).join(''),
+    //     rol: roles.sample(),
+    //     actions: acciones(idx + 1)
+    // }))
+
+    useEffect(async () => {
+        setData([])
+        const users = await get('api/admin/verUsuarios')
+        setData(users.msg.map((item, idx) => ({
+            id: idx + 1,
+            firstname: ['Fulano', 'Mengano', 'Juanito', 'Marcela', 'Marisol', 'Jose', 'Alberto'].sample(),
+            lastname: ['DeTal', 'Rodriguez', 'Matamala', 'Oliveira', 'Castañeda', 'Araya'].sample(),
+            rut: item.rut,
+            phone: Array(8).fill(null).map(item => Math.round(Math.round(Math.random() * 9))).join(''),
+            email: item.correo,
+            rol: item.roles[0].rol,
+            actions: acciones(idx + 1)
+        })))
+    }, [refresh])
 
     const roles = ['Administrador', 'Cajero', 'Camarera']
 
@@ -33,15 +62,6 @@ export default () => {
         </Tooltip>
     </div>
 
-    const data = Array(12).fill(null).map((item, idx) => ({
-        id: idx + 1,
-        firstname: ['Fulano', 'Mengano', 'Juanito', 'Marcela', 'Marisol', 'Jose', 'Alberto'].sample(),
-        lastname: ['DeTal', 'Rodriguez', 'Matamala', 'Oliveira', 'Castañeda', 'Araya'].sample(),
-        phone: Array(8).fill(null).map(item => Math.round(Math.round(Math.random() * 9))).join(''),
-        rol: roles.sample(),
-        actions: acciones(idx + 1)
-    }))
-
     const columns = [
         {
             dataField: 'id',
@@ -56,6 +76,11 @@ export default () => {
         {
             dataField: 'lastname',
             text: 'Apellido',
+            sort: true
+        },
+        {
+            dataField: 'email',
+            text: 'Correo',
             sort: true
         },
         {
@@ -116,6 +141,8 @@ export default () => {
                                 firstname: '',
                                 lastname: '',
                                 phone: '',
+                                rut: '',
+                                email: '',
                                 rol: ''
                             })
                         }}
@@ -164,6 +191,27 @@ export default () => {
                             <Col lg={12}>
                                 <div className="mb-4">
                                     <Label
+                                        htmlFor="rut"
+                                        className="form-label w-100"
+                                        style={{ textAlign: 'left' }}
+                                    >
+                                        Rut
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        className="form-control"
+                                        id="billing-name"
+                                        name="rut"
+                                        pattern="^\d{7,8}[-][0-9kK]{1}$"
+                                        placeholder="Ingrese el rut del usuario"
+                                        value={userForm.rut}
+                                        onChange={(value) => handleFormChange(value, 'rut')}
+                                    />
+                                </div>
+                            </Col>
+                            <Col lg={12}>
+                                <div className="mb-4">
+                                    <Label
                                         htmlFor="phone"
                                         className="form-label w-100"
                                         style={{ textAlign: 'left' }}
@@ -177,6 +225,25 @@ export default () => {
                                         name="phone"
                                         value={userForm.phone}
                                         onChange={(value) => handleFormChange(value, 'phone')}
+                                    />
+                                </div>
+                            </Col>
+                            <Col lg={12}>
+                                <div className="mb-4">
+                                    <Label
+                                        htmlFor="email"
+                                        className="form-label w-100"
+                                        style={{ textAlign: 'left' }}
+                                    >
+                                        Teléfono
+                                    </Label>
+                                    <Input
+                                        type="email"
+                                        className="form-control"
+                                        placeholder="Ingrese el correo del usuario"
+                                        name="email"
+                                        value={userForm.email}
+                                        onChange={(value) => handleFormChange(value, 'email')}
                                     />
                                 </div>
                             </Col>

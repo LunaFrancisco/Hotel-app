@@ -4,7 +4,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const router = Router();
 
-const { crearUsuario, loginUsuario, revalidarToken, eliminarUsuario, updateUsuario } = require('../controllers/auth');
+const { crearServicio, actualizarServicio, eliminarServicio, buscarServicio } = require('../controllers/servicio');
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
@@ -21,7 +21,7 @@ router.post(
         check('rol', 'El rol es obligatorio').not().isEmpty(),
         validarCampos
     ],
-    crearUsuario
+    crearServicio
 );
 
 router.post(
@@ -31,20 +31,20 @@ router.post(
         check('password', 'El password debe ser minimo de 5 caracteres').isLength({ min: 6 }),
         validarCampos
     ],
-    loginUsuario
+    actualizarServicio
 );
 
-router.post(
+router.get(
     '/renew',
     [
         validarJWT
     ],
-    revalidarToken
+    eliminarServicio
 );
 
-router.delete(
-    '/deleteUser',
-    eliminarUsuario
+router.get(
+    '/find',
+    buscarServicio
 );
 
 

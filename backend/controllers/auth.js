@@ -26,9 +26,12 @@ const crearUsuario = async (req, res = response) => {
         const passwordHash = bcrypt.hashSync(password, salt);
         // Guardamos en la base de datos
         // await pool.query('INSERT INTO usuarios(nombre, apellido, rut, correo, telefono, direccion, contraseña) VALUES ($1, $2, $3, $4, $5, $6, $7)', [nombre, apellido, rut, correo, telefono, direccion, passwordHash]);
-        //semillita 
-       const rolzera = 'admin';
+        
+        //semillita (provisoria)
+        const rolzera = 'admin';
         await pool.query('INSERT INTO roles(rol) VALUES ($1)', [rolzera]);
+
+
         const findUser = await Usuario.findOne({
             where: {
                 rut
@@ -60,7 +63,7 @@ const crearUsuario = async (req, res = response) => {
                 telefono,
                 direccion,
                 password: passwordHash,
-                estado: 'TRUE'
+                estado: true
             }, {
                 fields: [
                     'nombre',

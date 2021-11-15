@@ -14,12 +14,13 @@ import { checkLogin, apiError } from '../store/actions';
 
 // import images
 import logoImg from "../assets/images/logo.jpg";
+import axios from 'axios'
 
 class Login extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { username: "usuario@mail.cl", password: "123456" }
+        this.state = { rut: "19522912-0", password: "secret" }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -68,8 +69,8 @@ class Login extends Component {
 
                                                             <div className="auth-form-group-custom mb-4">
                                                                 <i className="ri-user-2-line auti-custom-input-icon"></i>
-                                                                <Label htmlFor="username">Email</Label>
-                                                                <AvField name="username" value={this.state.username} type="text" className="form-control" id="username" validate={{ email: true, required: true }} placeholder="Enter username" />
+                                                                <Label htmlFor="username">Rut</Label>
+                                                                <AvField name="rut" value={this.state.rut} type="text" className="form-control" id="rut" validate={{ required: true, pattern: { value: '^\\d{7,8}[-][0-9kK]{1}$', errorMessage: 'Ingrese un RUT válido' } }} placeholder="Enter username" />
                                                             </div>
 
                                                             <div className="auth-form-group-custom mb-4">
@@ -78,10 +79,10 @@ class Login extends Component {
                                                                 <AvField name="password" value={this.state.password} type="password" className="form-control" id="userpassword" placeholder="Enter password" />
                                                             </div>
 
-                                                            <div className="form-check">
+                                                            {/* <div className="form-check">
                                                                 <Input type="checkbox" className="form-check-input" id="customControlInline" />
                                                                 <Label className="form-check-label" htmlFor="customControlInline">Recuerdame</Label>
-                                                            </div>
+                                                            </div> */}
 
                                                             <div className="mt-4 text-center">
                                                                 <Button color="primary" className="w-md waves-effect waves-light" type="submit">Iniciar sesión</Button>
