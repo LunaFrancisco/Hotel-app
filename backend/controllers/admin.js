@@ -11,7 +11,7 @@ const verUsuarios = async (req, res = response) => {
     try {
         const allUsers = await Usuario.findAll(
             {
-            attributes: ['rut', 'correo'],
+            attributes: ['id','rut','nombre', 'apellido', 'correo', 'direccion', 'telefono'],
             include: [
                 Roles
                ]
