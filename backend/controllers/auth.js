@@ -20,7 +20,7 @@ const pool = new Pool({
 const crearUsuario = async (req, res = response) => {
     try {
         const { nombre, apellido, rut, correo, telefono, direccion, password, rol } = req.body;
-        console.log(nombre, apellido, rut, correo, telefono, direccion, password, rol);
+        
         // Encriptar contraseña
         const salt = bcrypt.genSaltSync();
         const passwordHash = bcrypt.hashSync(password, salt);
@@ -42,11 +42,10 @@ const crearUsuario = async (req, res = response) => {
         });
         const findRol = await Rol.findOne({
             where: {
-                rol
+                id:rol
             },
             attributes: ['id']
         });
-        console.log(findRol.id);
         if (findUser && findRol) {
             return res.status(440).json({
                 ok: false,

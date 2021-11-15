@@ -11,10 +11,8 @@ const Estado = sequelize.define('estado', {
     estado: {
         type: Sequelize.TEXT,
         
-    },
-    descripcion:{
-        type: Sequelize.TEXT
-    },
+    }
+
 
 }, {
     timestamps: false

@@ -19,6 +19,9 @@ const Servicio_promociones = sequelize.define('servicio_promociones', {
     },
     estado: {
         type: Sequelize.BOOLEAN
+    },
+    id_servicio: {
+        type: Sequelize.INTEGER
     }
 }, {
 

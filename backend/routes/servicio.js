@@ -4,9 +4,10 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const router = Router();
 
-const { validarJWT } = require('../middlewares/validar-jwt');
+const { reservarHabitacion,estadoHabitaciones,cancelarReserva, desalojarHabitacion, listarHabitaciones, habilitarHabitacion } = require('../controllers/servicio');
 const { validarCampos } = require('../middlewares/validar-campos');
-const { reservarHabitacion, estadoHabitaciones, listarHabitaciones, habilitarHabitacion } = require('../controllers/servicio');
+const { validarJWT } = require('../middlewares/validar-jwt');
+
 
 router.post(
     '/new',
@@ -16,6 +17,25 @@ router.post(
         validarCampos
     ],
     reservarHabitacion
+);
+
+router.get(
+    '/state',
+    estadoHabitaciones
+);
+
+router.post(
+    '/cancel',
+    cancelarReserva
+);
+
+router.post(
+    '/desalojar',
+    desalojarHabitacion
+);
+router.get(
+    '/',
+    estadoHabitaciones
 );
 
 // router.post(
