@@ -171,6 +171,22 @@ const eliminarProducto = async (req, res = response) => {
     }
 };
 
+const obtenerTiposProducto = async (req, res = response) => {
+    try {
+        
+        return res.status(500).json({
+            ok: false,
+            msg: 'obtenerTiposProducto'
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Por favor hable con el administrador'
+        });
+    }
+};
+
 module.exports = {
     crearProducto,
     findAllProductos,
@@ -179,4 +195,5 @@ module.exports = {
     //    actualizarProducto,
     editarProducto,
     eliminarProducto,
+    obtenerTiposProducto
 };

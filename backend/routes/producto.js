@@ -55,5 +55,6 @@ router.get(
 
 router.put('/editarProducto', editarProducto);
 router.delete('/eliminarProducto', eliminarProducto);
+router.get('/obtenerTiposProducto', obtenerTiposProducto);
 
 module.exports = router;
