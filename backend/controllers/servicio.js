@@ -154,8 +154,33 @@ const listarHabitaciones = async (req, res) => {
     }
 };
 
+const habilitarHabitacion = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const habitacion = await Habitacion.findOne({
+            where: { id }
+        });
+        if (habitacion.id_estado === 3) {
+            habitacion.id_estado = 1;
+            habitacion.save();
+            return res.status(200).json({
+                ok: true,
+                msg: 'Habitacion habilitada correctamente'
+            });
+        }
+        return res.status(200).json({
+            ok: true,
+            msg: 'La habitacion no esta en estado de aseo'
+        });
+    }
+    catch (error) {
+        return res.status(200).json({
+            ok: false,
+            msg: 'Error, Hable con el administrador'
+        });
+    }
+};
 
-//reservar habitacion
 const reservarHabitacion = async (req, res) => {
     const { id,
         clientes,
@@ -336,6 +361,7 @@ const reservarHabitacion = async (req, res) => {
 
 module.exports = {
     listarHabitaciones,
+    habilitarHabitacion,
     reservarHabitacion,
     estadoHabitaciones
 };
