@@ -155,11 +155,8 @@ const listarHabitaciones = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-=======
 
 //reservar habitacion
->>>>>>> 3de2fadfa5e20a29ba18c978c33a3e87f429a96b
 const reservarHabitacion = async (req, res) => {
     const { id,
         clientes,
