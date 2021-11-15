@@ -6,7 +6,7 @@ const router = Router();
 
 const { validarJWT } = require('../middlewares/validar-jwt');
 const { validarCampos } = require('../middlewares/validar-campos');
-const { reservarHabitacion, estadoHabitaciones, listarHabitaciones } = require('../controllers/servicio');
+const { reservarHabitacion, estadoHabitaciones, listarHabitaciones, habilitarHabitacion } = require('../controllers/servicio');
 
 router.post(
     '/new',
@@ -48,5 +48,6 @@ router.post(
 // );
 
 router.get('/listarHabitaciones', listarHabitaciones);
+router.put('/habilitarHabitacion', habilitarHabitacion);
 
 module.exports = router;
