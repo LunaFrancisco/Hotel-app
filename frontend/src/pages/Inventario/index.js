@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react"
+import React, { Component, useState, useEffect } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button, Input, Label } from "reactstrap"
 import Tooltip from "../../components/Common/Tooltip";
 import SweetAlert from "react-bootstrap-sweetalert";
@@ -6,6 +6,7 @@ import SweetAlert from "react-bootstrap-sweetalert";
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 import Table from '../../components/Common/InventarioTable'
+import { get, post } from '../../api'
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
@@ -57,6 +58,11 @@ export default () => {
             </Button>
         </Tooltip>
     </div>
+
+    useEffect(async () => {
+        const data = await get('api/inventario/getInventario')
+        console.log(data)
+    }, [])
 
     let licores = [
         { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
