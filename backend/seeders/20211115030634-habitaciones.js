@@ -43,20 +43,8 @@ module.exports = {
           id_estado:1
       },
       {
-          id:5,
-          numero:5,
-          id_tipo:2,
-          id_estado:1
-      },
-      {
-          id:5,
-          numero:5,
-          id_tipo:2,
-          id_estado:1
-      },
-      {
           id:6,
-          numero:5,
+          numero:6,
           id_tipo:2,
           id_estado:1
       },

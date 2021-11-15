@@ -17,15 +17,15 @@ module.exports = {
           estado:'Disponible'
       },
       {
-          id:1,
+          id:2,
           estado:'Ocupada'
       },
       {
-          id:1,
+          id:3,
           estado:'Aseo'
       },
       {
-          id:1,
+          id:4,
           estado:'Mantenimiento'
       }
       
