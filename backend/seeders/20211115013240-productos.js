@@ -11,170 +11,169 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-     await queryInterface.bulkInsert('bodega', [
+     await queryInterface.bulkInsert('productos', [
       {
-          
-        id_producto: 1,
-        cantidad:100,
-        cantidad_minima:24
+        id:1,
+        nombre:'Coca-cola',
+         precio:2200,
+         id_tipo:2
       },
       {
-          
-        id_producto: 2,
-        cantidad:100,
-        cantidad_minima:24
+        id:2,
+         nombre:'Fanta',
+         precio:2200,
+         id_tipo:2
       },
       {
-          
-        id_producto: 3,
-        cantidad:48,
-        cantidad_minima:24
+        id:3,
+         nombre:'Sprite',
+         precio:2200,
+         id_tipo:2
       },
       {
-          
-        id_producto: 4,
-        cantidad:48,
-        cantidad_minima:24
+        id:4,
+         nombre:'Kem',
+         precio:2200,
+         id_tipo:2
       },
       {
-          
-        id_producto: 5,
-        cantidad:48,
-        cantidad_minima:24
+        id:5,
+         nombre:'Agua mineral c/Gas',
+         precio:1500,
+         id_tipo:2
       },
       {
-          
-        id_producto: 6,
-        cantidad:48,
-        cantidad_minima:24
+        id:6,
+         nombre:'Agua mineral s/Gas',
+         precio:1500,
+         id_tipo:2
       },
       {
-          
-        id_producto: 7,
-        cantidad:45,
-        cantidad_minima:24
+        id:7,
+        nombre:'Te',
+        precio:500,
+        id_tipo:2
+     },
+     {
+        id:8,
+        nombre:'Café',
+        precio:500,
+        id_tipo:2
+     },
+      { 
+        id:9,
+         nombre:'Churrasco',
+         precio:4500,
+         id_tipo:3
       },
       {
-          
-        id_producto: 8,
-        cantidad:45,
-        cantidad_minima:24
+        id:10,
+         nombre:'Papas Frita',
+         precio:4500,
+         id_tipo:3
       },
       {
-          
-        id_producto: 9,
-        cantidad:22,
-        cantidad_minima:24
+        id:11,
+         nombre:'Galleta',
+         precio:1000,
+         id_tipo:3
       },
       {
-          
-        id_producto: 10,
-        cantidad:22,
-        cantidad_minima:24
+        id:12,
+         nombre:'Pisco',
+         precio:4500,
+         id_tipo:1
       },
       {
-          
-        id_producto: 11,
-        cantidad:43,
-        cantidad_minima:24
+        id:13,
+         nombre:'Sour',
+         precio:4500,
+         id_tipo:1
       },
       {
-          
-        id_producto: 12,
-        cantidad:65,
-        cantidad_minima:24
+        id:14,
+         nombre:'Ron',
+         precio:4500,
+         id_tipo:1
       },
       {
-          
-        id_producto: 13,
-        cantidad:54,
-        cantidad_minima:24
+        id:15,
+         nombre:'whiskey',
+         precio:4500,
+         id_tipo:1
       },
       {
-          
-        id_producto: 14,
-        cantidad:44,
-        cantidad_minima:24
+        id:16,
+         nombre:'Gin c/Gin',
+         precio:4500,
+         id_tipo:1
       },
       {
-          
-        id_producto: 15,
-        cantidad:34,
-        cantidad_minima:24
+        id:17,
+         nombre:'Primavera',
+         precio:4500,
+         id_tipo:1
       },
       {
-          
-        id_producto: 16,
-        cantidad:65,
-        cantidad_minima:24
+        id:18,
+         nombre:'Martini',
+         precio:4500,
+         id_tipo:1
       },
       {
-          
-        id_producto: 17,
-        cantidad:76,
-        cantidad_minima:24
+        id:19,
+         nombre:'Sabanas',
+         precio:0,
+         id_tipo:4
       },
       {
-          
-        id_producto: 18,
-        cantidad:100,
-        cantidad_minima:24
+        id:20,
+         nombre:'Toalla',
+         precio:0,
+         id_tipo:4
       },
       {
-          
-        id_producto: 19,
-        cantidad:45,
-        cantidad_minima:24
+        id:21,
+         nombre:'Guantes',
+         precio:0,
+         id_tipo:5
+      },
+      { id:22,
+         nombre:'Bolsa de basura',
+         precio:0,
+         id_tipo:5
       },
       {
-          
-        id_producto: 20,
-        cantidad:45,
-        cantidad_minima:24
+        id:23,
+         nombre:'Preservativos',
+         precio:700,
+         id_tipo:6
       },
       {
-          
-        id_producto: 21,
-        cantidad:45,
-        cantidad_minima:24
+        id:24,
+         nombre:'Shampoo',
+         precio:700,
+         id_tipo:6
       },
       {
-          
-        id_producto: 22,
-        cantidad:45,
-        cantidad_minima:24
+        id:25,
+         nombre:'Balsamo',
+         precio:700,
+         id_tipo:6
       },
       {
-          
-        id_producto: 23,
-        cantidad:45,
-        cantidad_minima:24
+        id:26, 
+        nombre:'Peineta',
+         precio:1500,
+         id_tipo:6
       },
       {
-          
-        id_producto: 24,
-        cantidad:45,
-        cantidad_minima:24
+        id:27,
+         nombre:'Chicle',
+         precio:500,
+         id_tipo:6
       },
-      {
-          
-        id_producto: 25,
-        cantidad:45,
-        cantidad_minima:24
-      },
-      {
-          
-        id_producto: 26,
-        cantidad:5,
-        cantidad_minima:2
-      },
-      {
-          
-        id_producto: 27,
-        cantidad:5,
-        cantidad_minima:2
-      },
-     
+   
   ], {});
   },
 
@@ -185,6 +184,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-     await queryInterface.bulkDelete('bodega', null, {});
+     await queryInterface.bulkDelete('productos', null, {});
   }
 };

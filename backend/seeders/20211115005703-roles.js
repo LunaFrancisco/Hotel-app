@@ -14,12 +14,13 @@ module.exports = {
 
         await queryInterface.bulkInsert('roles', [
             {
+                id:1,
                 rol: 'Administrador',
             },
-            {
+            {   id:2,
                 rol: 'Cajero',
             },
-            {
+            {   id:3,
                 rol: 'Camarera',
             },
         ], {});

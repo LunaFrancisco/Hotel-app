@@ -13,6 +13,7 @@ module.exports = {
     */
      await queryInterface.bulkInsert('usuarios', [
       {
+          id:1,
           nombre:'Pedro',
           apellido:'Engel',
           rut:'11111111-1',
@@ -22,7 +23,7 @@ module.exports = {
           password: '$2a$10$CCJPhr5QdbmKghbP9ci/l.MWMMtkjntrlaFX9Ldigv28WKl0BofYK',
           estado: true
       },
-      {
+      { id:2,
           nombre:'Juan',
           apellido:'Perez',
           rut:'22222222-2',
@@ -33,6 +34,7 @@ module.exports = {
           estado: true
       },
       {
+          id:3,
           nombre:'Roberto',
           apellido:'Peña',
           rut:'33333333-3',
@@ -43,12 +45,13 @@ module.exports = {
           estado: true
       },
       {
+          id:4,
           nombre:'Juan',
           apellido:'Muñoz',
           rut:'11111111-1',
           correo:'Juan@munoz.com',
           telefono: 943587456,
-          dirección: 'av Matta weas',
+          direccion: 'av San Diego ',
           password: '$2a$10$CCJPhr5QdbmKghbP9ci/l.MWMMtkjntrlaFX9Ldigv28WKl0BofYK',
           estado: true
       },
@@ -88,8 +91,8 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-     await queryInterface.bulkDelete('rol_usuario', null, {});
-     await queryInterface.bulkDelete('usuarios', null, {});
+     await queryInterface.bulkDelete('rol_usuario');
+     await queryInterface.bulkDelete('usuarios');
      
   }
 };
