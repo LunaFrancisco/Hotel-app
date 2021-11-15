@@ -15,7 +15,7 @@ import {
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import { Link, useParams } from "react-router-dom";
 import classnames from "classnames";
-
+import { get } from '../../../api'
 import ClientInfo from './ClientInfo'
 import ServiceInfo from './ServiceInfo'
 import ExtrasInfo from './ExtrasInfo'
@@ -31,11 +31,13 @@ export default () => {
     ])
 
     const [orderSummary, setOrderSummary] = useState({
+        clients: [{}, {}],
         promotions: [],
         extras: []
     })
     const [total, setTotal] = useState(0)
     const [payment, setPayment] = useState(null)
+    const [inventario, setInventario] = useState([])
 
     const [activeTab, setActiveTab] = useState(1)
 
@@ -56,9 +58,48 @@ export default () => {
             orderSummary.promotions.reduce((carry, value) => carry + value.price, 0)
             + orderSummary.extras.reduce((carry, value) => carry + value.price, 0)
         )
+
+        console.log(orderSummary)
     }, [orderSummary])
 
-    const summaryContext = { orderSummary, setOrderSummary, payment, setPayment, setPaid }
+    useEffect(async () => {
+        const response = await get('api/inventario/getInventario')
+
+        setInventario(response.inventario)
+    }, [])
+
+    const checkForm = (form) => {
+        const element = document.getElementById(form.form)
+        console.log(element.checkValidity())
+        if (!element.checkValidity()) {
+            setActiveTab(form.tab)
+            setTimeout(() => element.reportValidity(), 300)
+        }
+        return element.checkValidity()
+    }
+
+    const handleComplete = () => {
+        const forms = [{
+            form: 'clients-form',
+            tab: 1,
+        }]
+        let error = false
+
+        for (const form of forms) {
+            if (!checkForm(form)) {
+                error = true
+                break
+            }
+        }
+
+
+
+        if (!error) {
+            console.log('comprar')
+        }
+    }
+
+    const summaryContext = { orderSummary, setOrderSummary, payment, setPayment, setPaid, handleComplete }
     return <Fragment>
         <div className="page-content">
             <Container fluid>
@@ -136,7 +177,9 @@ export default () => {
                                         className="twitter-bs-wizard-tab-content"
                                     >
                                         <TabPane tabId={1}>
-                                            <ClientInfo />
+                                            <SummaryContext.Provider value={summaryContext}>
+                                                <ClientInfo />
+                                            </SummaryContext.Provider>
                                         </TabPane>
                                         <TabPane
                                             tabId={2}
@@ -145,7 +188,7 @@ export default () => {
                                             aria-labelledby="v-pills-payment-tab"
                                         >
                                             <SummaryContext.Provider value={summaryContext}>
-                                                <ServiceInfo />
+                                                <ServiceInfo inventario={inventario} />
                                             </SummaryContext.Provider>
                                         </TabPane>
                                         <TabPane
@@ -155,12 +198,12 @@ export default () => {
                                             aria-labelledby="v-pills-payment-tab"
                                         >
                                             <SummaryContext.Provider value={summaryContext}>
-                                                <ExtrasInfo />
+                                                <ExtrasInfo inventario={inventario} />
                                             </SummaryContext.Provider>
                                         </TabPane>
                                         <TabPane tabId={4} id="v-pills-confir" role="tabpanel">
                                             <SummaryContext.Provider value={summaryContext}>
-                                                <PaymentInfo />
+                                                <PaymentInfo handleComplete={handleComplete} />
                                             </SummaryContext.Provider>
                                         </TabPane>
                                     </TabContent>
@@ -227,7 +270,7 @@ export default () => {
                                             {orderSummary.extras.map((orderitem, key) => (
                                                 <tr key={"_orderSummaryExtras_" + key}>
                                                     <th scope="row" colSpan="2">
-                                                        {orderitem.label}
+                                                        {orderitem.nombre}
                                                     </th>
                                                     {/* <td>
                                                         {orderitem.beberages.map((item, idx) => <p className="text-muted mb-0">

@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import {
     Row,
     Col,
@@ -6,8 +6,9 @@ import {
 } from "reactstrap";
 import CardPromocion from '../../../../components/Common/CardPromocion'
 import SummaryContext from '../SummaryContext'
+import { get } from '../../../../api'
 
-export default () => {
+export default ({ inventario }) => {
     const { orderSummary, setOrderSummary } = useContext(SummaryContext)
     const [promotions, setPromotions] = useState([
         {
@@ -94,6 +95,10 @@ export default () => {
             included: []
         },
     ])
+
+    useEffect(async () => {
+
+    }, [inventario])
 
     const addPromotions = (promotion) => setOrderSummary({
         ...orderSummary,
