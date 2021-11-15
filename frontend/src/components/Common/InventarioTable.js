@@ -57,6 +57,7 @@ export default ({ data, columns }) => {
                                         <div className="position-relative">
                                             <SearchBar
                                                 {...toolkitProps.searchProps}
+                                                placeholder="Buscar"
                                             />
                                             <i className="search-box chat-search-box" />
                                         </div>

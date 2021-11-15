@@ -6,11 +6,16 @@ import SweetAlert from "react-bootstrap-sweetalert";
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 import Table from '../../components/Common/InventarioTable'
-import { get, post } from '../../api'
+import { get, put, del, post } from '../../api'
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
     const [editPopup, setEditPopup] = useState(false)
+    const [deletePopup, setDeletePopup] = useState(false)
+    const [responsePopup, setResponsePopup] = useState(null)
+    const [refresh, setRefresh] = useState(false)
+    const [tipos, setTipos] = useState([])
+    const [bodega, setBodega] = useState([])
     const [edit, setEdit] = useState(false)
     const [data, setData] = useState({
         licores: [],
@@ -26,24 +31,36 @@ export default () => {
         product: '',
         category: '',
         price: '',
-
     })
+
     const breadcrumbItems = [
         { title: "Inventario", link: "#" },
     ]
 
+    const onAddProduct = async () => {
+        const response = await get('api/bodega/getBodega')
+        setBodega(response.msg)
+        setAddPopup(true)
+    }
+
     const onEdit = (item, isEdit = false) => {
-        console.log(item)
         setProduct({
+            ...item,
             id: item.id,
             price: item.precio,
             product: item.nombre,
             stock: item.inventario.cantidad,
+            category: tipos.find(tipo => tipo.tipo == item.tipo_producto.tipo)?.id,
             actions: acciones(item)
         })
         setEdit(isEdit)
         setEditPopup(true)
-    }
+    };
+
+    const onDelete = (item) => {
+        setProduct(item)
+        setDeletePopup(true)
+    };
 
     const handleFormChange = (value, attr) => {
         setProduct({
@@ -64,11 +81,16 @@ export default () => {
             </Button>
         </Tooltip>
         <Tooltip id={item.category + '-' + item.id + '-delete-button'} title="Eliminar producto">
-            <Button color="link" className="text-danger">
+            <Button onClick={() => onDelete(item)} color="link" className="text-danger">
                 <i className="ri-delete-bin-5-fill"></i>
             </Button>
         </Tooltip>
     </div>
+
+    useEffect(async () => {
+        const response = await get('api/products/obtenerTiposProducto')
+        setTipos(response.msg)
+    }, [])
 
     useEffect(async () => {
         const response = await get('api/inventario/getInventario')
@@ -89,7 +111,7 @@ export default () => {
             utencilios: response.inventario.filter(item => item.tipo_producto.tipo === 'utencilios').map(map_products),
             otros: response.inventario.filter(item => item.tipo_producto.tipo === 'otros').map(map_products),
         })
-    }, [])
+    }, [refresh, tipos])
 
     const columns = [
         {
@@ -126,19 +148,36 @@ export default () => {
                     <Breadcrumbs title="Inventario" breadcrumbItems={breadcrumbItems} />
                     <div className="position-relative" style={{ height: 50 }}>
                         <div aria-label="Page navigation example" className="pagination-rounded position-absolute top-0" style={{ right: 0 }}>
-                            <Button onClick={() => setAddPopup(true)} color="success">Agregar Producto</Button>
+                            <Button onClick={onAddProduct} color="success">Traer producto de bodega</Button>
                         </div>
                     </div>
                     {addPopup ? (
                         <SweetAlert
                             showCancel
-                            title="Añadir un producto"
+                            title="Traer producto de bodega"
                             cancelBtnBsStyle="danger"
                             confirmBtnBsStyle="success"
                             confirmBtnText="Añadir"
                             cancelBtnText="Cancelar"
-                            onConfirm={() => {
-
+                            onConfirm={async () => {
+                                const response = await post('api/inventario/crearProductoInventario', {
+                                    id: product.id,
+                                    cantidad: product.stock
+                                }, { 'Content-Type': 'application/json' })
+                                if (response.ok) {
+                                    setResponsePopup({
+                                        title: 'Producto agregado con éxito',
+                                        ok: response.ok
+                                    })
+                                } else {
+                                    setResponsePopup({
+                                        title: 'Error al agregar el producto',
+                                        ok: response.ok
+                                    })
+                                }
+                                setProduct({})
+                                setRefresh(!refresh)
+                                setAddPopup(false)
                             }}
                             onCancel={() => setAddPopup(false)}
                         >
@@ -152,44 +191,27 @@ export default () => {
                                         >
                                             Producto
                                         </Label>
-                                        <Input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Ingrese el nombre del producto"
-                                        />
-                                    </div>
-                                </Col>
-                                <Col lg={12}>
-                                    <div className="mb-4">
-                                        <Label
-                                            htmlFor="categoria"
-                                            className="form-label w-100"
-                                            style={{ textAlign: 'left' }}
-                                        >
-                                            Categoría
-                                        </Label>
-                                        <select className="form-select">
-                                            <option defaultValue>Seleccion una categoría</option>
-                                            <option value="1">Tragos</option>
-                                            <option value="2">Bebidas</option>
-                                            <option value="3">Comidas</option>
+                                        <select className="form-select" onChange={(value) => handleFormChange(value, 'id')}>
+                                            <option defaultValue>Seleccion un producto</option>
+                                            {bodega.map(item => <option value={item.id} selected={item.id == product.id}>{item.nombre}</option>)}
                                         </select>
                                     </div>
                                 </Col>
                                 <Col lg={12}>
                                     <div className="mb-4">
                                         <Label
-                                            htmlFor="precio"
+                                            htmlFor="firstname"
                                             className="form-label w-100"
                                             style={{ textAlign: 'left' }}
                                         >
-                                            Precio
+                                            Stock
                                         </Label>
                                         <Input
                                             type="number"
                                             className="form-control"
-                                            id="billing-name"
-                                            placeholder="Ingrese el precio del producto"
+                                            placeholder="Ingrese la cantidad de stock"
+                                            value={product.stock}
+                                            onChange={(value) => handleFormChange(value, 'stock')}
                                         />
                                     </div>
                                 </Col>
@@ -283,6 +305,41 @@ export default () => {
                             </Card>
                         </Col>
                     </Row>
+                    {responsePopup != null && <SweetAlert
+                        title={responsePopup.title}
+                        type={responsePopup.ok ? 'success' : 'error'}
+                        onConfirm={() => setResponsePopup(null)}
+                    >
+                    </SweetAlert>}
+                    {deletePopup && <SweetAlert
+                        showCancel
+                        type="info"
+                        title="Está seguro que desea elminiar este producto"
+                        cancelBtnBsStyle="danger"
+                        confirmBtnBsStyle="success"
+                        confirmBtnText="Aceptar"
+                        cancelBtnText="Cancelar"
+                        onConfirm={async () => {
+                            const response = await del('api/products/eliminarProducto', {
+                                id_producto: product.id,
+                            }, { 'Content-Type': 'application/json' })
+                            if (response.ok) {
+                                setResponsePopup({
+                                    title: 'Producto eliminado con éxito',
+                                    ok: response.ok
+                                })
+                            } else {
+                                setResponsePopup({
+                                    title: 'Error al eliminar el stock',
+                                    ok: response.ok
+                                })
+                            }
+                            setProduct({})
+                            setRefresh(!refresh)
+                            setDeletePopup(false)
+                        }}
+                        onCancel={() => setDeletePopup(false)}
+                    />}
                     {editPopup ? (
                         <SweetAlert
                             showCancel
@@ -291,7 +348,44 @@ export default () => {
                             confirmBtnBsStyle="success"
                             confirmBtnText="Aceptar"
                             cancelBtnText="Cancelar"
-                            onConfirm={() => {
+                            onConfirm={async () => {
+                                if (edit) {
+                                    const response = await put('api/products/editarProducto', {
+                                        id: product.id,
+                                        nombre: product.product,
+                                        precio: product.price,
+                                        id_tipo: product.category
+                                    }, { 'Content-Type': 'application/json' })
+                                    if (response.ok) {
+                                        setResponsePopup({
+                                            title: 'El producto se ha actualizado con éxito',
+                                            ok: response.ok
+                                        })
+                                    } else {
+                                        setResponsePopup({
+                                            title: 'Error al actualizar el producto',
+                                            ok: response.ok
+                                        })
+                                    }
+                                } else {
+                                    const response = await put('api/inventario/actualizarStockInventario', {
+                                        id_producto: product.id,
+                                        stock: product.stock
+                                    }, { 'Content-Type': 'application/json' })
+                                    if (response.ok) {
+                                        setResponsePopup({
+                                            title: 'Stock actualizado con éxito',
+                                            ok: response.ok
+                                        })
+                                    } else {
+                                        setResponsePopup({
+                                            title: 'Error al actualizar el stock',
+                                            ok: response.ok
+                                        })
+                                    }
+                                }
+                                setEditPopup(false)
+                                setRefresh(!refresh)
                                 setProduct({})
                             }}
                             onCancel={() => setEditPopup(false)}
@@ -326,14 +420,9 @@ export default () => {
                                                 >
                                                     Categoría
                                                 </Label>
-                                                <select className="form-select" value={product.category} onChange={(value) => handleFormChange(value, 'category')}>
+                                                <select className="form-select" onChange={(value) => handleFormChange(value, 'category')}>
                                                     <option defaultValue>Seleccion una categoría</option>
-                                                    <option value="Licores">Licores</option>
-                                                    <option value="Bebidas">Bebidas</option>
-                                                    <option value="Comidas">Comidas</option>
-                                                    <option value="Ropa">Ropa</option>
-                                                    <option value="Utencilios">Utencilios</option>
-                                                    <option value="Otros">Otros</option>
+                                                    {tipos.map(tipo => <option value={tipo.id} selected={tipo.id == product.category}>{tipo.tipo}</option>)}
                                                 </select>
                                             </div>
                                         </Col>

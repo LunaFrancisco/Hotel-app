@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react"
+import React, { Component, useState, useEffect } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button, Label, Input } from "reactstrap"
 import Tooltip from "../../components/Common/Tooltip";
 
@@ -7,23 +7,61 @@ import Tooltip from "../../components/Common/Tooltip";
 import Breadcrumbs from "../../components/Common/Breadcrumb"
 import Table from '../../components/Common/InventarioTable'
 import SweetAlert from "react-bootstrap-sweetalert";
+import { get, put, del, post } from '../../api'
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
+    const [editPopup, setEditPopup] = useState(false)
+    const [deletePopup, setDeletePopup] = useState(false)
+    const [responsePopup, setResponsePopup] = useState(null)
+    const [refresh, setRefresh] = useState(false)
+    const [tipos, setTipos] = useState([])
+    const [bodega, setBodega] = useState([])
+    const [edit, setEdit] = useState(false)
+    const [data, setData] = useState({
+        licores: [],
+        bebidas: [],
+        comida: [],
+        ropa: [],
+        utencilios: [],
+        otros: [],
+    })
     const [product, setProduct] = useState({
         id: '',
         stock: '',
-        product: ''
-
+        product: '',
+        category: '',
+        cantidad: '',
+        cantidad_minima: '',
+        price: '',
     })
+
     const breadcrumbItems = [
         { title: "Bodega", link: "#" },
     ]
 
-    const onEdit = (item) => {
-        setProduct(item)
+    const onAddProduct = async () => {
         setAddPopup(true)
     }
+
+    const onEdit = (item, isEdit = false) => {
+        setProduct({
+            ...item,
+            id: item.id,
+            price: item.precio,
+            product: item.nombre,
+            stock: item.inventario.cantidad,
+            category: tipos.find(tipo => tipo.tipo == item.tipo_producto.tipo)?.id,
+            actions: acciones(item)
+        })
+        setEdit(isEdit)
+        setEditPopup(true)
+    };
+
+    const onDelete = (item) => {
+        setProduct(item)
+        setDeletePopup(true)
+    };
 
     const handleFormChange = (value, attr) => {
         setProduct({
@@ -33,88 +71,48 @@ export default () => {
     }
 
     const acciones = (item) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
-        <Tooltip id={'trago-' + item.id + '-take-button'} title="Editar stock">
+        <Tooltip id={item.category + '-' + item.id + '-take-button'} title="Editar stock">
             <Button onClick={() => onEdit(item)} color="link" className="text-info">
                 <i className="ri-close-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={'trago-' + item.id + '-delete-button'} title="Eliminar producto">
-            <Button color="link" className="text-danger">
+        <Tooltip id={item.category + '-' + item.id + '-edit-button'} title="Editar producto">
+            <Button onClick={() => onEdit(item, true)} color="link" className="text-warning">
+                <i className="ri-pencil-fill"></i>
+            </Button>
+        </Tooltip>
+        <Tooltip id={item.category + '-' + item.id + '-delete-button'} title="Eliminar producto">
+            <Button onClick={() => onDelete(item)} color="link" className="text-danger">
                 <i className="ri-delete-bin-5-fill"></i>
             </Button>
         </Tooltip>
     </div>
 
-    let licores = [
-        { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 2, product: 'Pisco', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 3, product: 'Gin', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 4, product: 'Sour', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 5, product: 'Cherry', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-    ];
+    useEffect(async () => {
+        const response = await get('api/products/obtenerTiposProducto')
+        setTipos(response.msg)
+    }, [])
 
-    licores = licores.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
+    useEffect(async () => {
+        const response = await get('api/bodega/getBodega')
 
-    let bebidas = [
-        { id: 8, product: 'Coca Cola', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 9, product: 'Fanta', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 10, product: 'Sprite', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 11, product: 'Ginger Ale', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-    ];
+        const map_products = (item) => ({
+            id: item.id,
+            price: `$ ${item.precio.toLocaleString("es-CL")}`,
+            product: item.nombre,
+            stock: item.bodega.cantidad,
+            actions: acciones(item)
+        })
 
-    bebidas = bebidas.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let comida = [
-        { id: 12, product: 'Papas Fritas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 13, product: 'Doritos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 13, product: 'Chicles', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-    ];
-
-    comida = comida.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let ropa = [
-        { id: 14, product: 'Sabanas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 15, product: 'Toallas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-    ];
-
-    ropa = ropa.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let utencilios = [
-        { id: 16, product: 'Vasos grandes', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 17, product: 'Vasos chicos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 18, product: 'Bandejas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-    ];
-
-    utencilios = utencilios.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let otros = [
-        { id: 19, product: 'Espumas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 20, product: 'Shampoo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 21, product: 'Bálsamo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 22, product: 'Prestobarba', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 23, product: 'Peinetas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-        { id: 24, product: 'Preservativos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}` },
-    ];
-
-    otros = otros.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
+        setData({
+            licores: response.msg.filter(item => item.tipo_producto.tipo === 'licores').map(map_products),
+            bebidas: response.msg.filter(item => item.tipo_producto.tipo === 'bebida').map(map_products),
+            comida: response.msg.filter(item => item.tipo_producto.tipo === 'comida').map(map_products),
+            ropa: response.msg.filter(item => item.tipo_producto.tipo === 'ropa').map(map_products),
+            utencilios: response.msg.filter(item => item.tipo_producto.tipo === 'utencilios').map(map_products),
+            otros: response.msg.filter(item => item.tipo_producto.tipo === 'otros').map(map_products),
+        })
+    }, [refresh, tipos])
 
     const columns = [
         {
@@ -144,7 +142,139 @@ export default () => {
             <div className="page-content">
                 <div className="container-fluid">
                     <Breadcrumbs title="Bodega" breadcrumbItems={breadcrumbItems} />
-
+                    <div className="position-relative" style={{ height: 50 }}>
+                        <div aria-label="Page navigation example" className="pagination-rounded position-absolute top-0" style={{ right: 0 }}>
+                            <Button onClick={onAddProduct} color="success">Añadir un producto</Button>
+                        </div>
+                    </div>
+                    {addPopup ? (
+                        <SweetAlert
+                            showCancel
+                            title="Añadir un producto"
+                            cancelBtnBsStyle="danger"
+                            confirmBtnBsStyle="success"
+                            confirmBtnText="Añadir"
+                            cancelBtnText="Cancelar"
+                            onConfirm={async () => {
+                                const response = await post('api/bodega/crearProductoBodega', {
+                                    nombre: product.product,
+                                    precio: product.price,
+                                    id_tipo: product.category,
+                                    cantidad: product.cantidad,
+                                    cantidad_minima: product.cantidad_minima
+                                }, { 'Content-Type': 'application/json' })
+                                if (response.ok) {
+                                    setResponsePopup({
+                                        title: 'Producto creado con éxito',
+                                        ok: response.ok
+                                    })
+                                } else {
+                                    setResponsePopup({
+                                        title: 'Error al crear producto',
+                                        ok: response.ok
+                                    })
+                                }
+                                setProduct({})
+                                setRefresh(!refresh)
+                                setAddPopup(false)
+                            }}
+                            onCancel={() => setAddPopup(false)}
+                        >
+                            <Row>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="product"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Producto
+                                        </Label>
+                                        <Input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Ingrese el nombre del producto"
+                                            value={product.product}
+                                            onChange={(value) => handleFormChange(value, 'product')}
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="categoria"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Categoría
+                                        </Label>
+                                        <select className="form-select" onChange={(value) => handleFormChange(value, 'category')}>
+                                            <option defaultValue>Seleccion una categoría</option>
+                                            {tipos.map(tipo => <option value={tipo.id} selected={tipo.id == product.category}>{tipo.tipo}</option>)}
+                                        </select>
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="precio"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Precio
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            className="form-control"
+                                            id="billing-name"
+                                            placeholder="Ingrese el precio del producto"
+                                            value={product.price}
+                                            onChange={(value) => handleFormChange(value, 'price')}
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="cantidad"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Cantidad
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            className="form-control"
+                                            id="billing-name"
+                                            placeholder="Ingrese el precio del producto"
+                                            value={product.cantidad}
+                                            onChange={(value) => handleFormChange(value, 'cantidad')}
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="cantidad_minima"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Cantidad mínima
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            className="form-control"
+                                            id="billing-name"
+                                            placeholder="Ingrese el precio del producto"
+                                            value={product.cantidad_minima}
+                                            onChange={(value) => handleFormChange(value, 'cantidad_minima')}
+                                        />
+                                    </div>
+                                </Col>
+                            </Row>
+                        </SweetAlert>
+                    ) : null
+                    }
                     <Row>
                         <Col className="col-6">
                             <Card>
@@ -154,7 +284,7 @@ export default () => {
                                         Botellas listados para inventario.
                                     </p>
                                     <Table
-                                        data={licores}
+                                        data={data.licores}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -168,7 +298,7 @@ export default () => {
                                         Bebidas listados para inventario.
                                     </p>
                                     <Table
-                                        data={bebidas}
+                                        data={data.bebidas}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -182,7 +312,7 @@ export default () => {
                                         Comidas listados para inventario.
                                     </p>
                                     <Table
-                                        data={comida}
+                                        data={data.comida}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -196,7 +326,7 @@ export default () => {
                                         Ropa listados para inventario.
                                     </p>
                                     <Table
-                                        data={ropa}
+                                        data={data.ropa}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -210,7 +340,7 @@ export default () => {
                                         Utencilios listados para inventario.
                                     </p>
                                     <Table
-                                        data={utencilios}
+                                        data={data.utencilios}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -224,45 +354,172 @@ export default () => {
                                         Otros productos listados para inventario.
                                     </p>
                                     <Table
-                                        data={otros}
+                                        data={data.otros}
                                         columns={columns}
                                     />
                                 </CardBody>
                             </Card>
                         </Col>
                     </Row>
-                    {addPopup ? (
+                    {responsePopup != null && <SweetAlert
+                        title={responsePopup.title}
+                        type={responsePopup.ok ? 'success' : 'error'}
+                        onConfirm={() => setResponsePopup(null)}
+                    >
+                    </SweetAlert>}
+                    {deletePopup && <SweetAlert
+                        showCancel
+                        type="info"
+                        title="Está seguro que desea elminiar este producto"
+                        cancelBtnBsStyle="danger"
+                        confirmBtnBsStyle="success"
+                        confirmBtnText="Aceptar"
+                        cancelBtnText="Cancelar"
+                        onConfirm={async () => {
+                            const response = await del('api/products/eliminarProducto', {
+                                id_producto: product.id,
+                            }, { 'Content-Type': 'application/json' })
+                            if (response.ok) {
+                                setResponsePopup({
+                                    title: 'Producto eliminado con éxito',
+                                    ok: response.ok
+                                })
+                            } else {
+                                setResponsePopup({
+                                    title: 'Error al eliminar el stock',
+                                    ok: response.ok
+                                })
+                            }
+                            setProduct({})
+                            setRefresh(!refresh)
+                            setDeletePopup(false)
+                        }}
+                        onCancel={() => setDeletePopup(false)}
+                    />}
+                    {editPopup ? (
                         <SweetAlert
                             showCancel
-                            title={`Editar stock de ${product.product}`}
+                            title={edit ? 'Editar producto' : `Editar stock de ${product.product}`}
                             cancelBtnBsStyle="danger"
                             confirmBtnBsStyle="success"
                             confirmBtnText="Aceptar"
                             cancelBtnText="Cancelar"
-                            onConfirm={() => {
+                            onConfirm={async () => {
+                                if (edit) {
+                                    const response = await put('api/products/editarProducto', {
+                                        id: product.id,
+                                        nombre: product.product,
+                                        precio: product.price,
+                                        id_tipo: product.category
+                                    }, { 'Content-Type': 'application/json' })
+                                    if (response.ok) {
+                                        setResponsePopup({
+                                            title: 'El producto se ha actualizado con éxito',
+                                            ok: response.ok
+                                        })
+                                    } else {
+                                        setResponsePopup({
+                                            title: 'Error al actualizar el producto',
+                                            ok: response.ok
+                                        })
+                                    }
+                                } else {
+                                    const response = await put('api/bodega/actualizarStockBodega', {
+                                        id_producto: product.id,
+                                        stock: product.stock
+                                    }, { 'Content-Type': 'application/json' })
+                                    if (response.ok) {
+                                        setResponsePopup({
+                                            title: 'Stock actualizado con éxito',
+                                            ok: response.ok
+                                        })
+                                    } else {
+                                        setResponsePopup({
+                                            title: 'Error al actualizar el stock',
+                                            ok: response.ok
+                                        })
+                                    }
+                                }
+                                setEditPopup(false)
+                                setRefresh(!refresh)
                                 setProduct({})
                             }}
-                            onCancel={() => setAddPopup(false)}
+                            onCancel={() => setEditPopup(false)}
                         >
                             <Row>
-                                <Col lg={12}>
-                                    <div className="mb-4">
-                                        <Label
-                                            htmlFor="firstname"
-                                            className="form-label w-100"
-                                            style={{ textAlign: 'left' }}
-                                        >
-                                            Stock
-                                        </Label>
-                                        <Input
-                                            type="number"
-                                            className="form-control"
-                                            placeholder="Ingrese la cantidad de stock"
-                                            value={product.stock}
-                                            onChange={(value) => handleFormChange(value, 'stock')}
-                                        />
-                                    </div>
-                                </Col>
+                                {
+                                    edit ? <Row>
+                                        <Col lg={12}>
+                                            <div className="mb-4">
+                                                <Label
+                                                    htmlFor="product"
+                                                    className="form-label w-100"
+                                                    style={{ textAlign: 'left' }}
+                                                >
+                                                    Producto
+                                                </Label>
+                                                <Input
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Ingrese el nombre del producto"
+                                                    value={product.product}
+                                                    onChange={(value) => handleFormChange(value, 'product')}
+                                                />
+                                            </div>
+                                        </Col>
+                                        <Col lg={12}>
+                                            <div className="mb-4">
+                                                <Label
+                                                    htmlFor="categoria"
+                                                    className="form-label w-100"
+                                                    style={{ textAlign: 'left' }}
+                                                >
+                                                    Categoría
+                                                </Label>
+                                                <select className="form-select" onChange={(value) => handleFormChange(value, 'category')}>
+                                                    <option defaultValue>Seleccion una categoría</option>
+                                                    {tipos.map(tipo => <option value={tipo.id} selected={tipo.id == product.category}>{tipo.tipo}</option>)}
+                                                </select>
+                                            </div>
+                                        </Col>
+                                        <Col lg={12}>
+                                            <div className="mb-4">
+                                                <Label
+                                                    htmlFor="precio"
+                                                    className="form-label w-100"
+                                                    style={{ textAlign: 'left' }}
+                                                >
+                                                    Precio
+                                                </Label>
+                                                <Input
+                                                    type="number"
+                                                    className="form-control"
+                                                    id="billing-name"
+                                                    placeholder="Ingrese el precio del producto"
+                                                    value={product.price}
+                                                    onChange={(value) => handleFormChange(value, 'price')}
+                                                />
+                                            </div>
+                                        </Col>
+                                    </Row> : <Col lg={12}>
+                                        <div className="mb-4">
+                                            <Label
+                                                htmlFor="firstname"
+                                                className="form-label w-100"
+                                                style={{ textAlign: 'left' }}
+                                            >
+                                                Stock
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="Ingrese la cantidad de stock"
+                                                value={product.stock}
+                                                onChange={(value) => handleFormChange(value, 'stock')}
+                                            />
+                                        </div>
+                                    </Col>
+                                }
                             </Row>
                         </SweetAlert>
                     ) : null
