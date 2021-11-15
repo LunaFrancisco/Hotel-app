@@ -104,12 +104,12 @@ export default () => {
         })
 
         setData({
-            licores: response.inventario.filter(item => item.tipo_producto.tipo === 'licores').map(map_products),
-            bebidas: response.inventario.filter(item => item.tipo_producto.tipo === 'bebida').map(map_products),
-            comida: response.inventario.filter(item => item.tipo_producto.tipo === 'comida').map(map_products),
-            ropa: response.inventario.filter(item => item.tipo_producto.tipo === 'ropa').map(map_products),
-            utencilios: response.inventario.filter(item => item.tipo_producto.tipo === 'utencilios').map(map_products),
-            otros: response.inventario.filter(item => item.tipo_producto.tipo === 'otros').map(map_products),
+            licores: response.inventario.filter(item => item.tipo_producto.tipo === 'Licores').map(map_products),
+            bebidas: response.inventario.filter(item => item.tipo_producto.tipo === 'Bebida').map(map_products),
+            comida: response.inventario.filter(item => item.tipo_producto.tipo === 'Comida').map(map_products),
+            ropa: response.inventario.filter(item => item.tipo_producto.tipo === 'Ropa').map(map_products),
+            utencilios: response.inventario.filter(item => item.tipo_producto.tipo === 'Utencilios').map(map_products),
+            otros: response.inventario.filter(item => item.tipo_producto.tipo === 'Otros').map(map_products),
         })
     }, [refresh, tipos])
 
