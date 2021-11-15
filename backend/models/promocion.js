@@ -19,10 +19,10 @@ const Promocion = sequelize.define('promociones', {
     },
     trago: {
         type: Sequelize.BOOLEAN
+    },
+    descripcion: {
+        type: Sequelize.TEXT
     }
-
-
-
 }, {
     timestamps: false
 });
