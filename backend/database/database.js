@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('test', 'postgres', 'postgres', {
+const sequelize = new Sequelize('test', 'postgres', 'tics2', {
     dialect: 'postgres',
     host: 'localhost',
     define: {
