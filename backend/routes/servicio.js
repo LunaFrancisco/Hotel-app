@@ -4,9 +4,9 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const router = Router();
 
-const { reservarHabitacion,estadoHabitaciones } = require('../controllers/servicio');
-const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
+const { validarCampos } = require('../middlewares/validar-campos');
+const { reservarHabitacion, estadoHabitaciones, listarHabitaciones } = require('../controllers/servicio');
 
 router.post(
     '/new',
@@ -46,5 +46,7 @@ router.post(
 //     '/updateUser',
 //     updateUsuario
 // );
+
+router.get('/listarHabitaciones', listarHabitaciones);
 
 module.exports = router;

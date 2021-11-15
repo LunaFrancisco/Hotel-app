@@ -7,6 +7,7 @@ const Promocion = require('../models/promocion');
 const Servicio = require('../models/servicio');
 const Servicio_promocion = require('../models/servicio_promociones');
 const Detalle_pedido = require('../models/detalle_pedido');
+const Tipo_habitacion = require('../models/tipo_habitacion');
 
 
 
@@ -97,38 +98,61 @@ const pendientePago = async (req, res) => {
             msg: 'error, contacte con el administrador'
         });
     }
-}
+;}
 
-//listado de habitaciones (tabla de habitaciones)
-
-const Habitaciones = async (req, res) => {
-
+const listarHabitaciones = async (req, res) => {
     try {
-
-        const getHabitaciones = await Habitacion.findAll({
-            attributes: ['numero'],
-            include: [Estado],
-            order: ['numero']
+        const habitaciones = await Habitacion.findAll({
+            attributes: [
+                'numero'
+            ],
+            include: [{
+                model: Estado,
+                attributes: [
+                    'id'
+                ],
+            }, {
+                model: Tipo_habitacion,
+                attributes: [
+                    'id'
+                ]
+            }, {
+                model: Servicio,
+                attributes: [
+                    'id',
+                    'hr_entrada',
+                    'hr_salida'
+                ]
+            }],
         });
-
-
-        res.json({
-            ok: true,
-            msg: {
-                "number: ": disponible.length,
-                "Estado": ocupada,
-                "aseo": asear
+        let array_final = [];
+        for (let habitacion of habitaciones) {
+            let id_servicio = habitacion.servicios[0]?.id
+            // Comprobamos si esta pagado dicho servicio
+            if (id_servicio) {
+                const registro_ServicioPromocion = await Servicio_promocion.findOne({
+                    where: { id_servicio }
+                });
+                let h = habitaciones.find(habitacion => habitacion.servicios[0]?.id === id_servicio);
+                h.dataValues.pagado = registro_ServicioPromocion.estado;
+                array_final.push(h.dataValues);
             }
+            else {
+                array_final.push(habitacion);
+            }
+        };
+        return res.status(200).json({
+            ok: true,
+            listaHabitaciones: array_final
         });
     }
     catch (error) {
         res.json({
             ok: false,
-            msg: 'No se pudo actualizar el cliente'
+            msg: 'Error, Hable con el administrador'
         });
     }
-
-}
+};
 
 
 //reservar habitacion
@@ -311,6 +335,7 @@ const reservarHabitacion = async (req, res) => {
 
 
 module.exports = {
+    listarHabitaciones,
     reservarHabitacion,
     estadoHabitaciones
 };
