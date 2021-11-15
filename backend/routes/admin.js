@@ -6,11 +6,12 @@ const router = Router();
 
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
-const { verUsuarios, nuevoRol } = require('../controllers/admin');
+const { verUsuarios, nuevoRol, obtenerRolesUsuarios } = require('../controllers/admin');
 const { crearCliente, findClient, actualizarCliente } = require('../controllers/clientes');
 
 router.get('/verUsuarios', verUsuarios);
 router.post('/nuevoRol', nuevoRol);
+router.get('/obtenerRolesUsuarios', obtenerRolesUsuarios);
 
 router.post('/crearClient', crearCliente);
 router.put('/updateClient', actualizarCliente);

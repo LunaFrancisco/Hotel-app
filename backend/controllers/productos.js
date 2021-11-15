@@ -4,6 +4,7 @@ const tipo_producto = require('../models/tipo_producto');
 const Producto = require('../models/producto');
 const Bodega = require('../models/bodega');
 const Inventario = require('../models/inventario');
+const Tipo_producto = require('../models/tipo_producto');
 
 
 const crearProducto = async (req, res = response) => {
@@ -173,10 +174,11 @@ const eliminarProducto = async (req, res = response) => {
 
 const obtenerTiposProducto = async (req, res = response) => {
     try {
-        
+        const tiposProducto = await Tipo_producto.findAll();
+        console.log(tiposProducto);
         return res.status(500).json({
             ok: false,
-            msg: 'obtenerTiposProducto'
+            msg: tiposProducto
         });
     } catch (error) {
         console.log(error);
@@ -191,8 +193,8 @@ module.exports = {
     crearProducto,
     findAllProductos,
     consultarProducto,
-    //    eliminarProducto,
-    //    actualizarProducto,
+    //eliminarProducto,
+    //actualizarProducto,
     editarProducto,
     eliminarProducto,
     obtenerTiposProducto

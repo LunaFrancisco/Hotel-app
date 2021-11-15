@@ -4,7 +4,7 @@ const router = Router();
 
 const { validarJWT } = require('../middlewares/validar-jwt');
 const { validarCampos } = require('../middlewares/validar-campos');
-const { crearProducto, findAllProductos, editarProducto, eliminarProducto } = require('../controllers/productos');
+const { crearProducto, findAllProductos, editarProducto, eliminarProducto, obtenerTiposProducto } = require('../controllers/productos');
 
 router.post(
     '/createProduct',

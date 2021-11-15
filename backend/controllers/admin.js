@@ -50,11 +50,26 @@ const nuevoRol = async (req, res = response) => {
         });
 };
 
-
-
+const obtenerRolesUsuarios = async (req, res = response) => {
+    try {
+        const rolesUsuarios = await Roles.findAll();
+        console.log(rolesUsuarios);
+        return res.status(500).json({
+            ok: false,
+            msg: rolesUsuarios
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Por favor hable con el administrador'
+        });
+    }
+};
 
 module.exports = {
     verUsuarios,
-    nuevoRol
+    nuevoRol,
+    obtenerRolesUsuarios
 };
 
