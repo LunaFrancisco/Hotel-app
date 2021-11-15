@@ -32,11 +32,7 @@ app.listen(process.env.PORT, async () => {
     try {
         await sequelize.authenticate();
         console.log('Base de datos ONLINE');
-<<<<<<< HEAD
-        // await sequelize.sync({ force: false });
-=======
         // await sequelize.sync({ force: true });
->>>>>>> 384b0a3410d66f83257aa3dc5acabe4d61987cfa
         // console.log("Tablas creadas.");
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
