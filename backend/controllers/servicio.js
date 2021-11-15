@@ -1,4 +1,5 @@
 const { response } = require('express');
+
 const Cliente = require('../models/cliente');
 const Habitacion = require('../models/habitaciones');
 const Estado = require('../models/estado');
@@ -7,6 +8,7 @@ const Promocion = require('../models/promocion');
 const Servicio = require('../models/servicio');
 const Servicio_promocion = require('../models/servicio_promociones');
 const Detalle_pedido = require('../models/detalle_pedido');
+const Tipo_habitacion = require('../models/tipo_habitacion');
 
 
 
@@ -97,41 +99,62 @@ const pendientePago = async (req, res) => {
             msg: 'error, contacte con el administrador'
         });
     }
-}
+};
 
-//listado de habitaciones (tabla de habitaciones)
-
-const Habitaciones = async (req, res) => {
-
+const listarHabitaciones = async (req, res) => {
     try {
-
-        const getHabitaciones = await Habitacion.findAll({
-            attributes: ['numero'],
-            include: [Estado],
-            order: ['numero']
+        const habitaciones = await Habitacion.findAll({
+            attributes: [
+                'numero'
+            ],
+            include: [{
+                model: Estado,
+                attributes: [
+                    'id'
+                ],
+            }, {
+                model: Tipo_habitacion,
+                attributes: [
+                    'id'
+                ]
+            }, {
+                model: Servicio,
+                attributes: [
+                    'id',
+                    'hr_entrada',
+                    'hr_salida'
+                ]
+            }],
         });
-
-
-        res.json({
-            ok: true,
-            msg: {
-                "number: ": disponible.length,
-                "Estado": ocupada,
-                "aseo": asear
+        let array_final = [];
+        for (let habitacion of habitaciones) {
+            let id_servicio = habitacion.servicios[0]?.id
+            // Comprobamos si esta pagado dicho servicio
+            if (id_servicio) {
+                const registro_ServicioPromocion = await Servicio_promocion.findOne({
+                    where: { id_servicio }
+                });
+                let h = habitaciones.find(habitacion => habitacion.servicios[0]?.id === id_servicio);
+                h.dataValues.pagado = registro_ServicioPromocion.estado;
+                array_final.push(h.dataValues);
             }
+            else {
+                array_final.push(habitacion);
+            }
+        };
+        return res.status(200).json({
+            ok: true,
+            listaHabitaciones: array_final
         });
     }
     catch (error) {
         res.json({
             ok: false,
-            msg: 'No se pudo actualizar el cliente'
+            msg: 'Error, Hable con el administrador'
         });
     }
+};
 
-}
-
-
-//reservar habitacion
 const reservarHabitacion = async (req, res) => {
     const { id,
         clientes,
@@ -141,19 +164,19 @@ const reservarHabitacion = async (req, res) => {
     } = req.body;
 
     try {
-        
+
         //consultar el estado
         const consultarEstado = await Habitacion.findOne({
             where: {
                 id,
                 id_estado: 1
             }
-            
+
         });
         //si el estado es disponible entonces registro el cliente
         if (consultarEstado) {
-           const arreglo = [];
-            clientes.forEach(async (cliente) =>  { 
+            const arreglo = [];
+            clientes.forEach(async (cliente) => {
 
                 const findClient = await Cliente.findOne({
                     where: {
@@ -163,8 +186,8 @@ const reservarHabitacion = async (req, res) => {
                         'id', 'nombre', 'apellido', 'rut'
                     ]
                 });
-                
-                 if (!findClient) {
+
+                if (!findClient) {
                     const createCliente = await Cliente.create({
                         nombre: cliente.nombre,
                         apellido: cliente.apellido,
@@ -178,15 +201,15 @@ const reservarHabitacion = async (req, res) => {
                     arreglo.push(caca);
                     console.log(JSON.stringify(createClient.id));
                 }
-                    
-                else{
+
+                else {
                     const mierda = await findClient.id;
                     arreglo.push(mierda);
                     console.log(mierda);
-                    }
+                }
             });
             console.log(arreglo);
-         
+
             const newService = await Servicio.create({
                 id_habitacion: id,
                 //id_usuario1,
@@ -198,22 +221,22 @@ const reservarHabitacion = async (req, res) => {
                 id_cliente1: 4,//deberia tener los id de el arreglo
                 id_cliente2: 5
             });
-            
-            
+
+
             //agregar servicio
-            
-        
-            servicios.forEach(async(service) => {
-                
-                const findPromocion = await Promocion.findOne( {
-                    where:{
-                        id:service.id_promocion
+
+
+            servicios.forEach(async (service) => {
+
+                const findPromocion = await Promocion.findOne({
+                    where: {
+                        id: service.id_promocion
                     }
                 });
 
-                if (findPromocion){
+                if (findPromocion) {
                     //consultar stock del producto
-                   const addPromo = Servicio_promocion.create({
+                    const addPromo = Servicio_promocion.create({
                         id_promocion: service.id_promocion,
                         id_servicio: newService.id,
                         id_tipo_pago: metodo_de_pago,
@@ -223,7 +246,7 @@ const reservarHabitacion = async (req, res) => {
                     });
                 }
                 else {
-                    res.json ({
+                    res.json({
                         ok: false,
                         msg: 'Servicio no existe'
                     });
@@ -238,36 +261,38 @@ const reservarHabitacion = async (req, res) => {
                 const addPedido = await Pedido.create({
                     id_tipo_pago: metodo_de_pago,
                     estado: 'pendiente',
-                    id_servicio:newService.id,
+                    id_servicio: newService.id,
                     //total
-                    
+
                 });
 
                 //rellenar la tabla producto pedido for each
-                extras.forEach(async(extra) =>{
+                extras.forEach(async (extra) => {
 
-                    const addDetallePedido =await Detalle_pedido.create({
+                    const addDetallePedido = await Detalle_pedido.create({
                         id_pedido: addPedido.id,
                         id_producto: extra.producto_id,
                         cantidad: extra.cantidad,
-                    });                                                                    
-                    
-                } );
+                    });
+
+                });
             }
 
             //cambiar estado de la habitacion a ocupada
-             const Ocupada = await Habitacion.update({
+            const Ocupada = await Habitacion.update({
                 id_estado: 2
-                
-                 
-             },
-             {where:{
-                id
-             }}
-             );
+
+
+            },
+                {
+                    where: {
+                        id
+                    }
+                }
+            );
             res.json("Habitacion reservada")
 
-            }
+        }
 
         else {
             res.json({
@@ -311,6 +336,7 @@ const reservarHabitacion = async (req, res) => {
 
 
 module.exports = {
+    listarHabitaciones,
     reservarHabitacion,
     estadoHabitaciones
 };

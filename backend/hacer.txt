@@ -2,3 +2,9 @@ editar producto (nombre, categoria, precio) listo
 editar stock en inventario listo
     bodega () listo
 eliminar producto
+
+git checkout main
+git pull origin back-joaquin
+git push origin main
+
+al entrar a mi branch hacer un pull del main

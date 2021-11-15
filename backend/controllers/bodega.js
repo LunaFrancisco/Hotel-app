@@ -43,7 +43,7 @@ const crearProductoBodega = async (req, res = response) => {
 
         // Si el producto no existe lo debemos crear
         const verificarProducto = await Producto.findOne({
-            where: { nombre: nombre }
+            where: { nombre }
         });
 
         // no existe, debemos agregarlo
@@ -53,10 +53,9 @@ const crearProductoBodega = async (req, res = response) => {
                 precio,
                 id_tipo,
             });
-            console.log(newProducto);
             // Ahora lo creamos en bodega
-            await Bodega.create({
-                id_producto: newProducto.dataValues.id,
+            const newProductoBodega = await Bodega.create({
+                id_producto: newProducto.id,
                 cantidad,
                 cantidad_minima
             });
@@ -71,7 +70,7 @@ const crearProductoBodega = async (req, res = response) => {
             where: { nombre }
         });
         const productoBodega = await Bodega.findOne({
-            where: { id_producto: producto.dataValues.id }
+            where: { id_producto: producto.id }
         });
         productoBodega.cantidad = cantidad;
         productoBodega.save();
