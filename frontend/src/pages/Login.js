@@ -20,7 +20,7 @@ class Login extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { rut: "19522912-0", password: "secret" }
+        this.state = { rut: "11111111-1", password: "secret" }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
