@@ -10,6 +10,7 @@ const getInventario = async (req, res = response) => {
     try {
         const findAllProducts = await Producto.findAll({
             attributes: [
+                'id',
                 'nombre',
                 'precio'
             ],
@@ -48,7 +49,7 @@ const crearProductoInventario = async (req, res = response) => {
         const producto = await Producto.findOne({
             where: { nombre }
         });
-        
+
         if (!producto) {
             return res.status(200).json({
                 ok: false,
@@ -58,7 +59,7 @@ const crearProductoInventario = async (req, res = response) => {
 
         // Descontamos la cantidad del producto en Bodega
         const productoBodega = await Bodega.findOne({
-            where: { id_producto: producto.dataValues.id}
+            where: { id_producto: producto.dataValues.id }
         });
         if (productoBodega.cantidad - cantidad < 0) {
             return res.status(200).json({
@@ -89,11 +90,17 @@ const crearProductoInventario = async (req, res = response) => {
     }
 };
 
-const descontarProductoInventario = (req, res = response) => {
+const actualizarStockInventario = async (req, res = response) => {
     try {
+        const { id_producto, stock } = req.body;
+        const productoInventario = await Inventario.findOne({
+            where: { id_producto }
+        });
+        productoInventario.cantidad = stock;
+        productoInventario.save();
         return res.status(500).json({
             ok: false,
-            msg: 'descontarProductoInventario'
+            msg: 'Stock en inventario actualizado correctamente'
         });
     } catch (error) {
         console.log(error);
@@ -107,5 +114,5 @@ const descontarProductoInventario = (req, res = response) => {
 module.exports = {
     getInventario,
     crearProductoInventario,
-    descontarProductoInventario
+    actualizarStockInventario
 };

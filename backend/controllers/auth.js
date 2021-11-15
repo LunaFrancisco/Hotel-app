@@ -12,7 +12,7 @@ const Roles = require('../models/rol');
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgres',
+    password: 'tics2',
     database: 'test',
     port: '5432'
 });
@@ -26,7 +26,7 @@ const crearUsuario = async (req, res = response) => {
         const passwordHash = bcrypt.hashSync(password, salt);
         // Guardamos en la base de datos
         // await pool.query('INSERT INTO usuarios(nombre, apellido, rut, correo, telefono, direccion, contraseña) VALUES ($1, $2, $3, $4, $5, $6, $7)', [nombre, apellido, rut, correo, telefono, direccion, passwordHash]);
-        
+
         //semillita (provisoria)
         // const rolzera = 'admin';
         // await pool.query('INSERT INTO roles(rol) VALUES ($1)', [rolzera]);
@@ -120,12 +120,12 @@ const loginUsuario = async (req, res) => {
             where: {
                 rut
             },
-            attributes: ['id', 'rut', 'password'],
+            attributes: ['id', 'rut', 'password', 'nombre', 'apellido'],
             include: [Rol],
-            
+
         });
-  
-        if(!findUser){
+
+        if (!findUser) {
             return res.status(500).json({
                 ok: false,
                 msg: 'Usuario o contraseña incorrecta'
@@ -133,11 +133,12 @@ const loginUsuario = async (req, res) => {
         }
         console.log(findUser.dataValues.roles[0].dataValues.rol);
         const passwordhash = findUser.dataValues.password;
-        
+
         //const tipo = findUser.dataValues.roles[0].dataValues.rol;
         const tipo = findUser.dataValues.roles[0].dataValues.rol;
+        const tipo_id = findUser.dataValues.roles[0].dataValues.id;
         //const { passwordhash, tipo } = result.rows[0];
-        const validPassword = bcrypt.compareSync(password,passwordhash);
+        const validPassword = bcrypt.compareSync(password, passwordhash);
         if (!validPassword) {
             return res.status(400).json({
                 ok: false,
@@ -149,8 +150,11 @@ const loginUsuario = async (req, res) => {
         return res.json({
             ok: true,
             msg: 'Login',
+            nombre: findUser.dataValues.nombre,
+            apellido: findUser.dataValues.apellido,
             rut,
             tipo,
+            tipo_id,
             token
         });
     } catch (error) {

@@ -12,6 +12,14 @@ export default () => {
     const [addPopup, setAddPopup] = useState(false)
     const [editPopup, setEditPopup] = useState(false)
     const [edit, setEdit] = useState(false)
+    const [data, setData] = useState({
+        licores: [],
+        bebidas: [],
+        comida: [],
+        ropa: [],
+        utencilios: [],
+        otros: [],
+    })
     const [product, setProduct] = useState({
         id: '',
         stock: '',
@@ -27,8 +35,11 @@ export default () => {
     const onEdit = (item, isEdit = false) => {
         console.log(item)
         setProduct({
-            ...item,
-            price: parseFloat(item.price.replaceAll('$ ', '').replaceAll('.', '').replaceAll(',', '.'))
+            id: item.id,
+            price: item.precio,
+            product: item.nombre,
+            stock: item.inventario.cantidad,
+            actions: acciones(item)
         })
         setEdit(isEdit)
         setEditPopup(true)
@@ -42,7 +53,7 @@ export default () => {
     }
 
     const acciones = (item) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
-        <Tooltip id={item.category + '-' + item.id + '-take-button'} title="Retirar producto">
+        <Tooltip id={item.category + '-' + item.id + '-take-button'} title="Editar stock">
             <Button onClick={() => onEdit(item)} color="link" className="text-info">
                 <i className="ri-close-fill"></i>
             </Button>
@@ -60,81 +71,25 @@ export default () => {
     </div>
 
     useEffect(async () => {
-        const data = await get('api/inventario/getInventario')
-        console.log(data)
+        const response = await get('api/inventario/getInventario')
+
+        const map_products = (item) => ({
+            id: item.id,
+            price: `$ ${item.precio.toLocaleString("es-CL")}`,
+            product: item.nombre,
+            stock: item.inventario.cantidad,
+            actions: acciones(item)
+        })
+
+        setData({
+            licores: response.inventario.filter(item => item.tipo_producto.tipo === 'licores').map(map_products),
+            bebidas: response.inventario.filter(item => item.tipo_producto.tipo === 'bebida').map(map_products),
+            comida: response.inventario.filter(item => item.tipo_producto.tipo === 'comida').map(map_products),
+            ropa: response.inventario.filter(item => item.tipo_producto.tipo === 'ropa').map(map_products),
+            utencilios: response.inventario.filter(item => item.tipo_producto.tipo === 'utencilios').map(map_products),
+            otros: response.inventario.filter(item => item.tipo_producto.tipo === 'otros').map(map_products),
+        })
     }, [])
-
-    let licores = [
-        { id: 1, product: 'Ron', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
-        { id: 2, product: 'Pisco', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
-        { id: 3, product: 'Gin', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
-        { id: 4, product: 'Sour', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
-        { id: 5, product: 'Cherry', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Licores' },
-    ];
-
-    licores = licores.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let bebidas = [
-        { id: 8, product: 'Coca Cola', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
-        { id: 9, product: 'Fanta', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
-        { id: 10, product: 'Sprite', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
-        { id: 11, product: 'Ginger Ale', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Bebidas' },
-    ]
-
-    bebidas = bebidas.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-
-    let comida = [
-        { id: 12, product: 'Papas Fritas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Comidas' },
-        { id: 13, product: 'Doritos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Comidas' },
-        { id: 13, product: 'Chicles', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Comidas' },
-    ];
-
-    comida = comida.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let ropa = [
-        { id: 14, product: 'Sabanas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Ropa' },
-        { id: 15, product: 'Toallas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Ropa' },
-    ];
-
-    ropa = ropa.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let utencilios = [
-        { id: 16, product: 'Vasos grandes', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Utencilios' },
-        { id: 17, product: 'Vasos chicos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Utencilios' },
-        { id: 18, product: 'Bandejas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Utencilios' },
-    ];
-
-    utencilios = utencilios.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
-
-    let otros = [
-        { id: 19, product: 'Espumas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
-        { id: 20, product: 'Shampoo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
-        { id: 21, product: 'Bálsamo', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
-        { id: 22, product: 'Prestobarba', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
-        { id: 23, product: 'Peinetas', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
-        { id: 24, product: 'Preservativos', stock: Math.round(Math.round(Math.random() * 30)), price: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, category: 'Otros' },
-    ];
-
-    otros = otros.map(item => ({
-        ...item,
-        actions: acciones(item)
-    }))
 
     const columns = [
         {
@@ -251,7 +206,7 @@ export default () => {
                                         licores listados para inventario.
                                     </p>
                                     <Table
-                                        data={licores}
+                                        data={data.licores}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -265,7 +220,7 @@ export default () => {
                                         Bebidas listados para inventario.
                                     </p>
                                     <Table
-                                        data={bebidas}
+                                        data={data.bebidas}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -279,7 +234,7 @@ export default () => {
                                         Comidas listados para inventario.
                                     </p>
                                     <Table
-                                        data={comida}
+                                        data={data.comida}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -293,7 +248,7 @@ export default () => {
                                         Ropa listados para inventario.
                                     </p>
                                     <Table
-                                        data={ropa}
+                                        data={data.ropa}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -307,7 +262,7 @@ export default () => {
                                         Utencilios listados para inventario.
                                     </p>
                                     <Table
-                                        data={utencilios}
+                                        data={data.utencilios}
                                         columns={columns}
                                     />
                                 </CardBody>
@@ -321,7 +276,7 @@ export default () => {
                                         Otros productos listados para inventario.
                                     </p>
                                     <Table
-                                        data={otros}
+                                        data={data.otros}
                                         columns={columns}
                                     />
                                 </CardBody>

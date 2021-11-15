@@ -12,10 +12,10 @@ class ProfileMenu extends Component {
     constructor(props) {
         super(props);
 
-        let username = "Admin";
+        let username = "";
         if (localStorage.getItem("authUser")) {
             const obj = JSON.parse(localStorage.getItem("authUser"));
-            username = obj.tipo
+            username = `${obj.nombre} ${obj.apellido}`
         }
 
         this.state = {

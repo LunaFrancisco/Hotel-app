@@ -24,7 +24,7 @@ class SidebarContent extends Component {
         let tipo;
         if (localStorage.getItem("authUser")) {
             const obj = JSON.parse(localStorage.getItem("authUser"));
-            tipo = obj.tipo
+            tipo = obj.tipo_id
         }
 
         this.state = {
@@ -99,7 +99,7 @@ class SidebarContent extends Component {
                     <ul className="metismenu list-unstyled" id="side-menu">
                         <li className="menu-title">{this.props.t('Menu')}</li>
 
-                        {this.state.tipo == 'admin' && <>
+                        {this.state.tipo == 1 && <>
                             <li>
                                 <Link to="/dashboard" className="waves-effect">
                                     <i className="ri-dashboard-line"></i>
@@ -143,7 +143,7 @@ class SidebarContent extends Component {
                             </li>
                         </>}
 
-                        {this.state.tipo == 'cajero' && <>
+                        {this.state.tipo == 2 && <>
                             <li>
                                 <Link to="/dashboard" className="waves-effect">
                                     <i className="ri-dashboard-line"></i>
@@ -187,7 +187,7 @@ class SidebarContent extends Component {
                             </li>
                         </>}
 
-                        {this.state.tipo == 'camarera' && <>
+                        {this.state.tipo == 3 && <>
                             <li>
                                 <Link to="/habitaciones" className=" waves-effect">
                                     <i className="ri-home-heart-line"></i>

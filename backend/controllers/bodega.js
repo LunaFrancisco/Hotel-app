@@ -89,7 +89,29 @@ const crearProductoBodega = async (req, res = response) => {
     }
 };
 
+const actualizarStockBodega = async (req, res = response) => {
+    try {
+        const { id_producto, cantidad } = req.body;
+        const registroBodega = await Bodega.findOne({
+            where: { id_producto }
+        });
+        registroBodega.cantidad = cantidad;
+        registroBodega.save();
+        return res.status(500).json({
+            ok: false,
+            msg: 'Producto en bodega actualizado'
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Por favor hable con el administrador'
+        });
+    }
+};
+
 module.exports = {
     getBodega,
-    crearProductoBodega
+    crearProductoBodega,
+    actualizarStockBodega
 };
