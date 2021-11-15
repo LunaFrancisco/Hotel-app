@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import {
     Button,
     Row,
@@ -20,40 +20,51 @@ import { Link } from 'react-router-dom'
 import CardPromocion from '../../../../components/Common/CardPromocion'
 import Select from "react-select";
 import SummaryContext from '../SummaryContext'
+import { get } from '../../../../api'
 
 export default () => {
     const { orderSummary, setOrderSummary } = useContext(SummaryContext)
     const selectValue = null
-    const [extras, setExtras] = useState([
-        {
-            label: 'Tragos',
-            options: [
-                'Ron Cola',
-                'Piscola',
-                'Pisco Sour',
-                'Gin Con Gin',
-                'Primavera',
-                'Martini',
-                'Whisky',
-            ].map(item => ({ label: item, value: item, price: Math.round(Math.random() * 10000) }))
-        },
-        {
-            label: 'Bebidas',
-            options: [
-                'Coca Cola',
-                'Fanta',
-                'Sprite',
-                'Ginger Ale',
-            ].map(item => ({ label: item, value: item, price: Math.round(Math.random() * 10000) }))
-        },
-        {
-            label: 'Comida',
-            options: [
-                'Papas Fritas',
-                'Doritos',
-            ].map(item => ({ label: item, value: item, price: Math.round(Math.random() * 10000) }))
-        }
-    ])
+    const [extras, setExtras] = useState([])
+
+    useEffect(async () => {
+        const response = await get('api/inventario/getInventario')
+
+        const map_products = (item) => ({
+            id: item.id,
+            price: item.precio,
+            nombre: item.nombre,
+            label: `${item.nombre} ($${item.precio})`,
+            stock: item.inventario.cantidad,
+        })
+
+        setExtras([
+            {
+                label: 'Licores',
+                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Licores').map(map_products)
+            },
+            {
+                label: 'Bebida',
+                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Bebida').map(map_products)
+            },
+            {
+                label: 'Comida',
+                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Comida').map(map_products)
+            },
+            {
+                label: 'Ropa',
+                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Ropa').map(map_products)
+            },
+            {
+                label: 'Utencilios',
+                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Utencilios').map(map_products)
+            },
+            {
+                label: 'Otros',
+                options: response.inventario.filter(item => item.tipo_producto.tipo === 'Otros').map(map_products)
+            },
+        ])
+    }, [])
 
     const addExtra = (value) => {
         if (value) {

@@ -28,7 +28,6 @@ module.exports = {
                 trago: false,
                 descripcion: 'Esta promoción include 1 bebida'
             },
-
             {
                 id: 3,
                 horas: 6,

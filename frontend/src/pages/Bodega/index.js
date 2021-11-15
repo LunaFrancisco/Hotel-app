@@ -50,7 +50,7 @@ export default () => {
             id: item.id,
             price: item.precio,
             product: item.nombre,
-            stock: item.inventario.cantidad,
+            stock: item.bodega.cantidad,
             category: tipos.find(tipo => tipo.tipo == item.tipo_producto.tipo)?.id,
             actions: acciones(item)
         })

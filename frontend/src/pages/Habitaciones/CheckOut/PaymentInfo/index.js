@@ -5,11 +5,12 @@ import {
     Input,
     Label,
     CardTitle,
+    Button
 } from "reactstrap";
 import { Link } from 'react-router-dom'
 import SummaryContext from "../SummaryContext";
 
-export default () => {
+export default ({ handleComplete }) => {
     const { payment, setPayment } = useContext(SummaryContext)
     const onChange = (el) => {
         setPayment(el.target.value)
@@ -155,9 +156,9 @@ export default () => {
                 </form>
             </div> */}
             <div className="mt-4 text-end">
-                <Link to="#" className="btn btn-success">
+                <Button onClick={handleComplete} to="#" className="btn btn-success">
                     Completar reserva
-                </Link>
+                </Button>
             </div>
         </div>
     </Fragment>
