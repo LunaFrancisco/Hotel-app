@@ -53,7 +53,6 @@ const crearProductoBodega = async (req, res = response) => {
                 precio,
                 id_tipo,
             });
-            console.log(newProducto);
             // Ahora lo creamos en bodega
             await Bodega.create({
                 id_producto: newProducto.dataValues.id,
