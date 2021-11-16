@@ -1,6 +1,6 @@
 
-const Tipo_habitacion = require('../models/tipo_habitacion');
 const { response } = require("express");
+const Tipo_habitacion = require('../models/tipo_habitacion');
 const Cliente = require("../models/cliente");
 const Habitacion = require("../models/habitaciones");
 const Estado = require("../models/estado");
@@ -315,6 +315,7 @@ const reservarHabitacion = async (req, res) => {
 //cancelar reserva (aliminar en cascada )
 
 const cancelarReserva = async (req, res) => {
+<<<<<<< Updated upstream
     const { id } = req.body;
     try {
         const findService = await Servicio.findOne({
@@ -338,6 +339,42 @@ const cancelarReserva = async (req, res) => {
                 msg: "error 502, contacte con el administrador",
             });
         }
+=======
+  const { id } = req.body;
+  try {
+    const findService = await Servicio.findOne({
+      where: {
+        id,
+      },
+      attributes: ['id','id_habitacion']
+    });
+    if (findService) {
+      const deleteService = await Servicio.destroy({
+        where: {
+          id: findService.id,
+        },
+      });
+
+      const updateHabitacion = await Habitacion.update({
+        estado:1 
+      },
+      {
+        where: {
+          id:findService.id_habitacion
+        }
+      });
+
+      return res.json({
+        ok: true,
+        msg: "Reserva cancelada",
+      });
+    } else {
+      res.json({
+        ok: false,
+        msg: "error 502, contacte con el administrador",
+      });
+    }
+>>>>>>> Stashed changes
 
         return console.log(cancelar);
     } catch (e) {
@@ -427,6 +464,18 @@ const listarPromociones = async (req, res = response) => {
     }
 };
 
+const calcularTotalServicio = async (req, res) => {
+    const { id } = req.body;
+    try {
+
+    }
+    catch(e){
+      res.json({
+        ok: false,
+        msg: "error, contacte con el administrador",
+      });
+    }
+};
 // const desalojarHabitacion = async (req, res) => {
 //   const { id } = req.body;
 //   try {
