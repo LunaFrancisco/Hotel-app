@@ -3,11 +3,12 @@ import { Button, Row, Col, Label, Input, Card, CardBody, CardTitle } from 'react
 import Table from '../../components/Common/InventarioTable'
 import Tooltip from '../../components/Common/Tooltip'
 import SweetAlert from "react-bootstrap-sweetalert";
-import { get } from '../../api'
+import { get, post } from '../../api'
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
     const [refresh, setRefresh] = useState(false)
+    const [responsePopup, setResponsePopup] = useState(null)
     Array.prototype.sample = function () {
         return this[Math.floor(Math.random() * this.length)];
     }
@@ -19,6 +20,8 @@ export default () => {
         phone: '',
         rut: '',
         email: '',
+        direccion: '',
+        password: '',
         rol: ''
     })
 
@@ -130,6 +133,12 @@ export default () => {
                     data={data}
                     columns={columns}
                 />
+                {responsePopup != null && <SweetAlert
+                    title={responsePopup.title}
+                    type={responsePopup.ok ? 'success' : 'error'}
+                    onConfirm={() => setResponsePopup(null)}
+                >
+                </SweetAlert>}
                 {addPopup ? (
                     <SweetAlert
                         showCancel
@@ -138,7 +147,28 @@ export default () => {
                         confirmBtnBsStyle="success"
                         confirmBtnText="Añadir"
                         cancelBtnText="Cancelar"
-                        onConfirm={() => {
+                        onConfirm={async () => {
+                            const response = await post('api/auth/new', {
+                                nombre: userForm.firstname,
+                                apellido: userForm.lastname,
+                                rut: userForm.rut,
+                                telefono: userForm.phone,
+                                correo: userForm.email,
+                                direccion: userForm.direccion,
+                                password: userForm.password,
+                                rol: userForm.rol,
+                            }, { 'Content-Type': 'application/json' })
+                            if (response.ok) {
+                                setResponsePopup({
+                                    title: 'El producto se ha actualizado con éxito',
+                                    ok: response.ok
+                                })
+                            } else {
+                                setResponsePopup({
+                                    title: 'Error al actualizar el producto',
+                                    ok: response.ok
+                                })
+                            }
                             setUserForm({
                                 id: null,
                                 firstname: '',
@@ -148,8 +178,21 @@ export default () => {
                                 email: '',
                                 rol: ''
                             })
+                            setAddPopup(false)
+                            setRefresh(!refresh)
                         }}
-                        onCancel={() => setAddPopup(false)}
+                        onCancel={() => {
+                            setUserForm({
+                                id: null,
+                                firstname: '',
+                                lastname: '',
+                                phone: '',
+                                rut: '',
+                                email: '',
+                                rol: ''
+                            })
+                            setAddPopup(false)
+                        }}
                     >
                         <Row>
                             <Col lg={12}>
@@ -215,6 +258,26 @@ export default () => {
                             <Col lg={12}>
                                 <div className="mb-4">
                                     <Label
+                                        htmlFor="rut"
+                                        className="form-label w-100"
+                                        style={{ textAlign: 'left' }}
+                                    >
+                                        Contraseña
+                                    </Label>
+                                    <Input
+                                        type="password"
+                                        className="form-control"
+                                        id="billing-name"
+                                        name="rut"
+                                        placeholder="Ingrese el rut del usuario"
+                                        value={userForm.password}
+                                        onChange={(value) => handleFormChange(value, 'password')}
+                                    />
+                                </div>
+                            </Col>
+                            <Col lg={12}>
+                                <div className="mb-4">
+                                    <Label
                                         htmlFor="phone"
                                         className="form-label w-100"
                                         style={{ textAlign: 'left' }}
@@ -238,7 +301,7 @@ export default () => {
                                         className="form-label w-100"
                                         style={{ textAlign: 'left' }}
                                     >
-                                        Teléfono
+                                        Email
                                     </Label>
                                     <Input
                                         type="email"
@@ -247,6 +310,25 @@ export default () => {
                                         name="email"
                                         value={userForm.email}
                                         onChange={(value) => handleFormChange(value, 'email')}
+                                    />
+                                </div>
+                            </Col>
+                            <Col lg={12}>
+                                <div className="mb-4">
+                                    <Label
+                                        htmlFor="direccion"
+                                        className="form-label w-100"
+                                        style={{ textAlign: 'left' }}
+                                    >
+                                        Dirección
+                                    </Label>
+                                    <Input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Ingrese el correo del usuario"
+                                        name="direccion"
+                                        value={userForm.direccion}
+                                        onChange={(value) => handleFormChange(value, 'direccion')}
                                     />
                                 </div>
                             </Col>
@@ -262,7 +344,7 @@ export default () => {
                                     <select className="form-select" name="rol" value={userForm.rol} onChange={(value) => handleFormChange(value, 'rol')}>
                                         <option defaultValue>Seleccion un rol</option>
                                         {
-                                            roles.map(item => <option value={item}>{item}</option>)
+                                            roles.map((item, idx) => <option value={idx + 1}>{item}</option>)
                                         }
                                     </select>
                                 </div>

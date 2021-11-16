@@ -7,27 +7,26 @@ import "./dashboard.scss";
 
 export default () => {
     const generateDummy = (length, max = 100000, min = 0) => Array(length).fill(null).map(item => Math.round((Math.random() * (max - min) + min)))
-    console.log(generateDummy(12))
     const series = [
         {
             name: 'Caja',
             type: 'column',
-            data: generateDummy(12)
+            data: generateDummy(3)
         },
         {
             name: 'Ventas',
             type: 'line',
-            data: generateDummy(12)
+            data: generateDummy(3)
         },
         {
             name: 'Gastos',
             type: 'line',
-            data: generateDummy(12)
+            data: generateDummy(3)
         },
         {
             name: 'Retiros',
             type: 'line',
-            data: generateDummy(12)
+            data: generateDummy(3)
         },
     ]
 
@@ -65,7 +64,7 @@ export default () => {
             }
         },
         colors: ['#5664d2', '#1cbb8c', '#ff3d60', '#fcb92c'],
-        labels: ['Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
+        labels: ['Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre'],
     }
 
     return (

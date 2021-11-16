@@ -15,7 +15,7 @@ class ProfileMenu extends Component {
         let username = "";
         if (localStorage.getItem("authUser")) {
             const obj = JSON.parse(localStorage.getItem("authUser"));
-            username = `${obj.nombre} ${obj.apellido}`
+            username = `${obj.nombre} ${obj.apellido} - ${obj.tipo}`
         }
 
         this.state = {
