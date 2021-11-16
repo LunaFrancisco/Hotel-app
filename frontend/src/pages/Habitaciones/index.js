@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Row, Button } from 'reactstrap'
 import {
     Container,
@@ -15,6 +15,8 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Cuadricula from "./Cuadricula";
 import Tabla from "./Tabla";
 import MiniWidgets from "../../components/Common/MiniWidgets";
+import { get, put } from '../../api'
+import SweetAlert from "react-bootstrap-sweetalert";
 
 export default () => {
     const breadcrumbItems = [
@@ -26,6 +28,8 @@ export default () => {
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [currentFilter, setCurrentFilter] = useState(null)
     const [rerender, setRerender] = useState(false);
+    const [refresh, setRefresh] = useState(false);
+    const [responsePopup, setResponsePopup] = useState(null)
 
     const states = [
         {
@@ -42,51 +46,61 @@ export default () => {
         },
     ]
 
-    const [rooms, setRooms] = useState([
-        {
-            id: 1,
-            number: 1,
-            state: 1,
-            paid: true
-        },
-        {
-            id: 2,
-            number: 2,
-            state: 2,
-            paid: true
-        },
-        {
-            id: 3,
-            number: 3,
-            state: 2,
-            paid: false
-        },
-        {
-            id: 4,
-            number: 4,
-            state: 3,
-            paid: true
-        },
-    ])
+    const [rooms, setRooms] = useState([])
+
+    useEffect(async () => {
+        const response = await get('api/services/listarHabitaciones')
+
+        setRooms(response.listaHabitaciones.map((item) => {
+            let salida = item.servicios.length > 0 ? new Date(`01-01-2021 ${item.servicios[0]?.hr_entrada}`) : '-'
+            let entrada = item.servicios.length > 0 ? new Date(`01-01-2021 ${item.servicios[0]?.hr_entrada}`) : '-'
+            if (salida != '-') {
+                salida.setHours(salida.getHours() + item.horas)
+                salida = `${salida.getHours()}:${salida.getMinutes()}:${salida.getSeconds()}`
+                entrada = `${entrada.getHours()}:${entrada.getMinutes()}:${entrada.getSeconds()}`
+            }
+
+            return ({
+                id: item.numero,
+                number: item.numero,
+                state: item.estado.id,
+                paid: item.paid ?? false,
+                servicio: item.servicios[0]?.id,
+                entrada: entrada,
+                salida: salida,
+            })
+        }))
+    }, [refresh])
 
     const onCheckout = (id) => {
         history.push(`/habitaciones/${id}/check-out`)
     }
 
-    const onEnable = (id) => {
-        const temp = rooms
-        const idx = temp.findIndex(item => item.id === id)
-        temp[idx] = {
-            ...temp[idx],
-            state: 1,
-            paid: false,
+    const onEnable = async (id) => {
+        const response = await put('api/services/habilitarHabitacion', { id }, { 'Content-Type': 'application/json' })
+        if (response.ok) {
+            setResponsePopup({
+                title: 'Habitación habilitada con éxito',
+                ok: response.ok
+            })
+        } else {
+            setResponsePopup({
+                title: 'Error al habilitar habitación',
+                ok: response.ok
+            })
         }
-        setRooms(temp)
 
+        setRefresh(!refresh)
         setRerender(!rerender)
     }
 
     return <div className="page-content">
+        {responsePopup != null && <SweetAlert
+            title={responsePopup.title}
+            type={responsePopup.ok ? 'success' : 'error'}
+            onConfirm={() => setResponsePopup(null)}
+        >
+        </SweetAlert>}
         <Container fluid>
             <Breadcrumbs
                 title="Habitaciones"
@@ -96,29 +110,29 @@ export default () => {
             <Row>
                 <MiniWidgets
                     title="Disponibles"
-                    value={`${Math.round(Math.random() * 32).toLocaleString("es-CL")}`}
+                    value={`${rooms.filter(item => item.state == 1).length.toLocaleString("es-CL")}`}
                     icon={
                         <Button color="success" style={{ pointerEvents: 'none', height: 50, width: 50 }}></Button>
                     }
-                    rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                    rate={0}
                     desc="Desde el turno anterior"
                 />
                 <MiniWidgets
                     title="Ocupado"
-                    value={`${Math.round(Math.random() * 32).toLocaleString("es-CL")}`}
+                    value={`${rooms.filter(item => item.state == 2).length.toLocaleString("es-CL")}`}
                     icon={
                         <Button color="warning" style={{ pointerEvents: 'none', height: 50, width: 50 }}></Button>
                     }
-                    rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                    rate={0}
                     desc="Desde el turno anterior"
                 />
                 <MiniWidgets
                     title="En limpieza"
-                    value={`${Math.round(Math.random() * 32).toLocaleString("es-CL")}`}
+                    value={`${rooms.filter(item => item.state == 3).length.toLocaleString("es-CL")}`}
                     icon={
                         <Button color="danger" style={{ pointerEvents: 'none', height: 50, width: 50 }}></Button>
                     }
-                    rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                    rate={0}
                     desc="Desde el turno anterior"
                     negative
                 />

@@ -10,95 +10,71 @@ import { get } from '../../../../api'
 
 export default ({ inventario }) => {
     const { orderSummary, setOrderSummary } = useContext(SummaryContext)
-    const [promotions, setPromotions] = useState([
-        {
-            id: 1,
-            price: 5500,
-            hours: 5,
-            description: 'Esta promoción include 2 bebidas',
-            included: [
-                [
-                    {
-                        id: 2,
-                        type: 'Bebida',
-                    }
-                ],
-                [
-                    {
-                        id: 2,
-                        type: 'Bebida',
-                    }
-                ]
-            ]
-        },
-        {
-            id: 2,
-            price: 8500,
-            hours: 6,
-            description: 'Esta promoción include 2 tragos',
-            included: [
-                [
-                    {
-                        id: 1,
-                        type: 'Trago',
-                    },
-                    {
-                        id: 2,
-                        type: 'Bebida',
-                    }
-                ],
-                [
-                    {
-                        id: 1,
-                        type: 'Trago',
-                    },
-                    {
-                        id: 2,
-                        type: 'Bebida',
-                    }
-                ]
-            ]
-        },
-        {
-            id: 3,
-            price: 10000,
-            hours: 10,
-            description: 'Esta promoción include 2 tragos y es de 10 horas, así que afirmate cabrito!',
-            included: [
-                [
-                    {
-                        id: 1,
-                        type: 'Trago',
-                    },
-                    {
-                        id: 2,
-                        type: 'Bebida',
-                    }
-                ],
-                [
-                    {
-                        id: 1,
-                        type: 'Trago',
-                    },
-                    {
-                        id: 2,
-                        type: 'Bebida',
-                    }
-                ]
-            ]
-        },
-        {
-            id: 4,
-            price: 3750,
-            hours: 2,
-            description: 'Esta promoción no incluye nada, POBRE!',
-            included: []
-        },
-    ])
+    const [promotions, setPromotions] = useState([])
 
     useEffect(async () => {
+        const response = await get('api/services/listarPromociones')
 
-    }, [inventario])
+        setPromotions(response.msg.map(item => {
+            const included = []
+            if (item.trago && item.bebida) {
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    },
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    },
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+            } else if (item.trago) {
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    }
+                ])
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    }
+                ])
+            } else if (item.bebida) {
+                included.push([
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+                included.push([
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+            }
+
+            return {
+                ...item,
+                hours: item.horas,
+                price: item.precio,
+                description: item.descripcion,
+                included
+            }
+        }))
+    }, [])
 
     const addPromotions = (promotion) => setOrderSummary({
         ...orderSummary,
@@ -116,6 +92,7 @@ export default ({ inventario }) => {
             {
                 promotions.map((promotion) => (<Col lg={4} sm={6}>
                     <CardPromocion
+                        inventario={inventario}
                         promotion={promotion}
                         added={false}
                         addPromotions={addPromotions}
@@ -134,6 +111,7 @@ export default ({ inventario }) => {
             {
                 orderSummary.promotions.map((promotion) => (<Col lg={4} sm={6}>
                     <CardPromocion
+                        inventario={inventario}
                         promotion={promotion}
                         addPromotions={addPromotions}
                         added={true}
@@ -152,6 +130,7 @@ export default ({ inventario }) => {
             {
                 [].map((promotion) => (<Col lg={4} sm={6}>
                     <CardPromocion
+                        inventario={inventario}
                         promotion={promotion}
                         addPromotions={addPromotions}
                         added={true}

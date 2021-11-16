@@ -15,12 +15,13 @@ import {
 import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import { Link, useParams } from "react-router-dom";
 import classnames from "classnames";
-import { get } from '../../../api'
+import { get, post } from '../../../api'
 import ClientInfo from './ClientInfo'
 import ServiceInfo from './ServiceInfo'
 import ExtrasInfo from './ExtrasInfo'
 import PaymentInfo from './PaymentInfo'
 import SummaryContext from './SummaryContext'
+import SweetAlert from "react-bootstrap-sweetalert";
 
 export default () => {
     const { id } = useParams();
@@ -33,11 +34,13 @@ export default () => {
     const [orderSummary, setOrderSummary] = useState({
         clients: [{}, {}],
         promotions: [],
-        extras: []
+        extras: [],
+        metodo_de_pago: null
     })
     const [total, setTotal] = useState(0)
     const [payment, setPayment] = useState(null)
     const [inventario, setInventario] = useState([])
+    const [responsePopup, setResponsePopup] = useState(null)
 
     const [activeTab, setActiveTab] = useState(1)
 
@@ -78,7 +81,7 @@ export default () => {
         return element.checkValidity()
     }
 
-    const handleComplete = () => {
+    const handleComplete = async () => {
         const forms = [{
             form: 'clients-form',
             tab: 1,
@@ -92,16 +95,44 @@ export default () => {
             }
         }
 
-
-
         if (!error) {
-            console.log('comprar')
+            const response = await post('api/services/new', {
+                id: id,
+                clientes: orderSummary.clients,
+                servicios: orderSummary.promotions.map(item => {
+                    return {
+                        id_promocion: item.id,
+                        id_productos: item.beberages.map(item => item.value.id)
+                    }
+                }),
+                extras: orderSummary.extras.map(item => item.id),
+                metodo_de_pago: orderSummary.metodo_de_pago
+            }, { 'Content-Type': 'application/json' })
+
+            if (response.ok) {
+                setResponsePopup({
+                    title: 'Habitación reservada con éxito',
+                    ok: response.ok
+                })
+                window.location.href = '/habitaciones'
+            } else {
+                setResponsePopup({
+                    title: 'Error al reservar la habitación',
+                    ok: response.ok
+                })
+            }
         }
     }
 
     const summaryContext = { orderSummary, setOrderSummary, payment, setPayment, setPaid, handleComplete }
     return <Fragment>
         <div className="page-content">
+            {responsePopup != null && <SweetAlert
+                title={responsePopup.title}
+                type={responsePopup.ok ? 'success' : 'error'}
+                onConfirm={() => setResponsePopup(null)}
+            >
+            </SweetAlert>}
             <Container fluid>
                 {/* Render Breadcrumb */}
                 <Breadcrumbs
@@ -243,7 +274,7 @@ export default () => {
                                                     </th>
                                                     <td>
                                                         {orderitem.beberages.map((item, idx) => <p className="text-muted mb-0">
-                                                            Bebestible {idx + 1}: {item.value} {idx > 0 ? <br /> : ''}
+                                                            Bebestible {idx + 1}: {item.value.nombre} {idx > 0 ? <br /> : ''}
                                                         </p>)}
                                                     </td>
                                                     <td>$ {orderitem.price.toLocaleString("es-CL")}</td>

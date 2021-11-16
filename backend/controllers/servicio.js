@@ -121,10 +121,17 @@ const listarHabitaciones = async (req, res) => {
             // Comprobamos si esta pagado dicho servicio
             if (id_servicio) {
                 const registro_ServicioPromocion = await Servicio_promocion.findOne({
-                    where: { id_servicio }
+                    where: { id_servicio },
+                    include: [{
+                        model: Promocion,
+                        attributes: [
+                            'horas'
+                        ],
+                    }],
                 });
                 let h = habitaciones.find(habitacion => habitacion.servicios[0]?.id === id_servicio);
                 h.dataValues.pagado = registro_ServicioPromocion.estado;
+                h.dataValues.horas = registro_ServicioPromocion.promocione.horas;
                 array_final.push(h.dataValues);
             }
             else {
@@ -137,6 +144,7 @@ const listarHabitaciones = async (req, res) => {
         });
     }
     catch (error) {
+        console.log(error)
         res.json({
             ok: false,
             msg: 'Error, Hable con el administrador'
@@ -285,7 +293,10 @@ const reservarHabitacion = async (req, res) => {
                     },
                 }
             );
-            res.json("Habitacion reservada");
+            res.json({
+                ok: true,
+                msg: "Habitacion reservada",
+            });
         } else {
             res.json({
                 ok: false,
@@ -293,6 +304,7 @@ const reservarHabitacion = async (req, res) => {
             });
         }
     } catch (e) {
+        console.log(e)
         res.json({
             ok: false,
             msg: "error, contacte con el administrador",

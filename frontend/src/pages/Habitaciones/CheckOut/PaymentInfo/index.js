@@ -11,9 +11,12 @@ import { Link } from 'react-router-dom'
 import SummaryContext from "../SummaryContext";
 
 export default ({ handleComplete }) => {
-    const { payment, setPayment } = useContext(SummaryContext)
+    const { orderSummary, setOrderSummary } = useContext(SummaryContext)
     const onChange = (el) => {
-        setPayment(el.target.value)
+        setOrderSummary({
+            ...orderSummary,
+            metodo_de_pago: el.target.value
+        })
     }
 
 
@@ -32,7 +35,7 @@ export default ({ handleComplete }) => {
                                 name="pay-method"
                                 id="pay-methodoption1"
                                 className="card-radio-input"
-                                value="Efectivo"
+                                value="1"
                                 onChange={onChange}
                             />
 
@@ -52,7 +55,7 @@ export default ({ handleComplete }) => {
                                 name="pay-method"
                                 id="pay-methodoption3"
                                 className="card-radio-input"
-                                value="Tarjeta de Crédito / Débito"
+                                value="2"
                                 onChange={onChange}
                             />
 

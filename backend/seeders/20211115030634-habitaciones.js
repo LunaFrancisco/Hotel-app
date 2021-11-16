@@ -51,25 +51,25 @@ module.exports = {
             },
             {
                 id: 7,
-                numero: 5,
+                numero: 7,
                 id_tipo: 2,
                 id_estado: 1
             },
             {
                 id: 8,
-                numero: 5,
+                numero: 8,
                 id_tipo: 2,
                 id_estado: 1
             },
             {
                 id: 9,
-                numero: 5,
+                numero: 9,
                 id_tipo: 2,
                 id_estado: 1
             },
             {
                 id: 10,
-                numero: 5,
+                numero: 10,
                 id_tipo: 2,
                 id_estado: 1
             },

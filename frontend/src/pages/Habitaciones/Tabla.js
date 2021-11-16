@@ -68,8 +68,6 @@ export default ({ rooms, onCheckout, onEnable }) => {
 
     const data = rooms.map((item, idx) => ({
         ...item,
-        checkin_time: `${Math.round(Math.round(Math.random() * 31))}-10-2021 ${Math.round(Math.round(Math.random() * 23))}:${Math.round(Math.round(Math.random() * 59))}`,
-        checkout_time: `${Math.round(Math.round(Math.random() * 31))}-10-2021 ${Math.round(Math.round(Math.random() * 23))}:${Math.round(Math.round(Math.random() * 59))}`,
         actions: renderActions(item, idx),
         state: renderState(item.state),
         paid: item.paid ? 'SI' : 'NO'
@@ -92,12 +90,12 @@ export default ({ rooms, onCheckout, onEnable }) => {
             sort: true
         },
         {
-            dataField: 'checkin_time',
+            dataField: 'entrada',
             text: 'Hora de entrada',
             sort: true
         },
         {
-            dataField: 'checkout_time',
+            dataField: 'salida',
             text: 'Hora de salida',
             sort: true
         },

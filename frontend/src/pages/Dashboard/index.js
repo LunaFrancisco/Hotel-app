@@ -46,21 +46,21 @@ class Dashboard extends Component {
                                 title="Caja"
                                 value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
                                 // icon="ri-stack-line"
-                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                rate={0}
                                 desc="Desde el mes anterior"
                             />
                             <MiniWidgets
                                 title="Ventas"
                                 value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
                                 // icon="ri-stack-line"
-                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                rate={0}
                                 desc="Desde el mes anterior"
                             />
                             <MiniWidgets
                                 title="Gastos"
                                 value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
                                 // icon="ri-add-fill"
-                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                rate={0}
                                 desc="Desde el mes anterior"
                                 negative
                             />
@@ -68,7 +68,7 @@ class Dashboard extends Component {
                                 title="Retiros"
                                 value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
                                 // icon=" ri-add-fill"
-                                rate={(Math.random() * (5 - -5) + -5).toFixed(2)}
+                                rate={0}
                                 desc="Desde el mes anterior"
                                 negative
                             />

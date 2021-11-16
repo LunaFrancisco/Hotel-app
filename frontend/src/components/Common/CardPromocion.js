@@ -13,7 +13,7 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import Switch from 'react-switch'
 import SummaryContext from '../../pages/Habitaciones/CheckOut/SummaryContext'
 
-export default ({ active, added, addPromotions, promotion, paid }) => {
+export default ({ inventario, active, added, addPromotions, promotion, paid }) => {
     const { setPaid } = useContext(SummaryContext)
     const [addPopup, setAddPopup] = useState(false)
     const [editPopup, setEditPopup] = useState(false)
@@ -23,7 +23,7 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
         let temp = beberages
         temp[idx] = {
             id: value.target.id,
-            value: value.target.value
+            value: inventario.find(item => item.id == value.target.value)
         }
         setBeberages(temp)
     }
@@ -48,21 +48,8 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
     };
 
     const options = {
-        1: [
-            'Ron Cola',
-            'Piscola',
-            'Pisco Sour',
-            'Gin Con Gin',
-            'Primavera',
-            'Martini',
-            'Whisky',
-        ],
-        2: [
-            'Coca Cola',
-            'Fanta',
-            'Sprite',
-            'Ginger Ale',
-        ]
+        1: inventario.filter(item => item.tipo_producto.tipo === 'Licores'),
+        2: inventario.filter(item => item.tipo_producto.tipo === 'Bebida'),
     }
 
     console.log(paid)
@@ -133,9 +120,9 @@ export default ({ active, added, addPromotions, promotion, paid }) => {
                                             {
                                                 options[type.id].map((option, sub_idx) => (
                                                     <div className="form-check">
-                                                        <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option} onChange={(value) => beberageChange(idx, value)} />
+                                                        <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option.id} onChange={(value) => beberageChange(idx, value)} />
                                                         <Label className="form-check-label" id={sub_idx}>
-                                                            {option}
+                                                            {option.nombre}
                                                         </Label>
                                                     </div>
                                                 ))
