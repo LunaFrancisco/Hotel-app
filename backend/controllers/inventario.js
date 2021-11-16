@@ -77,8 +77,8 @@ const crearProductoInventario = async (req, res = response) => {
             cantidad_minima: 1
         });
 
-        return res.status(500).json({
-            ok: false,
+        return res.status(200).json({
+            ok: true,
             msg: 'Producto creado en inventario correctamente'
         });
     } catch (error) {

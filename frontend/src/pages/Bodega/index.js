@@ -279,9 +279,9 @@ export default () => {
                         <Col className="col-6">
                             <Card>
                                 <CardBody>
-                                    <CardTitle className="h4">Botellas</CardTitle>
+                                    <CardTitle className="h4">Licores</CardTitle>
                                     <p className="card-title-desc">
-                                        Botellas listados para inventario.
+                                        Licores listados para inventario.
                                     </p>
                                     <Table
                                         data={data.licores}

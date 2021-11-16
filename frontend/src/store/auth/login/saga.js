@@ -23,7 +23,11 @@ function* loginUser({ payload: { user, history } }) {
         if (response.ok) {
             yield put(loginUserSuccessful(response))
             localStorage.setItem('authUser', JSON.stringify(response))
-            history.push('/dashboard');
+            if (response.tipo_id === 3) {
+                history.push('/habitaciones');
+            } else {
+                history.push('/dashboard');
+            }
         } else {
             if (response.error) {
                 yield put(apiError(Object.entries(response.errors).map(item => item[1].msg).join('\n')));

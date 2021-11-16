@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import Tooltip from './Tooltip'
 
-export default ({ img, room: { paid, state, number, id }, onCheckout, onEnable }) => {
+export default ({ img, room: { paid, state, number, id, servicio }, onCheckout, onEnable, onCancel }) => {
     const states = {
         1: 'bg-color-success',
         2: 'bg-color-warning',
@@ -80,7 +80,7 @@ export default ({ img, room: { paid, state, number, id }, onCheckout, onEnable }
                         </Tooltip>
 
                         <Tooltip id={'cuadricula-' + id + '-cancel-button'} title="Cancelar Reserva" center>
-                            <ButtonHabitacion color="danger">
+                            <ButtonHabitacion onClick={() => onCancel(servicio)} color="danger">
                                 <i className="ri-delete-bin-5-fill"></i>
                             </ButtonHabitacion>
                         </Tooltip>

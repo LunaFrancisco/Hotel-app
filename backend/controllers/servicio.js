@@ -315,20 +315,30 @@ const reservarHabitacion = async (req, res) => {
 //cancelar reserva (aliminar en cascada )
 
 const cancelarReserva = async (req, res) => {
-<<<<<<< Updated upstream
     const { id } = req.body;
     try {
         const findService = await Servicio.findOne({
             where: {
                 id,
             },
+            attributes: ['id', 'id_habitacion']
         });
         if (findService) {
+            const updateHabitacion = await Habitacion.update({
+                id_estado: 1
+            },
+                {
+                    where: {
+                        id: findService.id_habitacion
+                    }
+                });
+
             const deleteService = await Servicio.destroy({
                 where: {
                     id: findService.id,
                 },
             });
+
             return res.json({
                 ok: true,
                 msg: "Reserva cancelada",
@@ -339,42 +349,6 @@ const cancelarReserva = async (req, res) => {
                 msg: "error 502, contacte con el administrador",
             });
         }
-=======
-  const { id } = req.body;
-  try {
-    const findService = await Servicio.findOne({
-      where: {
-        id,
-      },
-      attributes: ['id','id_habitacion']
-    });
-    if (findService) {
-      const deleteService = await Servicio.destroy({
-        where: {
-          id: findService.id,
-        },
-      });
-
-      const updateHabitacion = await Habitacion.update({
-        estado:1 
-      },
-      {
-        where: {
-          id:findService.id_habitacion
-        }
-      });
-
-      return res.json({
-        ok: true,
-        msg: "Reserva cancelada",
-      });
-    } else {
-      res.json({
-        ok: false,
-        msg: "error 502, contacte con el administrador",
-      });
-    }
->>>>>>> Stashed changes
 
         return console.log(cancelar);
     } catch (e) {
@@ -469,11 +443,11 @@ const calcularTotalServicio = async (req, res) => {
     try {
 
     }
-    catch(e){
-      res.json({
-        ok: false,
-        msg: "error, contacte con el administrador",
-      });
+    catch (e) {
+        res.json({
+            ok: false,
+            msg: "error, contacte con el administrador",
+        });
     }
 };
 // const desalojarHabitacion = async (req, res) => {

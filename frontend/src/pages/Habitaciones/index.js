@@ -15,7 +15,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import Cuadricula from "./Cuadricula";
 import Tabla from "./Tabla";
 import MiniWidgets from "../../components/Common/MiniWidgets";
-import { get, put } from '../../api'
+import { get, put, post } from '../../api'
 import SweetAlert from "react-bootstrap-sweetalert";
 
 export default () => {
@@ -86,6 +86,25 @@ export default () => {
         } else {
             setResponsePopup({
                 title: 'Error al habilitar habitación',
+                ok: response.ok
+            })
+        }
+
+        setRefresh(!refresh)
+        setRerender(!rerender)
+    }
+
+    const onCancel = async (id) => {
+        const response = await post('api/services/cancel', { id }, { 'Content-Type': 'application/json' })
+        console.log(id, response)
+        if (response.ok) {
+            setResponsePopup({
+                title: 'Reservación cancelada con éxito',
+                ok: response.ok
+            })
+        } else {
+            setResponsePopup({
+                title: 'Error al cancelar reserva de habitación',
                 ok: response.ok
             })
         }
@@ -180,10 +199,12 @@ export default () => {
                     <Tabla
                         rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
+                        onCancel={onCancel}
                         onEnable={onEnable} />
                     : <Cuadricula
                         rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
+                        onCancel={onCancel}
                         onEnable={onEnable} />
             }
         </Container>

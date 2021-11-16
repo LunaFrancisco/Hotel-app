@@ -9,7 +9,7 @@ import {
 import Tooltip from '../../components/Common/Tooltip'
 import Table from '../../components/Common/InventarioTable'
 
-export default ({ rooms, onCheckout, onEnable }) => {
+export default ({ rooms, onCheckout, onEnable, onCancel }) => {
     const states = {
         1: 'Disponible',
         2: 'Ocupado',
@@ -49,7 +49,7 @@ export default ({ rooms, onCheckout, onEnable }) => {
                 </Tooltip>
 
                 <Tooltip id={'room-' + idx + '-cancel-button'} title="Cancelar Reserva">
-                    <Button color="link" className="text-danger">
+                    <Button onClick={() => onCancel(room.servicio)} color="link" className="text-danger">
                         <i className="ri-delete-bin-5-fill"></i>
                     </Button>
                 </Tooltip>
