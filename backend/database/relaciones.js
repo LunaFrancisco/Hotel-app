@@ -16,11 +16,19 @@ const Tipo_habitacion = require('../models/tipo_habitacion');
 const Tipo_pago = require('../models/tipo_pago');
 const tipo_producto = require('../models/tipo_producto');
 const Usuario = require('../models/usuario');
+const Balance = require('../models/balance');
+const Retiro = require('../models/retiro');
+const Gasto_caja = require('../models/gasto_caja');
+const Gasto_inventario = require('../models/gasto_inventario');
+const Balance_aux = require('../models/balance_aux');
+
 
 
 //const { FOREIGNKEYS } = require('sequelize/types/lib/query-types');
 
 //1:n
+
+
 Cliente.hasMany(Lista_negra, { foreignKey: 'id_cliente', sourceKey: 'id', onDelete: 'CASCADE' });
 Lista_negra.belongsTo(Cliente, { foreignKey: 'id_cliente', sourceKey: 'id', onDelete: 'CASCADE' });
 
@@ -60,6 +68,25 @@ Servicio.belongsTo(Cliente, { foreignKey: 'id_cliente1', sourceKey: 'id', onDele
 
 Cliente.hasMany(Servicio, { foreignKey: 'id_cliente2', sourceKey: 'id', onDelete: 'CASCADE' });
 Servicio.belongsTo(Cliente, { foreignKey: 'id_cliente2', sourceKey: 'id', onDelete: 'CASCADE' });
+
+Usuario.hasMany(Gasto_caja, { foreignKey: 'id_usuario', sourceKey: 'id' });
+Gasto_caja.belongsTo(Usuario, { foreignKey: 'id_usuario', sourceKey: 'id' });
+
+Usuario.hasMany(Balance, { foreignKey: 'id_usuario', sourceKey: 'id' });
+Balance.belongsTo(Usuario, { foreignKey: 'id_usuario', sourceKey: 'id' });
+
+Usuario.hasMany(Retiro, { foreignKey: 'id_usuario', sourceKey: 'id' });
+Retiro.belongsTo(Usuario, { foreignKey: 'id_usuario', sourceKey: 'id' });
+
+
+//especial
+
+Usuario.hasMany(Gasto_inventario, { foreignKey: 'id_usuario', sourceKey: 'id' });
+Gasto_inventario.belongsTo(Usuario, { foreignKey: 'id_usuario', sourceKey: 'id' });
+
+Producto.hasMany(Gasto_inventario, { foreignKey: 'id_producto', sourceKey: 'id' });
+Gasto_inventario.belongsTo(Producto, { foreignKey: 'id_producto', sourceKey: 'id' });
+
 
 
 //1:1
