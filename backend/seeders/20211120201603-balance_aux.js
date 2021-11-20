@@ -12,23 +12,21 @@ module.exports = {
          *   isBetaMember: false
          * }], {});
         */
-        await queryInterface.bulkInsert('balance', [
+        await queryInterface.bulkInsert('balance_aux', [
             {
                 id: 1,
-                id_usuario: null,
-                caja_anterior: 50000,
-                ventas_total:null,  
-              retiros_total:null,  
-              gastos_total:null,  
-              caja_final:null,  
-              fecha:null 
+                ventas:5000,
+                gastos:0,
+                retiros:0,
+                caja:55000,
+                id_balance:1
               
             }
 
 
         ], {});
 
-        //await sequelize.query('ALTER SEQUENCE balance_id_sec RESTART WITH 2;')
+       
     },
 
     down: async (queryInterface, Sequelize) => {
@@ -38,6 +36,6 @@ module.exports = {
          * Example:
          * await queryInterface.bulkDelete('People', null, {});
          */
-        await queryInterface.bulkDelete('balance');
+        await queryInterface.bulkDelete('balance_aux');
     }
 };
