@@ -1,19 +1,48 @@
-import { Fragment, useState } from "react"
+import { Fragment, useState, useEffect } from "react"
 import { Button, Row, Col, Label, Input } from 'reactstrap'
 import Table from '../../../components/Common/InventarioTable'
 import SweetAlert from "react-bootstrap-sweetalert";
+import { get, post } from '../../../api'
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
+    const [refresh, setRefresh] = useState(false)
+    const [responsePopup, setResponsePopup] = useState(null)
+    const [data, setData] = useState([])
+    const initialForm = {
+        fecha: '',
+        monto: '',
+        descripcion: ''
+    }
+    const [form, setForm] = useState(initialForm)
 
     const timeFormat = (number) => number > 9 ? `${number}` : `0${number}`
-    const data = Array(15).fill(null).map(item => ({
-        amount: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, id: Math.round(Math.round(Math.random() * 5014)),
-        room: Math.round(Math.round(Math.random() * 32)),
-        checkin_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
-        transaction_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
-        obs: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam, perferendis. Nobis voluptate, assumenda quae magni reiciendis unde asperiores enim eum.'
-    }))
+    // const data = Array(15).fill(null).map(item => ({
+    //     amount: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, id: Math.round(Math.round(Math.random() * 5014)),
+    //     room: Math.round(Math.round(Math.random() * 32)),
+    //     checkin_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
+    //     transaction_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
+    //     obs: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam, perferendis. Nobis voluptate, assumenda quae magni reiciendis unde asperiores enim eum.'
+    // }))
+
+    useEffect(async () => {
+        const response = await get('api/caja/allRetiros')
+
+        setData(response.findRetiros.map(item => ({
+            id: item.id,
+            amount: `$ ${Math.round(item.monto).toLocaleString("es-CL")}`,
+            obs: item.descripcion,
+            checkin_date: 'TODO',
+        })))
+
+    }, [refresh])
+
+    const handleFormChange = (value, attr) => {
+        setForm({
+            ...form,
+            [attr]: value.target.value
+        })
+    }
 
     const columns = [
         {
@@ -57,6 +86,12 @@ export default () => {
                 data={data}
                 columns={columns}
             />
+            {responsePopup != null && <SweetAlert
+                title={responsePopup.title}
+                type={responsePopup.ok ? 'success' : 'error'}
+                onConfirm={() => setResponsePopup(null)}
+            >
+            </SweetAlert>}
             {addPopup ? (
                 <SweetAlert
                     showCancel
@@ -65,10 +100,27 @@ export default () => {
                     confirmBtnBsStyle="success"
                     confirmBtnText="Añadir"
                     cancelBtnText="Cancelar"
-                    onConfirm={() => {
-
+                    onConfirm={async () => {
+                        const response = await post('api/caja/retiro', form, { 'Content-Type': 'application/json' })
+                        if (response.ok) {
+                            setResponsePopup({
+                                title: 'Retiro agregado con éxito',
+                                ok: response.ok
+                            })
+                        } else {
+                            setResponsePopup({
+                                title: `Error al crear retiro: ${response.msg}`,
+                                ok: response.ok
+                            })
+                        }
+                        setForm(initialForm)
+                        setAddPopup(false)
+                        setRefresh(!refresh)
                     }}
-                    onCancel={() => setAddPopup(false)}
+                    onCancel={() => {
+                        setForm(initialForm)
+                        setAddPopup(false)
+                    }}
                 >
                     <Row>
                         <Col lg={12}>
@@ -84,6 +136,9 @@ export default () => {
                                     type="datetime-local"
                                     className="form-control"
                                     placeholder="Ingrese la fecha del gasto"
+                                    name="fecha"
+                                    value={form.fecha}
+                                    onChange={(value) => handleFormChange(value, 'fecha')}
                                 />
                             </div>
                         </Col>
@@ -101,6 +156,9 @@ export default () => {
                                     className="form-control"
                                     id="billing-name"
                                     placeholder="Ingrese el monto del gasto"
+                                    name="monto"
+                                    value={form.monto}
+                                    onChange={(value) => handleFormChange(value, 'monto')}
                                 />
                             </div>
                         </Col>
@@ -118,6 +176,9 @@ export default () => {
                                     className="form-control"
                                     id="billing-email-address"
                                     placeholder="Ingrese una observación del gasto"
+                                    name="descripcion"
+                                    value={form.descripcion}
+                                    onChange={(value) => handleFormChange(value, 'descripcion')}
                                 />
                             </div>
                         </Col>
