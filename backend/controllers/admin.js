@@ -11,18 +11,18 @@ const verUsuarios = async (req, res = response) => {
     try {
         const allUsers = await Usuario.findAll(
             {
-            attributes: ['id','rut','nombre', 'apellido', 'correo', 'direccion', 'telefono'],
-            include: [
-                Roles
-               ]
+                attributes: ['id', 'rut', 'nombre', 'apellido', 'correo', 'direccion', 'telefono'],
+                include: [
+                    Roles
+                ]
             });
-            return res.json({      
-                ok: true,
-                msg: allUsers 
-            })
-         
-         
-            
+        return res.json({
+            ok: true,
+            msg: allUsers
+        })
+
+
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
