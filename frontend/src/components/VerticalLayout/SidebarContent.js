@@ -196,6 +196,7 @@ class SidebarContent extends Component {
                             </li>
                         </>}
 
+
                         {/* <li>
                             <Link to="/#" className="has-arrow waves-effect">
                                 <i className="ri-brush-line"></i>
