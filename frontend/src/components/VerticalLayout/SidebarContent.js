@@ -198,6 +198,19 @@ class SidebarContent extends Component {
 
                         {/* <li>
                             <Link to="/#" className="has-arrow waves-effect">
+                                <i className="ri-brush-line"></i>
+                                <span className="ms-1">{this.props.t('Icons')}</span>
+                            </Link>
+                            <ul className="sub-menu">
+                                <li><Link to="/icons-remix">{this.props.t('Remix Icons')}</Link></li>
+                                <li><Link to="/material-design">{this.props.t('Material Design')}</Link></li>
+                                <li><Link to="/dripicons">{this.props.t('Dripicons')}</Link></li>
+                                <li><Link to="/font-awesome-5">{this.props.t('Font awesome 5')}</Link></li>
+                            </ul>
+                        </li> */}
+
+                        {/* <li>
+                            <Link to="/#" className="has-arrow waves-effect">
                                 <i className="ri-store-2-line"></i>
                                 <span className="ms-1">{this.props.t('E-Commerce')}</span>
                             </Link>
