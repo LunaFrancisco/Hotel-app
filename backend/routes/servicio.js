@@ -10,12 +10,7 @@ const { validarJWT } = require('../middlewares/validar-jwt');
 
 
 router.post(
-    '/new',
-    [
-        check('servicios', 'Agregue un servicio').not().isEmpty(),
-        check('metodo_de_pago', 'Ingrese metodo de pago').not().isEmpty(),
-        validarCampos
-    ],
+    '/reservarHabitacion',
     reservarHabitacion
 );
 
@@ -30,7 +25,7 @@ router.post(
 );
 
 router.post(
-    '/desalojar',
+    '/desalojarHabitacion',
     desalojarHabitacion
 );
 router.get(

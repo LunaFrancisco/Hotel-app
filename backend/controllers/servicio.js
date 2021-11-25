@@ -1,5 +1,6 @@
-
 const { response } = require("express");
+const sequelize = require("../database/database");
+
 const Tipo_habitacion = require('../models/tipo_habitacion');
 const Cliente = require("../models/cliente");
 const Habitacion = require("../models/habitaciones");
@@ -10,7 +11,8 @@ const Servicio = require("../models/servicio");
 const Servicio_promocion = require("../models/servicio_promociones");
 const Detalle_pedido = require("../models/detalle_pedido");
 const Servicio_promociones = require("../models/servicio_promociones");
-const sequelize = require("../database/database");
+const Balance_aux = require("../models/balance_aux");
+const Producto = require("../models/producto");
 
 //habitaciones disponibles
 //habitaciones ocupadas
@@ -180,17 +182,17 @@ const habilitarHabitacion = async (req, res) => {
 };
 
 const reservarHabitacion = async (req, res) => {
-    const { id, clientes, servicios, extras, metodo_de_pago } = req.body;
-
     try {
-        //consultar el estado
+        const { id, clientes, servicios, extras, metodo_de_pago } = req.body;
+        // Consultar el estado
         const consultarEstado = await Habitacion.findOne({
             where: {
                 id,
                 id_estado: 1,
             },
         });
-        //si el estado es disponible entonces registro el cliente
+
+        // Si el estado es disponible entonces registro el cliente
         if (consultarEstado) {
             const arreglo = [];
 
@@ -220,13 +222,12 @@ const reservarHabitacion = async (req, res) => {
                     const client = findClient.id;
                     arreglo.push(client);
                 }
-            }
-            console.log(arreglo);
+            } // end for
 
             const newService = await Servicio.create({
                 id_habitacion: id,
-                //id_usuario1,
-                //id_turno,
+                // id_usuario1,
+                // id_turno,
                 fecha: sequelize.literal("CURRENT_DATE"),
                 hr_entrada: sequelize.literal("CURRENT_TIME"),
                 total: 0,
@@ -234,9 +235,8 @@ const reservarHabitacion = async (req, res) => {
                 id_cliente2: arreglo[1],
             });
 
-            //agregar servicio
+            // Agregar servicio
             servicios.forEach(async (service) => {
-                console.log()
                 const findPromocion = await Promocion.findOne({
                     where: {
                         id: service.id_promocion,
@@ -244,7 +244,7 @@ const reservarHabitacion = async (req, res) => {
                 });
 
                 if (findPromocion) {
-                    //consultar stock del producto
+                    // Consultar stock del producto
                     const addPromo = Servicio_promocion.create({
                         id_promocion: service.id_promocion,
                         id_servicio: newService.id,
@@ -253,36 +253,52 @@ const reservarHabitacion = async (req, res) => {
                         id_producto2: service.id_productos[1],
                         estado: false,
                     });
-
+                    // Agregamos la venta en tabla balance_aux
+                    const balance_aux = await Balance_aux.findOne({
+                        where: { id: 1 }
+                    });
+                    balance_aux.ventas += findPromocion.precio;
+                    balance_aux.save();
                 } else {
-                    res.json({
+                    return res.json({
                         ok: false,
                         msg: "Servicio no existe",
                     });
                 }
             });
 
-            //agrego los extras si existen tabla pedidos y producto pedido
-
+            // Agrego los extras si existen tabla pedidos y producto pedido
             if (extras) {
                 const addPedido = await Pedido.create({
+                    id_servicio: newService.id,
                     id_tipo_pago: metodo_de_pago,
                     estado: "pendiente",
-                    id_servicio: newService.id,
                     //total
                 });
-
-                //rellenar la tabla producto pedido for each
                 extras.forEach(async (extra) => {
                     const addDetallePedido = await Detalle_pedido.create({
                         id_pedido: addPedido.id,
-                        id_producto: extra.producto_id,
-                        cantidad: extra.cantidad,
+                        id_producto: extra,
+                        cantidad: 1,
                     });
+                    // Agregamos precio de cada producto a ventas en balance_aux
+                    const producto = await Producto.findOne({
+                        where: {
+                            id: extra
+                        }
+                    });
+                    // Agregamos las ventas de extras en la tabla balance_aux
+                    const balance_aux = await Balance_aux.findOne({
+                        where: {
+                            id: 1
+                        }
+                    });
+                    balance_aux.ventas += producto.precio;
+                    balance_aux.save();
                 });
             }
 
-            //cambiar estado de la habitacion a ocupada
+            // Cambiar estado de la habitacion a ocupada
             const Ocupada = await Habitacion.update(
                 {
                     id_estado: 2,
@@ -293,27 +309,27 @@ const reservarHabitacion = async (req, res) => {
                     },
                 }
             );
-            res.json({
+
+            return res.json({
                 ok: true,
                 msg: "Habitacion reservada",
             });
         } else {
-            res.json({
+            return res.json({
                 ok: false,
-                msg: "error, no se puede reservar esta habitación",
+                msg: "Error, la habitación no está disponible",
             });
         }
     } catch (e) {
-        console.log(e)
-        res.json({
+        console.log(e);
+        return res.status(200).json({
             ok: false,
             msg: "error, contacte con el administrador",
         });
     }
 };
 
-//cancelar reserva (aliminar en cascada )
-
+//cancelar reserva (aliminar en cascada)
 const cancelarReserva = async (req, res) => {
     const { id } = req.body;
     try {
