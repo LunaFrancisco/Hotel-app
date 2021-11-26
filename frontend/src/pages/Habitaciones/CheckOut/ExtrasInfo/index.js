@@ -32,7 +32,7 @@ export default ({ inventario }) => {
             id: item.id,
             price: item.precio,
             nombre: item.nombre,
-            label: `${item.nombre} ($${item.precio})`,
+            label: `${item.nombre} ($${item.precio}) - ${item.inventario.cantidad} unidad${item.inventario.cantidad == 1 ? '' : 'es'} en inventario`,
             stock: item.inventario.cantidad,
         })
 
