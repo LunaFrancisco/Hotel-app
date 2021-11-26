@@ -13,6 +13,7 @@ const Detalle_pedido = require("../models/detalle_pedido");
 const Servicio_promociones = require("../models/servicio_promociones");
 const Balance_aux = require("../models/balance_aux");
 const Producto = require("../models/producto");
+const descInv = require("../helpers/desc-inv");
 
 //habitaciones disponibles
 //habitaciones ocupadas
@@ -192,6 +193,10 @@ const reservarHabitacion = async (req, res) => {
             },
         });
 
+        // En caso de algun error estas variables se modifican y se envian al cliente
+        let error = false;
+        let msg;
+
         // Si el estado es disponible entonces registro el cliente
         if (consultarEstado) {
             const arreglo = [];
@@ -226,8 +231,6 @@ const reservarHabitacion = async (req, res) => {
 
             const newService = await Servicio.create({
                 id_habitacion: id,
-                // id_usuario1,
-                // id_turno,
                 fecha: sequelize.literal("CURRENT_DATE"),
                 hr_entrada: sequelize.literal("CURRENT_TIME"),
                 total: 0,
@@ -245,7 +248,7 @@ const reservarHabitacion = async (req, res) => {
 
                 if (findPromocion) {
                     // Consultar stock del producto
-                    const addPromo = Servicio_promocion.create({
+                    Servicio_promocion.create({
                         id_promocion: service.id_promocion,
                         id_servicio: newService.id,
                         id_tipo_pago: metodo_de_pago,
@@ -253,6 +256,9 @@ const reservarHabitacion = async (req, res) => {
                         id_producto2: service.id_productos[1],
                         estado: false,
                     });
+                    // Descontamos los productos de inventario
+                    descInv(service.id_productos[0], 1);
+                    descInv(service.id_productos[1], 1);
                     // Agregamos la venta en tabla balance_aux
                     const balance_aux = await Balance_aux.findOne({
                         where: { id: 1 }
@@ -275,8 +281,8 @@ const reservarHabitacion = async (req, res) => {
                     estado: "pendiente",
                     //total
                 });
-                extras.forEach(async (extra) => {
-                    const addDetallePedido = await Detalle_pedido.create({
+                for (let extra of extras) {
+                    await Detalle_pedido.create({
                         id_pedido: addPedido.id,
                         id_producto: extra,
                         cantidad: 1,
@@ -287,7 +293,13 @@ const reservarHabitacion = async (req, res) => {
                             id: extra
                         }
                     });
-                    // Agregamos las ventas de extras en la tabla balance_aux
+                    // Descontamos de inventario
+                    const resp = await descInv(extra, 1);
+                    if (!resp) {
+                        error = true
+                        msg = `El producto ${producto.nombre} no tiene stock suficiente`;
+                        break;
+                    }
                     const balance_aux = await Balance_aux.findOne({
                         where: {
                             id: 1
@@ -295,11 +307,11 @@ const reservarHabitacion = async (req, res) => {
                     });
                     balance_aux.ventas += producto.precio;
                     balance_aux.save();
-                });
+                };
             }
 
             // Cambiar estado de la habitacion a ocupada
-            const Ocupada = await Habitacion.update(
+            await Habitacion.update(
                 {
                     id_estado: 2,
                 },
@@ -310,9 +322,9 @@ const reservarHabitacion = async (req, res) => {
                 }
             );
 
-            return res.json({
-                ok: true,
-                msg: "Habitacion reservada",
+            return res.status(200).json({
+                ok: error ? false : true,
+                msg: error ? msg : "Habitacion reservada",
             });
         } else {
             return res.json({

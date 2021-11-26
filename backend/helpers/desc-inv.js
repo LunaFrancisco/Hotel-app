@@ -1,14 +1,17 @@
 const Inventario = require("../models/inventario");
 
-export const descontarInventario = (id, cantidad) => {
+const descInv = async (id_producto, cantidad) => {
     const producto = await Inventario.findOne({
-        where: { id }
+        where: { id: id_producto }
     });
     if (producto.cantidad > cantidad) {
         producto.cantidad -= cantidad;
+        producto.save();
         return true;
     }
     else {
         return false
     }
 };
+
+module.exports = descInv;
