@@ -117,6 +117,9 @@ const listarHabitaciones = async (req, res) => {
                     'hr_salida'
                 ]
             }],
+            order: [
+                ['numero', 'ASC']
+            ]
         });
         let array_final = [];
         for (let habitacion of habitaciones) {
@@ -343,42 +346,40 @@ const reservarHabitacion = async (req, res) => {
 
 //cancelar reserva (aliminar en cascada)
 const cancelarReserva = async (req, res) => {
-    const { id } = req.body;
     try {
-        const findService = await Servicio.findOne({
-            where: {
-                id,
-            },
+        const { id_servicio } = req.body;
+        const servicio = await Servicio.findOne({
+            where: { id: id_servicio },
             attributes: ['id', 'id_habitacion']
         });
-        if (findService) {
-            const updateHabitacion = await Habitacion.update({
-                id_estado: 1
-            },
-                {
-                    where: {
-                        id: findService.id_habitacion
-                    }
-                });
-
-            const deleteService = await Servicio.destroy({
-                where: {
-                    id: findService.id,
-                },
-            });
-
-            return res.json({
-                ok: true,
-                msg: "Reserva cancelada",
-            });
-        } else {
-            res.json({
+        if (!servicio) {
+            return res.status(200).json({
                 ok: false,
-                msg: "error 502, contacte con el administrador",
+                msg: 'No existe el servicio'
             });
         }
-
-        return console.log(cancelar);
+        // Quitar todo respecto a servicio_promociones (registros y ventas)
+        const servicio_promociones = await Servicio_promocion.findAll({
+            where: { id_servicio: servicio.id }
+        });
+        servicio_promociones.forEach(async servicio_promocion => {
+            // Quitar de ventas el precio respectivo
+            const promocion = await Promocion.findOne({
+                where: { id: servicio_promocion.id_promocion }
+            });
+            const balance = await Balance_aux.findOne({
+                where: { id: 1 }
+            });
+            balance.ventas -= promocion.precio;
+            balance.save();
+            // Eliminamos el registro de tabla servicio_promocion
+            servicio_promocion.destroy();
+        });
+        servicio.destroy();
+        return res.status(200).json({
+            ok: true,
+            msg: 'Habitacion cancelada'
+        });
     } catch (e) {
         res.json({
             ok: false,
