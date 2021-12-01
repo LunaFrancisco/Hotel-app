@@ -103,7 +103,7 @@ const crearUsuario = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 
@@ -162,7 +162,7 @@ const loginUsuario = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -196,7 +196,7 @@ const eliminarUsuario = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'No se pudo eliminar. Por favor hable con el administrador'
+            msg: 'No se pudo eliminar. Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -241,7 +241,7 @@ const updateUsuario = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 

@@ -134,10 +134,11 @@ export default () => {
                     columns={columns}
                 />
                 {responsePopup != null && <SweetAlert
-                    title={responsePopup.title}
+                    title={responsePopup.ok ? 'Éxito' : 'Error'}
                     type={responsePopup.ok ? 'success' : 'error'}
                     onConfirm={() => setResponsePopup(null)}
                 >
+                    {responsePopup.msg}
                 </SweetAlert>}
                 {addPopup ? (
                     <SweetAlert
@@ -158,17 +159,10 @@ export default () => {
                                 password: userForm.password,
                                 rol: userForm.rol,
                             }, { 'Content-Type': 'application/json' })
-                            if (response.ok) {
-                                setResponsePopup({
-                                    title: 'El producto se ha actualizado con éxito',
-                                    ok: response.ok
-                                })
-                            } else {
-                                setResponsePopup({
-                                    title: 'Error al actualizar el producto',
-                                    ok: response.ok
-                                })
-                            }
+                            setResponsePopup({
+                                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                ok: response.ok
+                            })
                             setUserForm({
                                 id: null,
                                 firstname: '',

@@ -81,17 +81,10 @@ export default () => {
 
     const onEnable = async (id) => {
         const response = await put('api/services/habilitarHabitacion', { id }, { 'Content-Type': 'application/json' })
-        if (response.ok) {
-            setResponsePopup({
-                title: 'Habitación habilitada con éxito',
-                ok: response.ok
-            })
-        } else {
-            setResponsePopup({
-                title: 'Error al habilitar habitación',
-                ok: response.ok
-            })
-        }
+        setResponsePopup({
+            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+            ok: response.ok
+        })
 
         setRefresh(!refresh)
         setRerender(!rerender)
@@ -109,10 +102,11 @@ export default () => {
 
     return <div className="page-content">
         {responsePopup != null && <SweetAlert
-            title={responsePopup.title}
+            title={responsePopup.ok ? 'Éxito' : 'Error'}
             type={responsePopup.ok ? 'success' : 'error'}
             onConfirm={() => setResponsePopup(null)}
         >
+            {responsePopup.msg}
         </SweetAlert>}
         {desalojarPopup && <SweetAlert
             showCancel
@@ -124,17 +118,10 @@ export default () => {
             cancelBtnText="Cancelar"
             onConfirm={async () => {
                 const response = await post('api/services/desalojar', { id: reserva }, { 'Content-Type': 'application/json' })
-                if (response.ok) {
-                    setResponsePopup({
-                        title: 'Habitación desalojada con éxito',
-                        ok: response.ok
-                    })
-                } else {
-                    setResponsePopup({
-                        title: 'Error al desalojar habitación',
-                        ok: response.ok
-                    })
-                }
+                setResponsePopup({
+                    msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                    ok: response.ok
+                })
 
                 setRefresh(!refresh)
                 setRerender(!rerender)
@@ -153,17 +140,10 @@ export default () => {
             cancelBtnText="Cancelar"
             onConfirm={async () => {
                 const response = await post('api/services/cancel', { id: reserva }, { 'Content-Type': 'application/json' })
-                if (response.ok) {
-                    setResponsePopup({
-                        title: 'Reservación cancelada con éxito',
-                        ok: response.ok
-                    })
-                } else {
-                    setResponsePopup({
-                        title: 'Error al cancelar reserva de habitación',
-                        ok: response.ok
-                    })
-                }
+                setResponsePopup({
+                    msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                    ok: response.ok
+                })
 
                 setRefresh(!refresh)
                 setRerender(!rerender)

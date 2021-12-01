@@ -88,7 +88,7 @@ const pendientePago = async (req, res) => {
     catch (e) {
         res.json({
             ok: false,
-            msg: 'error, contacte con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -339,7 +339,7 @@ const reservarHabitacion = async (req, res) => {
         console.log(e);
         return res.status(200).json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -383,7 +383,7 @@ const cancelarReserva = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -446,7 +446,7 @@ const desalojarHabitacion = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -462,7 +462,7 @@ const listarPromociones = async (req, res = response) => {
         console.log(error);
         return res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -475,7 +475,7 @@ const calcularTotalServicio = async (req, res) => {
     catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -522,7 +522,7 @@ const calcularTotalServicio = async (req, res) => {
 //   } catch (e) {
 //     res.json({
 //       ok: false,
-//       msg: "error, contacte con el administrador",
+//       msg: "Ha ocurrido un error, por favor contacte al administrador",
 //     });
 //   }
 // };

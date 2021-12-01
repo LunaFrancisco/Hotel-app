@@ -23,7 +23,7 @@ const calcularTotalVentas = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -66,7 +66,7 @@ const newRetiro = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -107,7 +107,7 @@ const newGasto = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -128,7 +128,7 @@ const allRetiros = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -147,7 +147,7 @@ const allGastos = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -218,7 +218,7 @@ const cierreCaja = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };

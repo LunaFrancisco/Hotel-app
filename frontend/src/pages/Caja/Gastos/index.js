@@ -88,10 +88,11 @@ export default () => {
                 columns={columns}
             />
             {responsePopup != null && <SweetAlert
-                title={responsePopup.title}
+                title={responsePopup.ok ? 'Éxito' : 'Error'}
                 type={responsePopup.ok ? 'success' : 'error'}
                 onConfirm={() => setResponsePopup(null)}
             >
+                {responsePopup.msg}
             </SweetAlert>}
             {addPopup ? (
                 <SweetAlert
@@ -103,17 +104,10 @@ export default () => {
                     cancelBtnText="Cancelar"
                     onConfirm={async () => {
                         const response = await post('api/caja/gasto', form, { 'Content-Type': 'application/json' })
-                        if (response.ok) {
-                            setResponsePopup({
-                                title: 'Gasto agregado con éxito',
-                                ok: response.ok
-                            })
-                        } else {
-                            setResponsePopup({
-                                title: `Error al crear gasto: ${response.msg}`,
-                                ok: response.ok
-                            })
-                        }
+                        setResponsePopup({
+                            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                            ok: response.ok
+                        })
                         setForm(initialForm)
                         setAddPopup(false)
                         setRefresh(!refresh)

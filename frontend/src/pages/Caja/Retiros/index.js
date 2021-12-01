@@ -17,13 +17,6 @@ export default () => {
     const [form, setForm] = useState(initialForm)
 
     const timeFormat = (number) => number > 9 ? `${number}` : `0${number}`
-    // const data = Array(15).fill(null).map(item => ({
-    //     amount: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`, id: Math.round(Math.round(Math.random() * 5014)),
-    //     room: Math.round(Math.round(Math.random() * 32)),
-    //     checkin_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
-    //     transaction_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
-    //     obs: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam, perferendis. Nobis voluptate, assumenda quae magni reiciendis unde asperiores enim eum.'
-    // }))
 
     useEffect(async () => {
         const response = await get('api/caja/allRetiros')
@@ -87,10 +80,11 @@ export default () => {
                 columns={columns}
             />
             {responsePopup != null && <SweetAlert
-                title={responsePopup.title}
+                title={responsePopup.ok ? 'Éxito' : 'Error'}
                 type={responsePopup.ok ? 'success' : 'error'}
                 onConfirm={() => setResponsePopup(null)}
             >
+                {responsePopup.msg}
             </SweetAlert>}
             {addPopup ? (
                 <SweetAlert
@@ -102,17 +96,10 @@ export default () => {
                     cancelBtnText="Cancelar"
                     onConfirm={async () => {
                         const response = await post('api/caja/retiro', form, { 'Content-Type': 'application/json' })
-                        if (response.ok) {
-                            setResponsePopup({
-                                title: 'Retiro agregado con éxito',
-                                ok: response.ok
-                            })
-                        } else {
-                            setResponsePopup({
-                                title: `Error al crear retiro: ${response.msg}`,
-                                ok: response.ok
-                            })
-                        }
+                        setResponsePopup({
+                            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                            ok: response.ok
+                        })
                         setForm(initialForm)
                         setAddPopup(false)
                         setRefresh(!refresh)

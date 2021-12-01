@@ -163,17 +163,10 @@ export default () => {
                                     cantidad: product.cantidad,
                                     cantidad_minima: product.cantidad_minima
                                 }, { 'Content-Type': 'application/json' })
-                                if (response.ok) {
-                                    setResponsePopup({
-                                        title: 'Producto creado con éxito',
-                                        ok: response.ok
-                                    })
-                                } else {
-                                    setResponsePopup({
-                                        title: 'Error al crear producto',
-                                        ok: response.ok
-                                    })
-                                }
+                                setResponsePopup({
+                                    msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                    ok: response.ok
+                                })
                                 setProduct({})
                                 setRefresh(!refresh)
                                 setAddPopup(false)
@@ -362,10 +355,11 @@ export default () => {
                         </Col>
                     </Row>
                     {responsePopup != null && <SweetAlert
-                        title={responsePopup.title}
+                        title={responsePopup.ok ? 'Éxito' : 'Error'}
                         type={responsePopup.ok ? 'success' : 'error'}
                         onConfirm={() => setResponsePopup(null)}
                     >
+                        {responsePopup.msg}
                     </SweetAlert>}
                     {deletePopup && <SweetAlert
                         showCancel
@@ -379,17 +373,10 @@ export default () => {
                             const response = await del('api/products/eliminarProducto', {
                                 id_producto: product.id,
                             }, { 'Content-Type': 'application/json' })
-                            if (response.ok) {
-                                setResponsePopup({
-                                    title: 'Producto eliminado con éxito',
-                                    ok: response.ok
-                                })
-                            } else {
-                                setResponsePopup({
-                                    title: 'Error al eliminar el stock',
-                                    ok: response.ok
-                                })
-                            }
+                            setResponsePopup({
+                                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                ok: response.ok
+                            })
                             setProduct({})
                             setRefresh(!refresh)
                             setDeletePopup(false)
@@ -412,33 +399,19 @@ export default () => {
                                         precio: product.price,
                                         id_tipo: product.category
                                     }, { 'Content-Type': 'application/json' })
-                                    if (response.ok) {
-                                        setResponsePopup({
-                                            title: 'El producto se ha actualizado con éxito',
-                                            ok: response.ok
-                                        })
-                                    } else {
-                                        setResponsePopup({
-                                            title: 'Error al actualizar el producto',
-                                            ok: response.ok
-                                        })
-                                    }
+                                    setResponsePopup({
+                                        msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                        ok: response.ok
+                                    })
                                 } else {
                                     const response = await put('api/bodega/actualizarStockBodega', {
                                         id_producto: product.id,
                                         stock: product.stock
                                     }, { 'Content-Type': 'application/json' })
-                                    if (response.ok) {
-                                        setResponsePopup({
-                                            title: 'Stock actualizado con éxito',
-                                            ok: response.ok
-                                        })
-                                    } else {
-                                        setResponsePopup({
-                                            title: 'Error al actualizar el stock',
-                                            ok: response.ok
-                                        })
-                                    }
+                                    setResponsePopup({
+                                        msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                        ok: response.ok
+                                    })
                                 }
                                 setEditPopup(false)
                                 setRefresh(!refresh)

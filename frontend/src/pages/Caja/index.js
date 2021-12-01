@@ -97,10 +97,11 @@ export default () => {
                     </div>
 
                     {responsePopup != null && <SweetAlert
-                        title={responsePopup.title}
+                        title={responsePopup.ok ? 'Éxito' : 'Error'}
                         type={responsePopup.ok ? 'success' : 'error'}
                         onConfirm={() => setResponsePopup(null)}
                     >
+                        {responsePopup.msg}
                     </SweetAlert>}
 
                     {cierreCajaPopup && <SweetAlert
@@ -119,18 +120,10 @@ export default () => {
                             const response = await post('api/caja/cierre', {
                                 id_usuario
                             }, { 'Content-Type': 'application/json' })
-                            if (response.ok) {
-                                setResponsePopup({
-                                    title: 'El cierre de caja se ha realizado con éxito',
-                                    ok: response.ok
-                                })
-                                setTimeout(() => window.location.reload(), 1000)
-                            } else {
-                                setResponsePopup({
-                                    title: 'Error al realizar cierre de caja',
-                                    ok: response.ok
-                                })
-                            }
+                            setResponsePopup({
+                                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                ok: response.ok
+                            })
                             setCierreCajaPopup(false)
                         }}
                         onCancel={() => setCierreCajaPopup(false)}
