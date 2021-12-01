@@ -326,7 +326,7 @@ export default () => {
                             setDeletePopup(false)
                         }}
                         onCancel={() => setDeletePopup(false)}
-                    ><p>¿Está seguro que desea eliminar el producto?</p></SweetAlert>}
+                    ><p>¿Está seguro que desea eliminar el producto: <strong>{product.nombre}</strong>?</p></SweetAlert>}
                     {editPopup ? (
                         <SweetAlert
                             showCancel

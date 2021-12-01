@@ -158,7 +158,7 @@ export default () => {
                 {deletePopup && <SweetAlert
                     showCancel
                     type="info"
-                    title="Está seguro que desea elminiar este usuario"
+                    title="Eliminar usuario"
                     cancelBtnBsStyle="danger"
                     confirmBtnBsStyle="success"
                     confirmBtnText="Aceptar"
@@ -176,7 +176,7 @@ export default () => {
                         setDeletePopup(false)
                     }}
                     onCancel={() => setDeletePopup(false)}
-                />}
+                ><p>¿Está seguro que desea eliminar el usuario <strong>{userForm.nombre} {userForm.apellido}</strong> con rut <strong>{userForm.rut}</strong>?</p></SweetAlert>}
                 {addPopup ? (
                     <SweetAlert
                         showCancel={false}

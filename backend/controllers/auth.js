@@ -93,7 +93,7 @@ const crearUsuario = async (req, res = response) => {
             const token = await generarJWT(rut, rol);
             return res.status(201).json({
                 ok: true,
-                msg: 'registrado',
+                msg: 'Usuario Registrado correctamente',
                 rut,
                 rol,
                 token
@@ -142,7 +142,7 @@ const loginUsuario = async (req, res) => {
         if (!validPassword) {
             return res.status(400).json({
                 ok: false,
-                msg: 'rut y/o contraseña incorrecta'
+                msg: 'Rut y/o contraseña incorrecta'
             });
         }
         // Generar JWT
