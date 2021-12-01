@@ -350,7 +350,7 @@ export default () => {
                                             value={userForm.rol}
                                             validate={{ required: { value: true, errorMessage: 'El rol es requerido' } }}
                                         >
-                                            <option defaultValue>Seleccion un rol</option>
+                                            <option value="">Seleccion un rol</option>
                                             {
                                                 roles.map((item, idx) => <option value={item.id}>{item.rol}</option>)
                                             }

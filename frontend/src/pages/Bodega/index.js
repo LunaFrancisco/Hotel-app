@@ -145,6 +145,7 @@ export default () => {
     }
 
     const handleEditSubmit = async (event, value) => {
+        console.log(value)
         value = {
             ...value,
             id: product?.id,
@@ -463,7 +464,7 @@ export default () => {
                                                         value={tipos.find(item => item.tipo === product.tipo_producto.tipo).id}
                                                         validate={{ required: { value: true, errorMessage: 'La categoría es requerida' } }}
                                                     >
-                                                        <option defaultValue>Seleccion una categoría</option>
+                                                        <option value="">Seleccion una categoría</option>
                                                         {tipos.map(tipo => <option value={tipo.id}>{tipo.tipo}</option>)}
                                                     </AvField>
                                                 </div>
