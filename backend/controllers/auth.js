@@ -196,7 +196,7 @@ const eliminarUsuario = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'No se pudo eliminar. Ha ocurrido un error, por favor contacte al administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -212,7 +212,6 @@ const updateUsuario = async (req, res) => {
         });
 
         if (findUser) {
-
             const updateUser = await Usuario.update({
                 nombre,
                 apellido,

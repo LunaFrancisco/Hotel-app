@@ -55,7 +55,7 @@ const obtenerRolesUsuarios = async (req, res = response) => {
         const rolesUsuarios = await Roles.findAll();
         console.log(rolesUsuarios);
         return res.status(500).json({
-            ok: false,
+            ok: true,
             msg: rolesUsuarios
         });
     } catch (error) {

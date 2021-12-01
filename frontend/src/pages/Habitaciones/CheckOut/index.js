@@ -73,7 +73,6 @@ export default () => {
 
     const checkForm = (form) => {
         const element = document.getElementById(form.form)
-        console.log(element.checkValidity())
         if (!element.checkValidity()) {
             setActiveTab(form.tab)
             setTimeout(() => element.reportValidity(), 300)

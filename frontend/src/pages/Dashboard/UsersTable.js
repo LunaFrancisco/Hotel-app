@@ -2,57 +2,58 @@ import { Fragment, useState, useEffect } from "react"
 import { Button, Row, Col, Label, Input, Card, CardBody, CardTitle } from 'reactstrap'
 import Table from '../../components/Common/InventarioTable'
 import Tooltip from '../../components/Common/Tooltip'
+import SweetAlertFormButtons from "../../components/Common/SweetAlertFormButtons"
 import SweetAlert from "react-bootstrap-sweetalert";
-import { get, post } from '../../api'
+import { get, post, put, del } from '../../api'
+import { AvForm, AvField } from 'availity-reactstrap-validation';
 
 export default () => {
     const [addPopup, setAddPopup] = useState(false)
+    const [deletePopup, setDeletePopup] = useState(false)
+    const [edit, setEdit] = useState(false)
     const [refresh, setRefresh] = useState(false)
     const [responsePopup, setResponsePopup] = useState(null)
     Array.prototype.sample = function () {
         return this[Math.floor(Math.random() * this.length)];
     }
 
-    const [userForm, setUserForm] = useState({
+    const emptyUserForm = {
         id: null,
-        firstname: '',
-        lastname: '',
-        phone: '',
+        nombre: '',
+        apellido: '',
+        telefono: '',
         rut: '',
-        email: '',
+        correo: '',
         direccion: '',
         password: '',
         rol: ''
-    })
+    }
+
+    const [userForm, setUserForm] = useState(emptyUserForm)
 
     const [data, setData] = useState([])
+    const [roles, setRoles] = useState([])
 
     useEffect(async () => {
-        setData([])
+        const data = await get('api/admin/obtenerRolesUsuarios')
+        setRoles(data.msg)
+
         const users = await get('api/admin/verUsuarios')
         setData(users.msg.map((item, idx) => ({
-            id: item.id,
-            firstname: item.nombre,
-            lastname: item.apellido,
-            rut: item.rut,
-            phone: item.telefono,
-            email: item.correo,
+            ...item,
             rol: item.roles[0].rol,
-            actions: acciones(item.id)
+            actions: acciones(item)
         })))
-        console.log(data)
     }, [refresh])
 
-    const roles = ['Administrador', 'Cajero', 'Camarera']
-
-    const acciones = (id) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
-        <Tooltip id={'user-' + id + '-edit-button'} title="Editar Usuario">
-            <Button onClick={() => { onEdit(id) }} color="link" className="text-warning">
+    const acciones = (user) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
+        <Tooltip id={'user-' + user.id + '-edit-button'} title="Editar Usuario">
+            <Button onClick={() => { onEdit(user) }} color="link" className="text-warning">
                 <i className="ri-pencil-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={'user-' + id + '-delete-button'} title="Eliminar Usuario">
-            <Button color="link" className="text-danger">
+        <Tooltip id={'user-' + user.id + '-delete-button'} title="Eliminar Usuario">
+            <Button onClick={() => { onDelete(user) }} color="link" className="text-danger">
                 <i className="ri-delete-bin-5-fill"></i>
             </Button>
         </Tooltip>
@@ -65,22 +66,27 @@ export default () => {
             sort: true,
         },
         {
-            dataField: 'firstname',
+            dataField: 'nombre',
             text: 'Nombre',
             sort: true
         },
         {
-            dataField: 'lastname',
+            dataField: 'apellido',
             text: 'Apellido',
             sort: true
         },
         {
-            dataField: 'email',
+            dataField: 'rut',
+            text: 'Rut',
+            sort: true
+        },
+        {
+            dataField: 'correo',
             text: 'Correo',
             sort: true
         },
         {
-            dataField: 'phone',
+            dataField: 'telefono',
             text: 'Teléfono',
             sort: true
         },
@@ -96,27 +102,30 @@ export default () => {
         },
     ];
 
-    const onEdit = (id) => {
-        console.log(data)
-        const user = data.find(item => item.id == id)
+    const onEdit = (user) => {
         setUserForm(({
-            id: user.id,
-            firstname: user.nombre,
-            lastname: user.apellido,
-            rut: user.rut,
-            phone: user.telefono,
-            email: user.correo,
-            rol: user.roles[0].rol,
-            actions: acciones(user.id + 1)
+            ...user,
+            rol: user.roles[0].id
         }))
+        setEdit(true)
         setAddPopup(true)
     }
 
-    const handleFormChange = (value, attr) => {
-        setUserForm({
-            ...userForm,
-            [attr]: value.target.value
+    const onDelete = (user) => {
+        setUserForm(user)
+        setDeletePopup(true)
+    }
+
+    const handleSubmit = async (event, value) => {
+        console.log('api/auth/updateUser')
+        const response = edit ? await put('api/auth/updateUser', userForm, { 'Content-Type': 'application/json' }) : await post('api/auth/new', userForm, { 'Content-Type': 'application/json' })
+        setResponsePopup({
+            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+            ok: response.ok
         })
+        setUserForm(emptyUserForm)
+        setAddPopup(false)
+        setRefresh(!refresh)
     }
 
     return (
@@ -127,7 +136,10 @@ export default () => {
                     Listado de todas los usuarios registrados en la plataforma
                 </p>
                 <div aria-label="Page navigation example" className="pagination-rounded position-absolute top-0 m-3" style={{ right: 0 }}>
-                    <Button onClick={() => setAddPopup(true)} color="success">Agregar usuario</Button>
+                    <Button onClick={() => {
+                        setEdit(false)
+                        setAddPopup(true)
+                    }} color="success">Agregar usuario</Button>
                 </div>
                 <Table
                     data={data}
@@ -140,210 +152,225 @@ export default () => {
                 >
                     {responsePopup.msg}
                 </SweetAlert>}
+                {deletePopup && <SweetAlert
+                    showCancel
+                    type="info"
+                    title="Está seguro que desea elminiar este usuario"
+                    cancelBtnBsStyle="danger"
+                    confirmBtnBsStyle="success"
+                    confirmBtnText="Aceptar"
+                    cancelBtnText="Cancelar"
+                    onConfirm={async () => {
+                        const response = await del('api/auth/deleteUser', {
+                            id: userForm.id,
+                        }, { 'Content-Type': 'application/json' })
+                        setResponsePopup({
+                            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                            ok: response.ok
+                        })
+                        setUserForm(emptyUserForm)
+                        setRefresh(!refresh)
+                        setDeletePopup(false)
+                    }}
+                    onCancel={() => setDeletePopup(false)}
+                />}
                 {addPopup ? (
                     <SweetAlert
-                        showCancel
-                        title="Añadir un usuario"
-                        cancelBtnBsStyle="danger"
-                        confirmBtnBsStyle="success"
-                        confirmBtnText="Añadir"
-                        cancelBtnText="Cancelar"
+                        showCancel={false}
+                        showConfirm={false}
+                        title={edit ? "Editar usuario" : "Añadir un usuario"}
                         onConfirm={async () => {
-                            const response = await post('api/auth/new', {
-                                nombre: userForm.firstname,
-                                apellido: userForm.lastname,
-                                rut: userForm.rut,
-                                telefono: userForm.phone,
-                                correo: userForm.email,
-                                direccion: userForm.direccion,
-                                password: userForm.password,
-                                rol: userForm.rol,
-                            }, { 'Content-Type': 'application/json' })
-                            setResponsePopup({
-                                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
-                                ok: response.ok
-                            })
-                            setUserForm({
-                                id: null,
-                                firstname: '',
-                                lastname: '',
-                                phone: '',
-                                rut: '',
-                                email: '',
-                                rol: ''
-                            })
-                            setAddPopup(false)
-                            setRefresh(!refresh)
+                            const element = document.getElementById('add-popup-form')
+                            element.submit()
                         }}
                         onCancel={() => {
-                            setUserForm({
-                                id: null,
-                                firstname: '',
-                                lastname: '',
-                                phone: '',
-                                rut: '',
-                                email: '',
-                                rol: ''
-                            })
+                            setUserForm(emptyUserForm)
                             setAddPopup(false)
                         }}
                     >
-                        <Row>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="firstname"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Nombre
-                                    </Label>
-                                    <Input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ingrese el nombre del usuario"
-                                        name="firstname"
-                                        value={userForm.firstname}
-                                        onChange={(value) => handleFormChange(value, 'firstname')}
-                                    />
-                                </div>
-                            </Col>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="lastname"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Apellido
-                                    </Label>
-                                    <Input
-                                        type="text"
-                                        className="form-control"
-                                        id="billing-name"
-                                        name="lastname"
-                                        placeholder="Ingrese el apellido del usuario"
-                                        value={userForm.lastname}
-                                        onChange={(value) => handleFormChange(value, 'lastname')}
-                                    />
-                                </div>
-                            </Col>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="rut"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Rut
-                                    </Label>
-                                    <Input
-                                        type="text"
-                                        className="form-control"
-                                        id="billing-name"
-                                        name="rut"
-                                        pattern="^\d{7,8}[-][0-9kK]{1}$"
-                                        placeholder="Ingrese el rut del usuario"
-                                        value={userForm.rut}
-                                        onChange={(value) => handleFormChange(value, 'rut')}
-                                    />
-                                </div>
-                            </Col>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="rut"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Contraseña
-                                    </Label>
-                                    <Input
-                                        type="password"
-                                        className="form-control"
-                                        id="billing-name"
-                                        name="rut"
-                                        placeholder="Ingrese el rut del usuario"
-                                        value={userForm.password}
-                                        onChange={(value) => handleFormChange(value, 'password')}
-                                    />
-                                </div>
-                            </Col>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="phone"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Teléfono
-                                    </Label>
-                                    <Input
-                                        type="phone"
-                                        className="form-control"
-                                        placeholder="Ingrese el teléfono del usuario"
-                                        name="phone"
-                                        value={userForm.phone}
-                                        onChange={(value) => handleFormChange(value, 'phone')}
-                                    />
-                                </div>
-                            </Col>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="email"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Email
-                                    </Label>
-                                    <Input
-                                        type="email"
-                                        className="form-control"
-                                        placeholder="Ingrese el correo del usuario"
-                                        name="email"
-                                        value={userForm.email}
-                                        onChange={(value) => handleFormChange(value, 'email')}
-                                    />
-                                </div>
-                            </Col>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="direccion"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Dirección
-                                    </Label>
-                                    <Input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ingrese el correo del usuario"
-                                        name="direccion"
-                                        value={userForm.direccion}
-                                        onChange={(value) => handleFormChange(value, 'direccion')}
-                                    />
-                                </div>
-                            </Col>
-                            <Col lg={12}>
-                                <div className="mb-4">
-                                    <Label
-                                        htmlFor="phone"
-                                        className="form-label w-100"
-                                        style={{ textAlign: 'left' }}
-                                    >
-                                        Rol
-                                    </Label>
-                                    <select className="form-select" name="rol" value={userForm.rol} onChange={(value) => handleFormChange(value, 'rol')}>
-                                        <option defaultValue>Seleccion un rol</option>
-                                        {
-                                            roles.map((item, idx) => <option value={idx + 1}>{item}</option>)
-                                        }
-                                    </select>
-                                </div>
-                            </Col>
-                        </Row>
+                        <AvForm id="add-popup-form" onValidSubmit={handleSubmit}>
+                            <Row>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="nombre"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Nombre
+                                        </Label>
+                                        <AvField
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Ingrese el nombre del usuario"
+                                            id="nombre"
+                                            name="nombre"
+                                            value={userForm.nombre}
+                                            validate={{ required: { value: true, errorMessage: 'El nombre es requerido' } }}
+                                            required
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="apellido"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Apellido
+                                        </Label>
+                                        <AvField
+                                            type="text"
+                                            className="form-control"
+                                            id="apellido"
+                                            name="apellido"
+                                            placeholder="Ingrese el apellido del usuario"
+                                            value={userForm.apellido}
+                                            validate={{ required: { value: true, errorMessage: 'El apellido es requerido' } }}
+                                            required
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="rut"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Rut
+                                        </Label>
+                                        <AvField
+                                            type="text"
+                                            className="form-control"
+                                            id="rut"
+                                            name="rut"
+                                            pattern="^\d{7,8}[-][0-9kK]{1}$"
+                                            placeholder="Ingrese el rut del usuario"
+                                            value={userForm.rut}
+                                            validate={{ required: { value: true, errorMessage: 'El rut es requerido' }, pattern: { value: '^\\d{7,8}[-][0-9kK]{1}$', errorMessage: 'Ingrese un RUT válido' } }}
+                                            required
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="password"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Contraseña
+                                        </Label>
+                                        <AvField
+                                            type="password"
+                                            className="form-control"
+                                            id="password"
+                                            name="password"
+                                            min="5"
+                                            placeholder="Ingrese una contraseña"
+                                            value={userForm.password}
+                                            validate={{ required: { value: !edit, errorMessage: 'La contraseña es requerida' }, min: { value: 5, errorMessage: 'La contraseña debe tener al menos 5 caracteres' } }}
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="telefono"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Teléfono
+                                        </Label>
+                                        <AvField
+                                            type="phone"
+                                            className="form-control"
+                                            placeholder="Ingrese el teléfono del usuario"
+                                            id="telefono"
+                                            name="telefono"
+                                            value={userForm.telefono}
+                                            validate={{ required: { value: true, errorMessage: 'El teléfono es requerido' } }}
+                                            required
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="correo"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            correo
+                                        </Label>
+                                        <AvField
+                                            type="email"
+                                            className="form-control"
+                                            placeholder="Ingrese el correo del usuario"
+                                            id="correo"
+                                            name="correo"
+                                            value={userForm.correo}
+                                            validate={{ required: { value: true, errorMessage: 'El correo es requerido' }, email: { value: true, errorMessage: 'Ingrese un correo válido' } }}
+                                            required
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="direccion"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Dirección
+                                        </Label>
+                                        <AvField
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Ingrese el correo del usuario"
+                                            id="direccion"
+                                            name="direccion"
+                                            value={userForm.direccion}
+                                            validate={{ required: { value: true, errorMessage: 'La dirección es requerida' } }}
+                                            required
+                                        />
+                                    </div>
+                                </Col>
+                                <Col lg={12}>
+                                    <div className="mb-4">
+                                        <Label
+                                            htmlFor="rol"
+                                            className="form-label w-100"
+                                            style={{ textAlign: 'left' }}
+                                        >
+                                            Rol
+                                        </Label>
+                                        <AvField
+                                            type="select"
+                                            className="form-select"
+                                            id="rol"
+                                            name="rol"
+                                            value={userForm.rol}
+                                            validate={{ required: { value: true, errorMessage: 'El rol es requerido' } }}
+                                        >
+                                            <option defaultValue>Seleccion un rol</option>
+                                            {
+                                                roles.map((item, idx) => <option value={item.id}>{item.rol}</option>)
+                                            }
+                                        </AvField>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <SweetAlertFormButtons
+                                confirmBtnText={edit ? "Editar" : "Añadir"}
+                                onCancel={() => {
+                                    setUserForm(emptyUserForm)
+                                    setAddPopup(false)
+                                }}
+                            />
+                        </AvForm>
                     </SweetAlert>
                 ) : null
                 }

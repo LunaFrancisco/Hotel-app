@@ -70,7 +70,7 @@ class Login extends Component {
                                                             <div className="auth-form-group-custom mb-4">
                                                                 <i className="ri-user-2-line auti-custom-input-icon"></i>
                                                                 <Label htmlFor="username">Rut</Label>
-                                                                <AvField name="rut" value={this.state.rut} type="text" className="form-control" id="rut" validate={{ required: true, pattern: { value: '^\\d{7,8}[-][0-9kK]{1}$', errorMessage: 'Ingrese un RUT válido' } }} placeholder="Enter username" />
+                                                                <AvField name="rut" value={this.state.rut} type="text" className="form-control" id="rut" validate={{ required: { value: true, errorMessage: 'El rut es requerido' }, pattern: { value: '^\\d{7,8}[-][0-9kK]{1}$', errorMessage: 'Ingrese un RUT válido' } }} placeholder="Enter username" />
                                                             </div>
 
                                                             <div className="auth-form-group-custom mb-4">
