@@ -129,7 +129,7 @@ const editarProducto = async (req, res = response) => {
 
         return res.status(200).json({
             ok: true,
-            msg: 'editarProducto'
+            msg: 'Producto actualiza correctamente'
         });
     } catch (error) {
         console.log(error);

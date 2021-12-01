@@ -117,10 +117,13 @@ export default () => {
     }
 
     const handleSubmit = async (event, value) => {
-        console.log('api/auth/updateUser')
-        const response = edit ? await put('api/auth/updateUser', userForm, { 'Content-Type': 'application/json' }) : await post('api/auth/new', userForm, { 'Content-Type': 'application/json' })
+        value = {
+            ...value,
+            id: userForm?.id,
+        }
+        const response = edit ? await put('api/auth/updateUser', value, { 'Content-Type': 'application/json' }) : await post('api/auth/new', value, { 'Content-Type': 'application/json' })
         setResponsePopup({
-            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+            msg: response.errors ? <p>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</p> : response.msg,
             ok: response.ok
         })
         setUserForm(emptyUserForm)
@@ -179,16 +182,9 @@ export default () => {
                         showCancel={false}
                         showConfirm={false}
                         title={edit ? "Editar usuario" : "Añadir un usuario"}
-                        onConfirm={async () => {
-                            const element = document.getElementById('add-popup-form')
-                            element.submit()
-                        }}
-                        onCancel={() => {
-                            setUserForm(emptyUserForm)
-                            setAddPopup(false)
-                        }}
+                        onCancel={() => setAddPopup(false)}
                     >
-                        <AvForm id="add-popup-form" onValidSubmit={handleSubmit}>
+                        <AvForm onValidSubmit={handleSubmit}>
                             <Row>
                                 <Col lg={12}>
                                     <div className="mb-4">
@@ -268,10 +264,9 @@ export default () => {
                                             className="form-control"
                                             id="password"
                                             name="password"
-                                            min="5"
                                             placeholder="Ingrese una contraseña"
                                             value={userForm.password}
-                                            validate={{ required: { value: !edit, errorMessage: 'La contraseña es requerida' }, min: { value: 5, errorMessage: 'La contraseña debe tener al menos 5 caracteres' } }}
+                                            validate={{ required: { value: !edit, errorMessage: 'La contraseña es requerida' }, minLength: { value: 5, errorMessage: 'La contraseña debe tener al menos 5 caracteres' } }}
                                         />
                                     </div>
                                 </Col>
@@ -303,7 +298,7 @@ export default () => {
                                             className="form-label w-100"
                                             style={{ textAlign: 'left' }}
                                         >
-                                            correo
+                                            Correo
                                         </Label>
                                         <AvField
                                             type="email"

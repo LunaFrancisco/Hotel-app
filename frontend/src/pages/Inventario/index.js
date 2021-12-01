@@ -308,7 +308,7 @@ export default () => {
                     {deletePopup && <SweetAlert
                         showCancel
                         type="info"
-                        title="Está seguro que desea elminiar este producto"
+                        title="Eliminar producto"
                         cancelBtnBsStyle="danger"
                         confirmBtnBsStyle="success"
                         confirmBtnText="Aceptar"
@@ -326,7 +326,7 @@ export default () => {
                             setDeletePopup(false)
                         }}
                         onCancel={() => setDeletePopup(false)}
-                    />}
+                    ><p>¿Está seguro que desea eliminar el producto?</p></SweetAlert>}
                     {editPopup ? (
                         <SweetAlert
                             showCancel
