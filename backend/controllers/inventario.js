@@ -70,12 +70,37 @@ const crearProductoInventario = async (req, res = response) => {
         productoBodega.cantidad -= cantidad;
         productoBodega.save();
 
-        // Guardamos el producto en Inventario
-        await Inventario.create({
-            id_producto: producto.dataValues.id,
-            cantidad,
-            cantidad_minima: 1
+        //buscamos el producto en inventario
+        const FindProd = await Inventario.findOne({
+            where:{
+                id_producto:id
+            }
         });
+        if(FindProd){
+            console.log(FindProd.cantidad);
+            const newCantidad = FindProd.cantidad + parseInt(cantidad)
+            console.log(newCantidad);
+           const getProd =  await Inventario.update({
+                
+                cantidad: newCantidad,
+                // cantidad_minima: 1
+            },{
+                where:{
+                    id_producto: producto.dataValues.id,
+                }
+            });
+
+        }
+        else{
+            // Guardamos el producto en Inventario
+            await Inventario.create({
+                id_producto: producto.dataValues.id,
+                cantidad,
+                cantidad_minima: 1
+            });
+
+        }      
+        
 
         return res.status(200).json({
             ok: true,
