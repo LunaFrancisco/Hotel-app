@@ -11,7 +11,6 @@ const Servicio = require("../models/servicio");
 const Servicio_promocion = require("../models/servicio_promociones");
 const Detalle_pedido = require("../models/detalle_pedido");
 const Servicio_promociones = require("../models/servicio_promociones");
-const sequelize = require("../database/database");
 const Inventario = require("../models/inventario");
 const Producto = require("../models/producto");
 const Balance_aux = require("../models/balance_aux");
