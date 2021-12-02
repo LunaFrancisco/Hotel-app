@@ -221,10 +221,38 @@ const cierreCaja = async (req, res) => {
   }
 };
 
+const informacionCaja = async (req, res) => {
+  try {
+    const findVentas = await Balance_aux.findOne({
+      where:{
+        id:1
+      }     
+    },{
+      attributes:["ventas","gastos","retiros","caja"]
+    });
+    const caja = [{
+      caja: findVentas.caja,
+      ventas: findVentas.ventas,
+      gastos: findVentas.gastos,
+      retiros: findVentas.retiros,
+    }]
+    return res.json({
+      ok: true,
+      caja
+    });
+  } catch (e) {
+    res.json({
+      ok: false,
+      msg: "error, contacte con el administrador",
+    });
+  }
+};
+
 module.exports = {
   newRetiro,
   newGasto,
   allRetiros,
   allGastos,
   cierreCaja,
+  informacionCaja
 };
