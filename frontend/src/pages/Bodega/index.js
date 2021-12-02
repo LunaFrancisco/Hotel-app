@@ -145,7 +145,6 @@ export default () => {
     }
 
     const handleEditSubmit = async (event, value) => {
-        console.log(value)
         value = {
             ...value,
             id: product?.id,
@@ -442,8 +441,8 @@ export default () => {
                                                         placeholder="Ingrese el nombre del producto"
                                                         id="nombre"
                                                         name="nombre"
-                                                        validate={{ required: { value: true, errorMessage: 'El nombre del producto es requerido' } }}
                                                         value={product.nombre}
+                                                        validate={{ required: { value: true, errorMessage: 'El nombre del producto es requerido' } }}
                                                     />
                                                 </div>
                                             </Col>
@@ -483,9 +482,9 @@ export default () => {
                                                         className="form-control"
                                                         id="precio"
                                                         name="precio"
-                                                        validate={{ required: { value: true, errorMessage: 'El precio es requerido' } }}
                                                         placeholder="Ingrese el precio del producto"
                                                         value={product.precio}
+                                                        validate={{ required: { value: true, errorMessage: 'El precio es requerido' } }}
                                                     />
                                                 </div>
                                             </Col>
@@ -505,6 +504,7 @@ export default () => {
                                                     id="cantidad"
                                                     name="cantidad"
                                                     value={product?.bodega?.cantidad}
+                                                    validate={{ required: { value: true, errorMessage: 'La cantidad es requerida' } }}
                                                 />
                                             </div>
                                         </Col>

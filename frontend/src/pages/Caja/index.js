@@ -106,10 +106,10 @@ export default () => {
 
                     {cierreCajaPopup && <SweetAlert
                         showCancel
-                        title="¿Esta seguro que desea cerrar la caja?"
+                        title="Cerrar caja"
                         cancelBtnBsStyle="danger"
                         confirmBtnBsStyle="success"
-                        confirmBtnText="Cerrar Caja"
+                        confirmBtnText="Aceptar"
                         cancelBtnText="Cancelar"
                         onConfirm={async () => {
                             let id_usuario = "";
@@ -128,7 +128,7 @@ export default () => {
                         }}
                         onCancel={() => setCierreCajaPopup(false)}
                     >
-
+                        <p>¿Está seguro que desea cerrar la caja?</p>
                     </SweetAlert>}
 
                     <Row>
