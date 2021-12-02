@@ -238,27 +238,29 @@ const reservarHabitacion = async (req, res) => {
 
             //agregar servicio
             servicios.forEach(async (service) => {
-                console.log()
                 const findPromocion = await Promocion.findOne({
                     where: {
                         id: service.id_promocion,
                     },
                 });
+                console.log(findPromocion);
 
                 if (findPromocion) {
                     
                     //consultar stock del producto
                    
 
-                    const addPromo = Servicio_promocion.create({
+                    const addPromo = await Servicio_promocion.create({
                         id_promocion: service.id_promocion,
                         id_servicio: newService.id,
                         id_tipo_pago: metodo_de_pago,
-                        id_producto1: service.id_productos[0],
-                        id_producto2: service.id_productos[1],
+                        id_producto1: service.id_producto1,
+                        // id_producto1: service.id_productos[0],
+                        // id_producto2: service.id_productos[0],
+                        id_producto2: service.id_producto2,
                         estado: false,
                     });
-
+                    console.log(addPromo);
                 } else {
                     res.json({
                         ok: false,
@@ -550,30 +552,13 @@ const getServicio = async (req, res = response ) => {
                 id
             },
             attributes:['id_habitacion','id_cliente1', 'id_cliente2'],
-            include:[{
-                model: Pedido
+            include:[
+                Promocion,
+                {
+                model: Pedido,
+                include:[Producto]
             }]
         });
-
-         const allPedidos = findService.pedidos;
-         let pedidos = [];
-        for (let pedido of allPedidos)
-        {
-            const findPedido = await Detalle_pedido.findAll({
-            where: {
-                id:pedido.id
-            }
-        });
-            
-        pedidos.push(findPedido.id);
-        console.log(pedidos);
-    }
-        // for(let i of productos){
-        //     const findPedido = await Producto.findOne({
-        //         where:{id:i.id}
-        //     });
-
-        // }
 
         if(findService){
             //datos cliente
@@ -597,8 +582,6 @@ const getServicio = async (req, res = response ) => {
                 findService,
                 cliente1,
                 cliente2
-                // findCliente1,
-                // findCliente2
                 
             });
         }

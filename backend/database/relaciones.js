@@ -104,7 +104,7 @@ Usuario.belongsToMany(Rol, { through: 'rol_usuario', foreignKey: 'usuarioId', on
 Rol.belongsToMany(Usuario, { through: 'rol_usuario', foreignKey: 'rolId', onDelete: 'CASCADE' });
 
 Servicio.belongsToMany(Promocion, { through: 'servicio_promociones', foreignKey: 'id_servicio', onDelete: 'CASCADE' });
-Servicio_promociones.belongsTo(Promocion, { foreignKey: 'id_promocion', sourceKey: 'id', onDelete: 'CASCADE' });
+// Servicio_promociones.belongsTo(Promocion, { foreignKey: 'id_promocion', sourceKey: 'id', onDelete: 'CASCADE' });
 Promocion.belongsToMany(Servicio, { through: 'servicio_promociones', foreignKey: 'id_promocion', onDelete: 'CASCADE' });
 
 Pedido.belongsToMany(Producto, { through: 'detalle_pedido', foreignKey: 'id_pedido', onDelete: 'CASCADE' });

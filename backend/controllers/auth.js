@@ -44,6 +44,7 @@ const crearUsuario = async (req, res = response) => {
     const findUser = await Usuario.findOne({
       where: {
         rut,
+        estado:true
       },
       attributes: ["id"],
     });
@@ -124,6 +125,7 @@ const loginUsuario = async (req, res) => {
     const findUser = await Usuario.findOne({
       where: {
         rut,
+        estado:true
       },
       attributes: ["id", "rut", "password", "nombre", "apellido"],
       include: [Rol],
@@ -185,10 +187,13 @@ const revalidarToken = async (req, res) => {
 const eliminarUsuario = async (req, res) => {
   const { id } = req.body;
   try {
-    const deleteUser = await Usuario.destroy({
-      where: {
-        id,
-      },
+    const deleteUser = await Usuario.update({
+      estado:false
+    },
+    {
+        where: {
+            id
+        }
     });
     return res.json({
       ok: true,

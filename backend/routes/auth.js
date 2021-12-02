@@ -42,7 +42,7 @@ router.post(
     revalidarToken
 );
 
-router.delete(
+router.get(
     '/deleteUser',
     eliminarUsuario
 );
