@@ -34,13 +34,7 @@ const crearUsuario = async (req, res = response) => {
     // Encriptar contraseña
     const salt = bcrypt.genSaltSync();
     const passwordHash = bcrypt.hashSync(password, salt);
-    // Guardamos en la base de datos
-    // await pool.query('INSERT INTO usuarios(nombre, apellido, rut, correo, telefono, direccion, contraseña) VALUES ($1, $2, $3, $4, $5, $6, $7)', [nombre, apellido, rut, correo, telefono, direccion, passwordHash]);
-
-    //semillita (provisoria)
-    // const rolzera = 'admin';
-    // await pool.query('INSERT INTO roles(rol) VALUES ($1)', [rolzera]);
-
+  
     const findUser = await Usuario.findOne({
       where: {
         rut,
@@ -85,35 +79,36 @@ const crearUsuario = async (req, res = response) => {
         }
       );
 
-      await newUser.addRoles([findRol]);
+            await newUser.addRoles([findRol]);
 
-      // const setRol = await Rol_usuario.create({
-      //     usuarioId: newUser.id,
-      //     rolId:findRol.id
-      // },{
-      //     fields:[
-      //         'usuarioId',
-      //         'rolId'
-      //     ]
-      // });
+            // const setRol = await Rol_usuario.create({
+            //     usuarioId: newUser.id,
+            //     rolId:findRol.id
+            // },{
+            //     fields:[
+            //         'usuarioId',
+            //         'rolId'
+            //     ]
+            // });
 
-      // Generar JWT
-      const token = await generarJWT(rut, rol);
-      return res.status(201).json({
-        ok: true,
-        msg: "registrado",
-        rut,
-        rol,
-        token,
-      });
+
+            // Generar JWT
+            const token = await generarJWT(rut, rol);
+            return res.status(201).json({
+                ok: true,
+                msg: 'Usuario Registrado correctamente',
+                rut,
+                rol,
+                token
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
+        });
     }
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      ok: false,
-      msg: "Por favor hable con el administrador",
-    });
-  }
 };
 
 const loginUsuario = async (req, res) => {
@@ -136,40 +131,44 @@ const loginUsuario = async (req, res) => {
         ok: false,
         msg: "Usuario o contraseña incorrecta",
       });
-    }
-    console.log(findUser.dataValues.roles[0].dataValues.rol);
-    const passwordhash = findUser.dataValues.password;
+        
+        }
+        console.log(findUser.dataValues.roles[0].dataValues.rol);
+        const passwordhash = findUser.dataValues.password;
+        const id = findUser.dataValues.id;
 
-    //const tipo = findUser.dataValues.roles[0].dataValues.rol;
-    const tipo = findUser.dataValues.roles[0].dataValues.rol;
-    const tipo_id = findUser.dataValues.roles[0].dataValues.id;
-    //const { passwordhash, tipo } = result.rows[0];
-    const validPassword = bcrypt.compareSync(password, passwordhash);
-    if (!validPassword) {
-      return res.status(400).json({
-        ok: false,
-        msg: "rut y/o contraseña incorrecta",
-      });
+        //const tipo = findUser.dataValues.roles[0].dataValues.rol;
+        const tipo = findUser.dataValues.roles[0].dataValues.rol;
+        const tipo_id = findUser.dataValues.roles[0].dataValues.id;
+        //const { passwordhash, tipo } = result.rows[0];
+        const validPassword = bcrypt.compareSync(password, passwordhash);
+        if (!validPassword) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Rut y/o contraseña incorrecta'
+            });
+        }
+        // Generar JWT
+        const token = await generarJWT(rut, tipo);
+        return res.json({
+            ok: true,
+            msg: 'Login',
+            id,
+            nombre: findUser.dataValues.nombre,
+            apellido: findUser.dataValues.apellido,
+            rut,
+            tipo,
+            tipo_id,
+            token
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
+        });
     }
-    // Generar JWT
-    const token = await generarJWT(rut, tipo);
-    return res.json({
-      ok: true,
-      msg: "Login",
-      nombre: findUser.dataValues.nombre,
-      apellido: findUser.dataValues.apellido,
-      rut,
-      tipo,
-      tipo_id,
-      token,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      ok: false,
-      msg: "Por favor hable con el administrador",
-    });
-  }
+  
 };
 
 const revalidarToken = async (req, res) => {

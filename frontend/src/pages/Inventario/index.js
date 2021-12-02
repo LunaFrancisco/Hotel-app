@@ -2,6 +2,8 @@ import React, { Component, useState, useEffect } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button, Input, Label } from "reactstrap"
 import Tooltip from "../../components/Common/Tooltip";
 import SweetAlert from "react-bootstrap-sweetalert";
+import { AvForm, AvField } from 'availity-reactstrap-validation';
+import SweetAlertFormButtons from "../../components/Common/SweetAlertFormButtons";
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
@@ -25,13 +27,20 @@ export default () => {
         utencilios: [],
         otros: [],
     })
-    const [product, setProduct] = useState({
+
+    const emptyProduct = {
         id: '',
         stock: '',
-        product: '',
-        category: '',
-        price: '',
-    })
+        nombre: '',
+        id_tipo: '',
+        cantidad: '',
+        cantidad_minima: '',
+        precio: '',
+        inventario: { cantidad: '' },
+        tipo_producto: { tipo: '' },
+    }
+
+    const [product, setProduct] = useState(emptyProduct)
 
     const breadcrumbItems = [
         { title: "Inventario", link: "#" },
@@ -40,19 +49,12 @@ export default () => {
     const onAddProduct = async () => {
         const response = await get('api/bodega/getBodega')
         setBodega(response.msg)
+        setProduct(emptyProduct)
         setAddPopup(true)
     }
 
     const onEdit = (item, isEdit = false) => {
-        setProduct({
-            ...item,
-            id: item.id,
-            price: item.precio,
-            product: item.nombre,
-            stock: item.inventario.cantidad,
-            category: tipos.find(tipo => tipo.tipo == item.tipo_producto.tipo)?.id,
-            actions: acciones(item)
-        })
+        setProduct(item)
         setEdit(isEdit)
         setEditPopup(true)
     };
@@ -62,25 +64,18 @@ export default () => {
         setDeletePopup(true)
     };
 
-    const handleFormChange = (value, attr) => {
-        setProduct({
-            ...product,
-            [attr]: value.target.value
-        })
-    }
-
     const acciones = (item) => <div className="d-flex justify-content-center" style={{ width: '50px' }}>
-        <Tooltip id={item.category + '-' + item.id + '-take-button'} title="Editar stock">
+        <Tooltip id={item.tipo_producto.tipo + '-' + item.id + '-take-button'} title="Editar stock">
             <Button onClick={() => onEdit(item)} color="link" className="text-info">
                 <i className="ri-close-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={item.category + '-' + item.id + '-edit-button'} title="Editar producto">
+        <Tooltip id={item.tipo_producto.tipo + '-' + item.id + '-edit-button'} title="Editar producto">
             <Button onClick={() => onEdit(item, true)} color="link" className="text-warning">
                 <i className="ri-pencil-fill"></i>
             </Button>
         </Tooltip>
-        <Tooltip id={item.category + '-' + item.id + '-delete-button'} title="Eliminar producto">
+        <Tooltip id={item.tipo_producto.tipo + '-' + item.id + '-delete-button'} title="Eliminar producto">
             <Button onClick={() => onDelete(item)} color="link" className="text-danger">
                 <i className="ri-delete-bin-5-fill"></i>
             </Button>
@@ -96,10 +91,9 @@ export default () => {
         const response = await get('api/inventario/getInventario')
 
         const map_products = (item) => ({
-            id: item.id,
-            price: `$ ${item.precio.toLocaleString("es-CL")}`,
-            product: item.nombre,
-            stock: item.inventario.cantidad,
+            ...item,
+            precio: `$ ${item.precio.toLocaleString("es-CL")}`,
+            cantidad: item.inventario.cantidad,
             actions: acciones(item)
         })
 
@@ -120,17 +114,17 @@ export default () => {
             sort: true,
         },
         {
-            dataField: 'product',
+            dataField: 'nombre',
             text: 'Producto',
             sort: true
         },
         {
-            dataField: 'stock',
+            dataField: 'cantidad',
             text: 'Stock',
             sort: true
         },
         {
-            dataField: 'price',
+            dataField: 'precio',
             text: 'Precio',
             sort: true
         },
@@ -140,6 +134,43 @@ export default () => {
             sort: true
         }
     ];
+
+    const handleAddSubmit = async (event, value) => {
+        const response = await post('api/inventario/crearProductoInventario', value, { 'Content-Type': 'application/json' })
+        setResponsePopup({
+            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+            ok: response.ok
+        })
+        setProduct(emptyProduct)
+        setRefresh(!refresh)
+        setAddPopup(false)
+    }
+
+    const handleEditSubmit = async (event, value) => {
+        value = {
+            ...value,
+            id: product?.id,
+            id_producto: product?.id,
+            stock: product?.cantidad,
+        }
+        console.log(value)
+        if (edit) {
+            const response = await put('api/products/editarProducto', value, { 'Content-Type': 'application/json' })
+            setResponsePopup({
+                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                ok: response.ok
+            })
+        } else {
+            const response = await put('api/inventario/actualizarStockInventario', value, { 'Content-Type': 'application/json' })
+            setResponsePopup({
+                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                ok: response.ok
+            })
+        }
+        setEditPopup(false)
+        setRefresh(!refresh)
+        setProduct({})
+    }
 
     return (
         <React.Fragment>
@@ -153,69 +184,59 @@ export default () => {
                     </div>
                     {addPopup ? (
                         <SweetAlert
-                            showCancel
+                            showCancel={false}
+                            showConfirm={false}
                             title="Traer producto de bodega"
-                            cancelBtnBsStyle="danger"
-                            confirmBtnBsStyle="success"
-                            confirmBtnText="Añadir"
-                            cancelBtnText="Cancelar"
-                            onConfirm={async () => {
-                                const response = await post('api/inventario/crearProductoInventario', {
-                                    id: product.id,
-                                    cantidad: product.stock
-                                }, { 'Content-Type': 'application/json' })
-                                if (response.ok) {
-                                    setResponsePopup({
-                                        title: 'Producto agregado con éxito',
-                                        ok: response.ok
-                                    })
-                                } else {
-                                    setResponsePopup({
-                                        title: 'Error al agregar el producto',
-                                        ok: response.ok
-                                    })
-                                }
-                                setProduct({})
-                                setRefresh(!refresh)
-                                setAddPopup(false)
-                            }}
                             onCancel={() => setAddPopup(false)}
                         >
-                            <Row>
-                                <Col lg={12}>
-                                    <div className="mb-4">
-                                        <Label
-                                            htmlFor="product"
-                                            className="form-label w-100"
-                                            style={{ textAlign: 'left' }}
-                                        >
-                                            Producto
-                                        </Label>
-                                        <select className="form-select" onChange={(value) => handleFormChange(value, 'id')}>
-                                            <option defaultValue>Seleccion un producto</option>
-                                            {bodega.map(item => <option value={item.id} selected={item.id == product.id}>{item.nombre}</option>)}
-                                        </select>
-                                    </div>
-                                </Col>
-                                <Col lg={12}>
-                                    <div className="mb-4">
-                                        <Label
-                                            htmlFor="firstname"
-                                            className="form-label w-100"
-                                            style={{ textAlign: 'left' }}
-                                        >
-                                            Stock
-                                        </Label>
-                                        <Input
-                                            type="number"
-                                            className="form-control"
-                                            placeholder="Ingrese la cantidad de stock"
-                                            value={product.stock}
-                                            onChange={(value) => handleFormChange(value, 'stock')}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
+                            <AvForm onValidSubmit={handleAddSubmit}>
+                                <Row>
+                                    <Col lg={12}>
+                                        <div className="mb-4">
+                                            <Label
+                                                htmlFor="id"
+                                                className="form-label w-100"
+                                                style={{ textAlign: 'left' }}
+                                            >
+                                                Producto
+                                            </Label>
+                                            <AvField
+                                                type="select"
+                                                id="id"
+                                                name="id"
+                                                className="form-select"
+                                                validate={{ required: { value: true, errorMessage: 'El producto es requerido' } }}
+                                            >
+                                                <option value="">Seleccion un producto</option>
+                                                {bodega.map(item => <option value={item.id}>{item.nombre}</option>)}
+                                            </AvField>
+                                        </div>
+                                    </Col>
+                                    <Col lg={12}>
+                                        <div className="mb-4">
+                                            <Label
+                                                htmlFor="cantidad"
+                                                className="form-label w-100"
+                                                style={{ textAlign: 'left' }}
+                                            >
+                                                Stock
+                                            </Label>
+                                            <AvField
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="Ingrese la cantidad de stock"
+                                                id="cantidad"
+                                                name="cantidad"
+                                                validate={{ required: { value: true, errorMessage: 'La cantidad de stock es requerida' } }}
+                                            />
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <SweetAlertFormButtons
+                                    confirmBtnText="Añadir"
+                                    onCancel={() => setAddPopup(false)}
+                                />
+                            </AvForm>
                         </SweetAlert>
                     ) : null
                     }
@@ -306,15 +327,16 @@ export default () => {
                         </Col>
                     </Row>
                     {responsePopup != null && <SweetAlert
-                        title={responsePopup.title}
+                        title={responsePopup.ok ? 'Éxito' : 'Error'}
                         type={responsePopup.ok ? 'success' : 'error'}
                         onConfirm={() => setResponsePopup(null)}
                     >
+                        {responsePopup.msg}
                     </SweetAlert>}
                     {deletePopup && <SweetAlert
                         showCancel
                         type="info"
-                        title="Está seguro que desea elminiar este producto"
+                        title="Eliminar producto"
                         cancelBtnBsStyle="danger"
                         confirmBtnBsStyle="success"
                         confirmBtnText="Aceptar"
@@ -323,148 +345,116 @@ export default () => {
                             const response = await del('api/products/eliminarProducto', {
                                 id_producto: product.id,
                             }, { 'Content-Type': 'application/json' })
-                            if (response.ok) {
-                                setResponsePopup({
-                                    title: 'Producto eliminado con éxito',
-                                    ok: response.ok
-                                })
-                            } else {
-                                setResponsePopup({
-                                    title: 'Error al eliminar el stock',
-                                    ok: response.ok
-                                })
-                            }
+                            setResponsePopup({
+                                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                ok: response.ok
+                            })
                             setProduct({})
                             setRefresh(!refresh)
                             setDeletePopup(false)
                         }}
                         onCancel={() => setDeletePopup(false)}
-                    />}
+                    ><p>¿Está seguro que desea eliminar el producto: <strong>{product.nombre}</strong>?</p></SweetAlert>}
                     {editPopup ? (
                         <SweetAlert
-                            showCancel
-                            title={edit ? 'Editar producto' : `Editar stock de ${product.product}`}
-                            cancelBtnBsStyle="danger"
-                            confirmBtnBsStyle="success"
-                            confirmBtnText="Aceptar"
-                            cancelBtnText="Cancelar"
-                            onConfirm={async () => {
-                                if (edit) {
-                                    const response = await put('api/products/editarProducto', {
-                                        id: product.id,
-                                        nombre: product.product,
-                                        precio: product.price,
-                                        id_tipo: product.category
-                                    }, { 'Content-Type': 'application/json' })
-                                    if (response.ok) {
-                                        setResponsePopup({
-                                            title: 'El producto se ha actualizado con éxito',
-                                            ok: response.ok
-                                        })
-                                    } else {
-                                        setResponsePopup({
-                                            title: 'Error al actualizar el producto',
-                                            ok: response.ok
-                                        })
-                                    }
-                                } else {
-                                    const response = await put('api/inventario/actualizarStockInventario', {
-                                        id_producto: product.id,
-                                        stock: product.stock
-                                    }, { 'Content-Type': 'application/json' })
-                                    if (response.ok) {
-                                        setResponsePopup({
-                                            title: 'Stock actualizado con éxito',
-                                            ok: response.ok
-                                        })
-                                    } else {
-                                        setResponsePopup({
-                                            title: 'Error al actualizar el stock',
-                                            ok: response.ok
-                                        })
-                                    }
-                                }
-                                setEditPopup(false)
-                                setRefresh(!refresh)
-                                setProduct({})
-                            }}
+                            showCancel={false}
+                            showConfirm={false}
+                            title={edit ? 'Editar producto' : `Editar stock de ${product.nombre}`}
                             onCancel={() => setEditPopup(false)}
                         >
-                            <Row>
-                                {
-                                    edit ? <Row>
-                                        <Col lg={12}>
+                            <AvForm onValidSubmit={handleEditSubmit}>
+                                <Row>
+                                    {
+                                        edit ? <Row>
+                                            <Col lg={12}>
+                                                <div className="mb-4">
+                                                    <Label
+                                                        htmlFor="nombre"
+                                                        className="form-label w-100"
+                                                        style={{ textAlign: 'left' }}
+                                                    >
+                                                        Producto
+                                                    </Label>
+                                                    <AvField
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Ingrese el nombre del producto"
+                                                        id="nombre"
+                                                        name="nombre"
+                                                        validate={{ required: { value: true, errorMessage: 'El nombre del producto es requerido' } }}
+                                                        value={product.nombre}
+                                                    />
+                                                </div>
+                                            </Col>
+                                            <Col lg={12}>
+                                                <div className="mb-4">
+                                                    <Label
+                                                        htmlFor="id_tipo"
+                                                        className="form-label w-100"
+                                                        style={{ textAlign: 'left' }}
+                                                    >
+                                                        Categoría
+                                                    </Label>
+                                                    <AvField
+                                                        type="select"
+                                                        className="form-select"
+                                                        id="id_tipo"
+                                                        name="id_tipo"
+                                                        value={tipos.find(item => item.tipo === product.tipo_producto.tipo).id}
+                                                        validate={{ required: { value: true, errorMessage: 'La categoría es requerida' } }}
+                                                    >
+                                                        <option value="">Seleccion una categoría</option>
+                                                        {tipos.map(tipo => <option value={tipo.id}>{tipo.tipo}</option>)}
+                                                    </AvField>
+                                                </div>
+                                            </Col>
+                                            <Col lg={12}>
+                                                <div className="mb-4">
+                                                    <Label
+                                                        htmlFor="precio"
+                                                        className="form-label w-100"
+                                                        style={{ textAlign: 'left' }}
+                                                    >
+                                                        Precio
+                                                    </Label>
+                                                    <AvField
+                                                        type="number"
+                                                        className="form-control"
+                                                        id="precio"
+                                                        name="precio"
+                                                        placeholder="Ingrese el precio del producto"
+                                                        value={product.precio}
+                                                        validate={{ required: { value: true, errorMessage: 'El precio es requerido' } }}
+                                                    />
+                                                </div>
+                                            </Col>
+                                        </Row> : <Col lg={12}>
                                             <div className="mb-4">
                                                 <Label
-                                                    htmlFor="product"
+                                                    htmlFor="cantidad"
                                                     className="form-label w-100"
                                                     style={{ textAlign: 'left' }}
                                                 >
-                                                    Producto
+                                                    Stock
                                                 </Label>
-                                                <Input
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Ingrese el nombre del producto"
-                                                    value={product.product}
-                                                    onChange={(value) => handleFormChange(value, 'product')}
-                                                />
-                                            </div>
-                                        </Col>
-                                        <Col lg={12}>
-                                            <div className="mb-4">
-                                                <Label
-                                                    htmlFor="categoria"
-                                                    className="form-label w-100"
-                                                    style={{ textAlign: 'left' }}
-                                                >
-                                                    Categoría
-                                                </Label>
-                                                <select className="form-select" onChange={(value) => handleFormChange(value, 'category')}>
-                                                    <option defaultValue>Seleccion una categoría</option>
-                                                    {tipos.map(tipo => <option value={tipo.id} selected={tipo.id == product.category}>{tipo.tipo}</option>)}
-                                                </select>
-                                            </div>
-                                        </Col>
-                                        <Col lg={12}>
-                                            <div className="mb-4">
-                                                <Label
-                                                    htmlFor="precio"
-                                                    className="form-label w-100"
-                                                    style={{ textAlign: 'left' }}
-                                                >
-                                                    Precio
-                                                </Label>
-                                                <Input
+                                                <AvField
                                                     type="number"
                                                     className="form-control"
-                                                    id="billing-name"
-                                                    placeholder="Ingrese el precio del producto"
-                                                    value={product.price}
-                                                    onChange={(value) => handleFormChange(value, 'price')}
+                                                    placeholder="Ingrese la cantidad de stock"
+                                                    id="cantidad"
+                                                    name="cantidad"
+                                                    value={product?.inventario?.cantidad}
+                                                    validate={{ required: { value: true, errorMessage: 'La cantidad es requerida' } }}
                                                 />
                                             </div>
                                         </Col>
-                                    </Row> : <Col lg={12}>
-                                        <div className="mb-4">
-                                            <Label
-                                                htmlFor="firstname"
-                                                className="form-label w-100"
-                                                style={{ textAlign: 'left' }}
-                                            >
-                                                Stock
-                                            </Label>
-                                            <Input
-                                                type="number"
-                                                className="form-control"
-                                                placeholder="Ingrese la cantidad de stock"
-                                                value={product.stock}
-                                                onChange={(value) => handleFormChange(value, 'stock')}
-                                            />
-                                        </div>
-                                    </Col>
-                                }
-                            </Row>
+                                    }
+                                </Row>
+                                <SweetAlertFormButtons
+                                    confirmBtnText={"Editar"}
+                                    onCancel={() => setEditPopup(false)}
+                                />
+                            </AvForm>
                         </SweetAlert>
                     ) : null
                     }

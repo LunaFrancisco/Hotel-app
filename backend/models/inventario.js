@@ -18,8 +18,6 @@ const Inventario = sequelize.define('inventario', {
     cantidad_minima: {
         type: Sequelize.INTEGER
     }
-
-
 }, {
     timestamps: false
 });

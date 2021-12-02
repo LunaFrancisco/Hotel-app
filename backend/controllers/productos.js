@@ -129,13 +129,13 @@ const editarProducto = async (req, res = response) => {
 
         return res.status(200).json({
             ok: true,
-            msg: 'editarProducto'
+            msg: 'Producto actualiza correctamente'
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -168,7 +168,7 @@ const eliminarProducto = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -184,7 +184,7 @@ const obtenerTiposProducto = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };

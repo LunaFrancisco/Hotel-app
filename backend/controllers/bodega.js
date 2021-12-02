@@ -32,7 +32,7 @@ const getBodega = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -83,7 +83,7 @@ const crearProductoBodega = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -104,7 +104,7 @@ const actualizarStockBodega = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };

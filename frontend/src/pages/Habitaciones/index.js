@@ -30,6 +30,9 @@ export default () => {
     const [rerender, setRerender] = useState(false);
     const [refresh, setRefresh] = useState(false);
     const [responsePopup, setResponsePopup] = useState(null)
+    const [cancelarReservaPopup, setCancelarReservaPopup] = useState(false)
+    const [desalojarPopup, setDesalojarPopup] = useState(false)
+    const [reserva, setReserva] = useState(null)
 
     const states = [
         {
@@ -78,48 +81,77 @@ export default () => {
 
     const onEnable = async (id) => {
         const response = await put('api/services/habilitarHabitacion', { id }, { 'Content-Type': 'application/json' })
-        if (response.ok) {
-            setResponsePopup({
-                title: 'Habitación habilitada con éxito',
-                ok: response.ok
-            })
-        } else {
-            setResponsePopup({
-                title: 'Error al habilitar habitación',
-                ok: response.ok
-            })
-        }
+        setResponsePopup({
+            msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+            ok: response.ok
+        })
 
         setRefresh(!refresh)
         setRerender(!rerender)
     }
 
-    const onCancel = async (id) => {
-        const response = await post('api/services/cancel', { id }, { 'Content-Type': 'application/json' })
-        console.log(id, response)
-        if (response.ok) {
-            setResponsePopup({
-                title: 'Reservación cancelada con éxito',
-                ok: response.ok
-            })
-        } else {
-            setResponsePopup({
-                title: 'Error al cancelar reserva de habitación',
-                ok: response.ok
-            })
-        }
+    const onDesalojar = async (id) => {
+        setReserva(id)
+        setDesalojarPopup(true)
+    }
 
-        setRefresh(!refresh)
-        setRerender(!rerender)
+    const onCancel = async (id) => {
+        setReserva(id)
+        setCancelarReservaPopup(true)
     }
 
     return <div className="page-content">
         {responsePopup != null && <SweetAlert
-            title={responsePopup.title}
+            title={responsePopup.ok ? 'Éxito' : 'Error'}
             type={responsePopup.ok ? 'success' : 'error'}
             onConfirm={() => setResponsePopup(null)}
         >
+            {responsePopup.msg}
         </SweetAlert>}
+        {desalojarPopup && <SweetAlert
+            showCancel
+            type="info"
+            title="Está seguro que desea desalojar esta habitación"
+            cancelBtnBsStyle="danger"
+            confirmBtnBsStyle="success"
+            confirmBtnText="Aceptar"
+            cancelBtnText="Cancelar"
+            onConfirm={async () => {
+                const response = await post('api/services/desalojar', { id: reserva }, { 'Content-Type': 'application/json' })
+                setResponsePopup({
+                    msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                    ok: response.ok
+                })
+
+                setRefresh(!refresh)
+                setRerender(!rerender)
+                setReserva(null)
+                setDesalojarPopup(false)
+            }}
+            onCancel={() => setDesalojarPopup(false)}
+        />}
+        {cancelarReservaPopup && <SweetAlert
+            showCancel
+            type="info"
+            title="Está seguro que desea cancelar esta reserva"
+            cancelBtnBsStyle="danger"
+            confirmBtnBsStyle="success"
+            confirmBtnText="Aceptar"
+            cancelBtnText="Cancelar"
+            onConfirm={async () => {
+                const response = await post('api/services/cancel', { id: reserva }, { 'Content-Type': 'application/json' })
+                setResponsePopup({
+                    msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                    ok: response.ok
+                })
+
+                setRefresh(!refresh)
+                setRerender(!rerender)
+                setReserva(null)
+                setCancelarReservaPopup(false)
+            }}
+            onCancel={() => setCancelarReservaPopup(false)}
+        />}
         <Container fluid>
             <Breadcrumbs
                 title="Habitaciones"
@@ -200,11 +232,14 @@ export default () => {
                         rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
                         onCancel={onCancel}
+                        onDesalojar={onDesalojar}
                         onEnable={onEnable} />
                     : <Cuadricula
                         rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
                         onCancel={onCancel}
+                        onCancel={onCancel}
+                        onDesalojar={onDesalojar}
                         onEnable={onEnable} />
             }
         </Container>

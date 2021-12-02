@@ -1,5 +1,6 @@
-
 const { response } = require("express");
+const sequelize = require("../database/database");
+
 const Tipo_habitacion = require('../models/tipo_habitacion');
 const Cliente = require("../models/cliente");
 const Habitacion = require("../models/habitaciones");
@@ -13,6 +14,8 @@ const Servicio_promociones = require("../models/servicio_promociones");
 const sequelize = require("../database/database");
 const Inventario = require("../models/inventario");
 const Producto = require("../models/producto");
+const Balance_aux = require("../models/balance_aux");
+const descInv = require("../helpers/desc-inv");
 
 //habitaciones disponibles
 //habitaciones ocupadas
@@ -87,7 +90,7 @@ const pendientePago = async (req, res) => {
     catch (e) {
         res.json({
             ok: false,
-            msg: 'error, contacte con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -116,6 +119,9 @@ const listarHabitaciones = async (req, res) => {
                     'hr_salida'
                 ]
             }],
+            order: [
+                ['numero', 'ASC']
+            ]
         });
         let array_final = [];
         for (let habitacion of habitaciones) {
@@ -182,17 +188,21 @@ const habilitarHabitacion = async (req, res) => {
 };
 
 const reservarHabitacion = async (req, res) => {
-    const { id, clientes, servicios, extras, metodo_de_pago } = req.body;
-
     try {
-        //consultar el estado
+        const { id, clientes, servicios, extras, metodo_de_pago } = req.body;
+        // Consultar el estado
         const consultarEstado = await Habitacion.findOne({
             where: {
                 id,
                 id_estado: 1,
             },
         });
-        //si el estado es disponible entonces registro el cliente
+
+        // En caso de algun error estas variables se modifican y se envian al cliente
+        let error = false;
+        let msg;
+
+        // Si el estado es disponible entonces registro el cliente
         if (consultarEstado) {
             const arreglo = [];
 
@@ -222,13 +232,10 @@ const reservarHabitacion = async (req, res) => {
                     const client = findClient.id;
                     arreglo.push(client);
                 }
-            }
-            console.log(arreglo);
+            } // end for
 
             const newService = await Servicio.create({
                 id_habitacion: id,
-                //id_usuario1,
-                //id_turno,
                 fecha: sequelize.literal("CURRENT_DATE"),
                 hr_entrada: sequelize.literal("CURRENT_TIME"),
                 total: 0,
@@ -236,7 +243,7 @@ const reservarHabitacion = async (req, res) => {
                 id_cliente2: arreglo[1],
             });
 
-            //agregar servicio
+            // Agregar servicio
             servicios.forEach(async (service) => {
                 const findPromocion = await Promocion.findOne({
                     where: {
@@ -254,43 +261,69 @@ const reservarHabitacion = async (req, res) => {
                         id_promocion: service.id_promocion,
                         id_servicio: newService.id,
                         id_tipo_pago: metodo_de_pago,
-                        id_producto1: service.id_producto1,
-                        // id_producto1: service.id_productos[0],
-                        // id_producto2: service.id_productos[0],
-                        id_producto2: service.id_producto2,
+                        //id_producto1: service.id_producto1,
+                        id_producto1: service.id_productos[0],
+                        id_producto2: service.id_productos[1],
+                        //id_producto2: service.id_producto2,
                         estado: false,
                     });
                     console.log(addPromo);
+                    // Descontamos los productos de inventario
+                    descInv(service.id_productos[0], 1);
+                    descInv(service.id_productos[1], 1);
+                    // Agregamos la venta en tabla balance_aux
+                    const balance_aux = await Balance_aux.findOne({
+                        where: { id: 1 }
+                    });
+                    balance_aux.ventas += findPromocion.precio;
+                    balance_aux.save();
                 } else {
-                    res.json({
+                    return res.json({
                         ok: false,
                         msg: "Servicio no existe",
                     });
                 }
             });
 
-            //agrego los extras si existen tabla pedidos y producto pedido
-
+            // Agrego los extras si existen tabla pedidos y producto pedido
             if (extras) {
                 const addPedido = await Pedido.create({
+                    id_servicio: newService.id,
                     id_tipo_pago: metodo_de_pago,
                     estado: "pendiente",
-                    id_servicio: newService.id,
                     //total
                 });
-
-                //rellenar la tabla producto pedido for each
-                extras.forEach(async (extra) => {
-                    const addDetallePedido = await Detalle_pedido.create({
+                for (let extra of extras) {
+                    await Detalle_pedido.create({
                         id_pedido: addPedido.id,
-                        id_producto: extra.producto_id,
-                        cantidad: extra.cantidad,
+                        id_producto: extra,
+                        cantidad: 1,
                     });
-                });
+                    // Agregamos precio de cada producto a ventas en balance_aux
+                    const producto = await Producto.findOne({
+                        where: {
+                            id: extra
+                        }
+                    });
+                    // Descontamos de inventario
+                    const resp = await descInv(extra, 1);
+                    if (!resp) {
+                        error = true
+                        msg = `El producto ${producto.nombre} no tiene stock suficiente`;
+                        break;
+                    }
+                    const balance_aux = await Balance_aux.findOne({
+                        where: {
+                            id: 1
+                        }
+                    });
+                    balance_aux.ventas += producto.precio;
+                    balance_aux.save();
+                };
             }
 
-            //cambiar estado de la habitacion a ocupada
-            const Ocupada = await Habitacion.update(
+            // Cambiar estado de la habitacion a ocupada
+            await Habitacion.update(
                 {
                     id_estado: 2,
                 },
@@ -300,73 +333,93 @@ const reservarHabitacion = async (req, res) => {
                     },
                 }
             );
-            res.json({
-                ok: true,
-                msg: "Habitacion reservada",
+
+            return res.status(200).json({
+                ok: error ? false : true,
+                msg: error ? msg : "Habitacion reservada",
             });
         } else {
-            res.json({
+            return res.json({
                 ok: false,
-                msg: "error, no se puede reservar esta habitación",
+                msg: "Error, la habitación no está disponible",
             });
         }
     } catch (e) {
-        console.log(e)
-        res.json({
+        console.log(e);
+        return res.status(200).json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
 
-//cancelar reserva (aliminar en cascada )
-
+//cancelar reserva (aliminar en cascada)
 const cancelarReserva = async (req, res) => {
-    const { id } = req.body;
     try {
-        const findService = await Servicio.findOne({
-            where: {
-                id,
-            },
+        const { id_servicio } = req.body;
+        const servicio = await Servicio.findOne({
+            where: { id: id_servicio },
             attributes: ['id', 'id_habitacion']
         });
-        if (findService) {
+        // if (findService) {
 
-            //actualizar 
+        //     //actualizar 
 
 
 
-            const updateHabitacion = await Habitacion.update({
-                id_estado: 1
-            },
-                {
-                    where: {
-                        id: findService.id_habitacion
-                    }
-                });
+        //     const updateHabitacion = await Habitacion.update({
+        //         id_estado: 1
+        //     },
+        //         {
+        //             where: {
+        //                 id: findService.id_habitacion
+        //             }
+        //         });
 
-            const deleteService = await Servicio.destroy({
-                where: {
-                    id: findService.id,
-                },
-            });
+        //     const deleteService = await Servicio.destroy({
+        //         where: {
+        //             id: findService.id,
+        //         },
+        //     });
 
-            return res.json({
-                ok: true,
-                msg: "Reserva cancelada",
-            });
-        } else {
-            res.json({
+        //     return res.json({
+        //         ok: true,
+        //         msg: "Reserva cancelada",
+        //     });
+        // } else {
+        //     res.json({
+        if (!servicio) {
+            return res.status(200).json({
                 ok: false,
-                msg: "error 502, contacte con el administrador",
+                msg: 'No existe el servicio'
             });
         }
-
-        return console.log(cancelar);
+        // Quitar todo respecto a servicio_promociones (registros y ventas)
+        const servicio_promociones = await Servicio_promocion.findAll({
+            where: { id_servicio: servicio.id }
+        });
+        servicio_promociones.forEach(async servicio_promocion => {
+            // Quitar de ventas el precio respectivo
+            const promocion = await Promocion.findOne({
+                where: { id: servicio_promocion.id_promocion }
+            });
+            const balance = await Balance_aux.findOne({
+                where: { id: 1 }
+            });
+            balance.ventas -= promocion.precio;
+            balance.save();
+            // Eliminamos el registro de tabla servicio_promocion
+            servicio_promocion.destroy();
+        });
+        servicio.destroy();
+        return res.status(200).json({
+            ok: true,
+            msg: 'Habitacion cancelada'
+        });
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -429,7 +482,7 @@ const desalojarHabitacion = async (req, res) => {
     } catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -445,7 +498,7 @@ const listarPromociones = async (req, res = response) => {
         console.log(error);
         return res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -458,7 +511,7 @@ const calcularTotalServicio = async (req, res) => {
     catch (e) {
         res.json({
             ok: false,
-            msg: "error, contacte con el administrador",
+            msg: "Ha ocurrido un error, por favor contacte al administrador",
         });
     }
 };
@@ -505,7 +558,7 @@ const calcularTotalServicio = async (req, res) => {
 //   } catch (e) {
 //     res.json({
 //       ok: false,
-//       msg: "error, contacte con el administrador",
+//       msg: "Ha ocurrido un error, por favor contacte al administrador",
 //     });
 //   }
 // };

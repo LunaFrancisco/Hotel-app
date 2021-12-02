@@ -1,6 +1,7 @@
 import React, { Component, useState } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button, Badge, Nav, NavItem, NavLink, TabPane, CardText, TabContent } from "reactstrap"
 import classnames from "classnames";
+import SweetAlert from "react-bootstrap-sweetalert";
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
@@ -9,9 +10,12 @@ import MiniWidgets from "../../components/Common/MiniWidgets";
 import VentasTable from "./Ventas";
 import GastosTable from "./Gastos";
 import RetirosTable from "./Retiros";
+import { get, post } from '../../api'
 
 export default () => {
     const [activeTab, setActiveTab] = useState(0)
+    const [cierreCajaPopup, setCierreCajaPopup] = useState(false)
+    const [responsePopup, setResponsePopup] = useState(null)
     const breadcrumbItems = [
         { title: "Caja", link: "#" },
     ]
@@ -85,6 +89,47 @@ export default () => {
             <div className="page-content">
                 <div className="container-fluid">
                     <Breadcrumbs title="Caja" breadcrumbItems={breadcrumbItems} />
+
+                    <div className="position-relative" style={{ height: 50 }}>
+                        <div aria-label="Page navigation example" className="pagination-rounded position-absolute top-0" style={{ right: 0 }}>
+                            <Button onClick={() => setCierreCajaPopup(true)} color="success">Cierre de caja</Button>
+                        </div>
+                    </div>
+
+                    {responsePopup != null && <SweetAlert
+                        title={responsePopup.ok ? 'Éxito' : 'Error'}
+                        type={responsePopup.ok ? 'success' : 'error'}
+                        onConfirm={() => setResponsePopup(null)}
+                    >
+                        {responsePopup.msg}
+                    </SweetAlert>}
+
+                    {cierreCajaPopup && <SweetAlert
+                        showCancel
+                        title="Cerrar caja"
+                        cancelBtnBsStyle="danger"
+                        confirmBtnBsStyle="success"
+                        confirmBtnText="Aceptar"
+                        cancelBtnText="Cancelar"
+                        onConfirm={async () => {
+                            let id_usuario = "";
+                            if (localStorage.getItem("authUser")) {
+                                const obj = JSON.parse(localStorage.getItem("authUser"));
+                                id_usuario = obj.id
+                            }
+                            const response = await post('api/caja/cierre', {
+                                id_usuario
+                            }, { 'Content-Type': 'application/json' })
+                            setResponsePopup({
+                                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                                ok: response.ok
+                            })
+                            setCierreCajaPopup(false)
+                        }}
+                        onCancel={() => setCierreCajaPopup(false)}
+                    >
+                        <p>¿Está seguro que desea cerrar la caja?</p>
+                    </SweetAlert>}
 
                     <Row>
                         <MiniWidgets

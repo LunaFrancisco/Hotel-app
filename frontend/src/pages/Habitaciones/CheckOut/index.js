@@ -73,7 +73,6 @@ export default () => {
 
     const checkForm = (form) => {
         const element = document.getElementById(form.form)
-        console.log(element.checkValidity())
         if (!element.checkValidity()) {
             setActiveTab(form.tab)
             setTimeout(() => element.reportValidity(), 300)
@@ -109,18 +108,10 @@ export default () => {
                 metodo_de_pago: orderSummary.metodo_de_pago
             }, { 'Content-Type': 'application/json' })
 
-            if (response.ok) {
-                setResponsePopup({
-                    title: 'Habitación reservada con éxito',
-                    ok: response.ok
-                })
-                window.location.href = '/habitaciones'
-            } else {
-                setResponsePopup({
-                    title: 'Error al reservar la habitación',
-                    ok: response.ok
-                })
-            }
+            setResponsePopup({
+                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
+                ok: response.ok
+            })
         }
     }
 
@@ -128,10 +119,11 @@ export default () => {
     return <Fragment>
         <div className="page-content">
             {responsePopup != null && <SweetAlert
-                title={responsePopup.title}
+                title={responsePopup.ok ? 'Éxito' : 'Error'}
                 type={responsePopup.ok ? 'success' : 'error'}
                 onConfirm={() => setResponsePopup(null)}
             >
+                {responsePopup.msg}
             </SweetAlert>}
             <Container fluid>
                 {/* Render Breadcrumb */}

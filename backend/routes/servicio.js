@@ -5,17 +5,12 @@ const { check } = require('express-validator');
 const router = Router();
 
 const { reservarHabitacion,estadoHabitaciones,cancelarReserva, desalojarHabitacion, listarHabitaciones, habilitarHabitacion, listarPromociones, getServicio } = require('../controllers/servicio');
-const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
+const { validarCampos } = require('../middlewares/validar-campos');
 
 
 router.post(
-    '/new',
-    [
-        check('servicios', 'Agregue un servicio').not().isEmpty(),
-        check('metodo_de_pago', 'Ingrese metodo de pago').not().isEmpty(),
-        validarCampos
-    ],
+    '/reservarHabitacion',
     reservarHabitacion
 );
 
@@ -30,7 +25,7 @@ router.post(
 );
 
 router.post(
-    '/desalojar',
+    '/desalojarHabitacion',
     desalojarHabitacion
 );
 router.get(

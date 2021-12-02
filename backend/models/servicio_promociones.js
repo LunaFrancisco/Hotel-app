@@ -8,7 +8,7 @@ const Servicio_promociones = sequelize.define('servicio_promociones', {
         allowNull: false,
         primaryKey: true
     },
-    id_tipo_pago: {
+    id_servicio: {
         type: Sequelize.INTEGER
     },
     id_producto1: {
@@ -17,11 +17,11 @@ const Servicio_promociones = sequelize.define('servicio_promociones', {
     id_producto2: {
         type: Sequelize.INTEGER
     },
+    id_tipo_pago: {
+        type: Sequelize.INTEGER
+    },
     estado: {
         type: Sequelize.BOOLEAN
-    },
-    id_servicio: {
-        type: Sequelize.INTEGER
     }
 }, {
 

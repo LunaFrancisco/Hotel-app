@@ -37,7 +37,7 @@ const getInventario = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
@@ -110,18 +110,18 @@ const crearProductoInventario = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };
 
 const actualizarStockInventario = async (req, res = response) => {
     try {
-        const { id_producto, stock } = req.body;
+        const { id_producto, cantidad } = req.body;
         const productoInventario = await Inventario.findOne({
             where: { id_producto }
         });
-        productoInventario.cantidad = stock;
+        productoInventario.cantidad = cantidad;
         productoInventario.save();
         return res.status(200).json({
             ok: true,
@@ -131,7 +131,7 @@ const actualizarStockInventario = async (req, res = response) => {
         console.log(error);
         return res.status(500).json({
             ok: false,
-            msg: 'Por favor hable con el administrador'
+            msg: 'Ha ocurrido un error, por favor contacte al administrador'
         });
     }
 };

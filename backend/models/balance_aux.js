@@ -2,28 +2,25 @@ const { Sequelize } = require('sequelize');
 const sequelize = require('../database/database');
 
 const Balance_aux = sequelize.define('balance_aux', {
-    
-    id:{
-        type:Sequelize.INTEGER,
+    id: {
+        type: Sequelize.INTEGER,
         primaryKey: true
     },
-    ventas:{
+    ventas: {
         type: Sequelize.INTEGER
     },
-    gastos:{
+    gastos: {
         type: Sequelize.INTEGER
     },
-    retiros:{
+    retiros: {
         type: Sequelize.INTEGER
     },
-    caja:{
+    caja: {
         type: Sequelize.INTEGER
     },
-    id_balance:{
+    id_balance: {
         type: Sequelize.INTEGER
     }
-
-
 }, {
     timestamps: false
 });
