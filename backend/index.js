@@ -28,6 +28,7 @@ app.use('/api/bodega', require('./routes/bodega'));
 app.use('/api/services', require('./routes/servicio'));
 app.use('/api/caja', require('./routes/caja'));
 app.use('/api/promociones', require('./routes/promociones'));
+app.use('/api/pedidos', require('./routes/pedidos'));
 
 
 // Escuchar peticiones
@@ -36,7 +37,7 @@ app.listen(process.env.PORT, async () => {
     try {
         await sequelize.authenticate();
         console.log('Base de datos ONLINE');
-        // await sequelize.sync({ force: true });
+        //await sequelize.sync({ force: true });
         // console.log("Tablas creadas.");
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);

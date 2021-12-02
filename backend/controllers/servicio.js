@@ -11,6 +11,8 @@ const Servicio_promocion = require("../models/servicio_promociones");
 const Detalle_pedido = require("../models/detalle_pedido");
 const Servicio_promociones = require("../models/servicio_promociones");
 const sequelize = require("../database/database");
+const Inventario = require("../models/inventario");
+const Producto = require("../models/producto");
 
 //habitaciones disponibles
 //habitaciones ocupadas
@@ -244,7 +246,10 @@ const reservarHabitacion = async (req, res) => {
                 });
 
                 if (findPromocion) {
+                    
                     //consultar stock del producto
+                   
+
                     const addPromo = Servicio_promocion.create({
                         id_promocion: service.id_promocion,
                         id_servicio: newService.id,
@@ -324,6 +329,11 @@ const cancelarReserva = async (req, res) => {
             attributes: ['id', 'id_habitacion']
         });
         if (findService) {
+
+            //actualizar 
+
+
+
             const updateHabitacion = await Habitacion.update({
                 id_estado: 1
             },
@@ -500,6 +510,115 @@ const calcularTotalServicio = async (req, res) => {
 
 //cambiar estado pago
 
+//funcion para descontar productos de inventario
+// export const consulProd = async (id) => {
+//     const stockProduct = await Inventario.findOne({
+//         where: {
+//             id_producto:id,
+            
+//         },
+//         attributes: [
+//             'cantidad'
+//         ]
+//     });
+
+//     if(stockProduct.cantidad>0){
+//         stockProduct.cantidad-= 1;
+//         stockProduct.save();
+//     }
+
+//     else{
+//         return res.json({
+//             ok:false,
+//             msg: 'Producto sin stock en inventario' 
+//         });
+//     }
+
+//     return stockProduct;
+// };
+
+
+//si hay stock eliminarlo de inventario
+
+
+const getServicio = async (req, res = response ) => {
+    try{
+        const {id} = req.body;
+
+        const findService = await Servicio.findOne({
+            where:{
+                id
+            },
+            attributes:['id_habitacion','id_cliente1', 'id_cliente2'],
+            include:[{
+                model: Pedido
+            }]
+        });
+
+         const allPedidos = findService.pedidos;
+         let pedidos = [];
+        for (let pedido of allPedidos)
+        {
+            const findPedido = await Detalle_pedido.findAll({
+            where: {
+                id:pedido.id
+            }
+        });
+            
+        pedidos.push(findPedido.id);
+        console.log(pedidos);
+    }
+        // for(let i of productos){
+        //     const findPedido = await Producto.findOne({
+        //         where:{id:i.id}
+        //     });
+
+        // }
+
+        if(findService){
+            //datos cliente
+            const findCliente1 = await Cliente.findOne({
+                where:{
+                    id:findService.id_cliente1
+                }
+            });
+            const findCliente2 = await Cliente.findOne({
+                where:{
+                    id:findService.id_cliente2
+                }
+            });
+
+            const cliente1= findCliente1;
+            const cliente2= findCliente2;
+
+            
+            return res.json({
+                ok:true,
+                findService,
+                cliente1,
+                cliente2
+                // findCliente1,
+                // findCliente2
+                
+            });
+        }
+        else{
+            return res.json({
+                ok:false,
+                msg:'No se encontro el servicio'
+            });
+        }
+               
+    }
+    catch(e){
+        return res.json({
+            ok:false,
+            msg:'Error, contacte con administración'
+        });
+    }
+};
+
+
 module.exports = {
     listarHabitaciones,
     habilitarHabitacion,
@@ -508,5 +627,6 @@ module.exports = {
     estadoHabitaciones,
     cancelarReserva,
     desalojarHabitacion,
-    listarPromociones
+    listarPromociones,
+    getServicio
 };
