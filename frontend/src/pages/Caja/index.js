@@ -1,7 +1,8 @@
-import React, { Component, useState } from "react"
+import React, { Component, useState, useEffect } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button, Badge, Nav, NavItem, NavLink, TabPane, CardText, TabContent } from "reactstrap"
 import classnames from "classnames";
 import SweetAlert from "react-bootstrap-sweetalert";
+import { timeFormat, moneyFormat } from "../../helpers/formatters";
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
@@ -16,6 +17,12 @@ export default () => {
     const [activeTab, setActiveTab] = useState(0)
     const [cierreCajaPopup, setCierreCajaPopup] = useState(false)
     const [responsePopup, setResponsePopup] = useState(null)
+    const [stats, setStats] = useState({
+        caja: 0,
+        ventas: 0,
+        gastos: 0,
+        retiros: 0
+    })
     const breadcrumbItems = [
         { title: "Caja", link: "#" },
     ]
@@ -36,7 +43,12 @@ export default () => {
         return <Badge className={`${color[state]} me-1`}>{label[state]}</Badge>
     }
 
-    const timeFormat = (number) => number > 9 ? `${number}` : `0${number}`
+    useEffect(() => {
+        get('api/caja').then(res => {
+            setStats(res.caja[0])
+        })
+    }, [])
+
     const data = Array(16).fill(null).map(item => ({
         amount: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`,
         state: renderState(Math.round(Math.random() * 2) + 1), id: Math.round(Math.round(Math.random() * 5014)),
@@ -134,21 +146,21 @@ export default () => {
                     <Row>
                         <MiniWidgets
                             title="Caja"
-                            value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                            value={moneyFormat(stats.caja)}
                             // icon="ri-stack-line"
                             rate={0}
                             desc="Desde el turno anterior"
                         />
                         <MiniWidgets
                             title="Ventas"
-                            value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                            value={moneyFormat(stats.ventas)}
                             // icon="ri-stack-line"
                             rate={0}
                             desc="Desde el turno anterior"
                         />
                         <MiniWidgets
                             title="Gastos"
-                            value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                            value={moneyFormat(stats.gastos)}
                             // icon="ri-add-fill"
                             rate={0}
                             desc="Desde el turno anterior"
@@ -156,7 +168,7 @@ export default () => {
                         />
                         <MiniWidgets
                             title="Retiros"
-                            value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
+                            value={moneyFormat(stats.retiros)}
                             // icon=" ri-add-fill"
                             rate={0}
                             desc="Desde el turno anterior"
