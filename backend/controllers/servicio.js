@@ -16,6 +16,9 @@ const Producto = require("../models/producto");
 const Balance_aux = require("../models/balance_aux");
 const descInv = require("../helpers/desc-inv");
 
+// Helpers
+const cantidad_extras = require('../helpers/cantidad_extras');
+
 //habitaciones disponibles
 //habitaciones ocupadas
 //habitaciones en aseo
@@ -266,7 +269,6 @@ const reservarHabitacion = async (req, res) => {
                         //id_producto2: service.id_producto2,
                         estado: false,
                     });
-                    console.log(addPromo);
                     // Descontamos los productos de inventario
                     descInv(service.id_productos[0], 1);
                     descInv(service.id_productos[1], 1);
@@ -286,26 +288,33 @@ const reservarHabitacion = async (req, res) => {
 
             // Agrego los extras si existen tabla pedidos y producto pedido
             if (extras) {
+                const objCantidadExtras = cantidad_extras(extras);
+                // [
+                //     { id_producto: '1', cantidad: 1 },
+                //     { id_producto: '2', cantidad: 1 },
+                //     { id_producto: '3', cantidad: 1 },
+                //     { id_producto: '4', cantidad: 1 }
+                // ]
                 const addPedido = await Pedido.create({
                     id_servicio: newService.id,
                     id_tipo_pago: metodo_de_pago,
                     estado: "pendiente",
                     //total
                 });
-                for (let extra of extras) {
+                for (let extra of objCantidadExtras) {
                     await Detalle_pedido.create({
                         id_pedido: addPedido.id,
-                        id_producto: extra,
-                        cantidad: 1,
+                        id_producto: extra.id_producto,
+                        cantidad: extra.cantidad,
                     });
                     // Agregamos precio de cada producto a ventas en balance_aux
                     const producto = await Producto.findOne({
                         where: {
-                            id: extra
+                            id: extra.id_producto
                         }
                     });
                     // Descontamos de inventario
-                    const resp = await descInv(extra, 1);
+                    const resp = await descInv(extra.id_producto, extra.cantidad);
                     if (!resp) {
                         error = true
                         msg = `El producto ${producto.nombre} no tiene stock suficiente`;
@@ -316,7 +325,7 @@ const reservarHabitacion = async (req, res) => {
                             id: 1
                         }
                     });
-                    balance_aux.ventas += producto.precio;
+                    balance_aux.ventas += producto.precio * extra.cantidad;
                     balance_aux.save();
                 };
             }
@@ -653,7 +662,6 @@ const getServicio = async (req, res = response ) => {
     }
 };
 
-
 module.exports = {
     listarHabitaciones,
     habilitarHabitacion,
@@ -663,5 +671,5 @@ module.exports = {
     cancelarReserva,
     desalojarHabitacion,
     listarPromociones,
-    getServicio
+    getServicio,
 };

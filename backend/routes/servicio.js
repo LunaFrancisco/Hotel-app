@@ -4,7 +4,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const router = Router();
 
-const { reservarHabitacion,estadoHabitaciones,cancelarReserva, desalojarHabitacion, listarHabitaciones, habilitarHabitacion, listarPromociones, getServicio } = require('../controllers/servicio');
+const { reservarHabitacion,estadoHabitaciones,cancelarReserva, desalojarHabitacion, listarHabitaciones, habilitarHabitacion, listarPromociones, getServicio, calcularExtras } = require('../controllers/servicio');
 const { validarJWT } = require('../middlewares/validar-jwt');
 const { validarCampos } = require('../middlewares/validar-campos');
 
