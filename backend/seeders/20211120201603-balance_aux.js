@@ -19,7 +19,7 @@ module.exports = {
                 gastos:0,
                 retiros:0,
                 caja:55000,
-                id_balance:1
+                id_balance:19
               
             }
 
