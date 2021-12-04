@@ -10,7 +10,8 @@ function authHeader() {
     }
 }
 
-const base_url = 'http://localhost:4000/'
+const base_url = process.env.REACT_APP_API_URL || 'http://localhost:4000/'
+console.log(base_url)
 
 export async function get(url, headers = {}) {
     return fetch(base_url + url, {

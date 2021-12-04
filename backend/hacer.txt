@@ -1,10 +1,40 @@
-editar producto (nombre, categoria, precio) listo
-editar stock en inventario listo
-    bodega () listo
-eliminar producto
+{
+    "id": 1,
+    "clientes": [
+        {
+            "nombre": "nombre 1",
+            "apellido": "apellido 1",
+            "rut": "19522912-0"
+        },
+        {
+            "nombre": "nombre 2",
+            "apellido": "apellido 2",
+            "rut": "107665714-0"
+        }
+    ],
+    "servicios": [
+        {
+            "id_promocion": 3, // $19.800
+            "id_productos": [
+                5, // agua mineral con gas
+                6  // agua mineral sin gas
+            ]
+        },
+        {
+            "id_promocion": 2, // $16.000
+            "id_productos": [
+                10, // papas fritas
+                11  // galleta
+            ]
+        }
+    ],
+    "extras": [
+        1, // $2.200 coca-cola
+        5, // $1.500 agua mineral con gas
+        7, // $500 te
+        23 // $700 preservativos
+    ],
+    "metodo_de_pago": 1
+}
 
-git checkout main
-git pull origin back-joaquin
-git push origin main
-
-al entrar a mi branch hacer un pull del main
+$40.700
