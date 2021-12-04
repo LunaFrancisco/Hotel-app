@@ -246,20 +246,15 @@ const reservarHabitacion = async (req, res) => {
             });
 
             // Agregar servicio
-            servicios.forEach(async (service) => {
+            for await(let service of servicios) {
                 const findPromocion = await Promocion.findOne({
                     where: {
                         id: service.id_promocion,
                     },
                 });
-                console.log(findPromocion);
-
                 if (findPromocion) {
-                    
                     //consultar stock del producto
-                   
-
-                    const addPromo = await Servicio_promocion.create({
+                    let addPromo = await Servicio_promocion.create({
                         id_promocion: service.id_promocion,
                         id_servicio: newService.id,
                         id_tipo_pago: metodo_de_pago,
@@ -273,18 +268,19 @@ const reservarHabitacion = async (req, res) => {
                     descInv(service.id_productos[0], 1);
                     descInv(service.id_productos[1], 1);
                     // Agregamos la venta en tabla balance_aux
-                    const balance_aux = await Balance_aux.findOne({
+                    let balance_aux = await Balance_aux.findOne({
                         where: { id: 1 }
                     });
                     balance_aux.ventas += findPromocion.precio;
-                    balance_aux.save();
+                    console.log('-----------------Balance_aux ventas: ', balance_aux.ventas);
+                    await balance_aux.save();
                 } else {
                     return res.json({
                         ok: false,
                         msg: "Servicio no existe",
                     });
                 }
-            });
+            };
 
             // Agrego los extras si existen tabla pedidos y producto pedido
             if (extras) {
@@ -325,8 +321,13 @@ const reservarHabitacion = async (req, res) => {
                             id: 1
                         }
                     });
-                    balance_aux.ventas += producto.precio * extra.cantidad;
-                    balance_aux.save();
+                    const ingresos = producto.precio * extra.cantidad;
+                    balance_aux.ventas += ingresos;
+                    await balance_aux.save();
+                    if (metodo_de_pago === 1) {
+                        balance_aux.caja += ingresos;
+                        await balance_aux.save();
+                    }
                 };
             }
 
