@@ -14,7 +14,7 @@ const fireBaseBackend = getFirebaseBackend();
 //If user is login then dispatch redux action's are directly from here.
 function* loginUser({ payload: { user, history } }) {
     try {
-        const response = yield fetch('http://localhost:4000/api/auth', {
+        const response = yield fetch((process.env.REACT_APP_API_URL || 'http://localhost:4000/') + 'api/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(user)
