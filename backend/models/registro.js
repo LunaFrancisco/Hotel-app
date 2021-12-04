@@ -1,0 +1,36 @@
+const { Sequelize } = require('sequelize');
+const sequelize = require('../database/database');
+
+const Registro = sequelize.define('registro', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    id_servicio:{
+        type: Sequelize.INTEGER
+    },
+    
+    id_habitacion: {
+        type: Sequelize.INTEGER
+    },
+    fecha: {
+        type: Sequelize.DATE
+    },
+    fecha_entrada: {
+        type: Sequelize.DATE
+    },
+    monto: {
+        type: Sequelize.INTEGER
+    },
+    estado: {
+        type: Sequelize.TEXT
+    },
+    obervacion: {
+        type: Sequelize.TEXT
+    },
+
+}, {
+    timestamps: false
+});
+
+module.exports = Registro;

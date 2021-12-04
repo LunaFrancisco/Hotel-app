@@ -21,6 +21,7 @@ const Retiro = require('../models/retiro');
 const Gasto_caja = require('../models/gasto_caja');
 const Gasto_inventario = require('../models/gasto_inventario');
 const Balance_aux = require('../models/balance_aux');
+const Registro = require('../models/registro');
 
 
 
