@@ -283,28 +283,44 @@ const informacionMensual = async (req, res) => {
          [sequelize.fn('sum', sequelize.col('retiros_total')), 'retiros']],
     
          group:  ['fechamen'],
-         order: [[sequelize.literal('fechamen'),'DESC']] 
+         order: [[sequelize.literal('fechamen'),'ASC']] 
       }
     );
 
-    let fechas = []
-    const cualquiernombre = info.map ( i =>{
-      // console.log(i.dataValues.fechamen)
-      const fecha = new Date(i.dataValues.fechamen)
-
-      fechas.push(months[fecha.getMonth()]);
-      
-      console.log(fecha.getMonth());
-      
-      return fecha.getMonth()
-    } );
-    console.log(fechas);
-   
     
+     let informacion = []
+     
+     //calculo mes actual
+     const d = new Date();
+    let mesActual =d.getMonth()
+
+
+     const cualquiernombre = info.map ( i =>{
+       
+      let date = i.dataValues.fechamen
+       let mes = new Date(i.dataValues.fechamen)
+      
+      
+      //  if (date != null && mes.getMonth() != mesActual ){
+       if (date != null ){
+        
+        const fecha = new Date(i.dataValues.fechamen)
+
+        informacion.push({
+          fecha : months[fecha.getMonth()],
+          ventas : i.dataValues.ventas,
+          retiros: i.dataValues.retiros,
+          gastos: i.dataValues.gastos
+        })
+        
+       }  
+          
+     });
+ 
     return res.json({
       ok: true,
-      info
-    //   caja,
+      informacion
+
     });
 
     } catch (e) {
