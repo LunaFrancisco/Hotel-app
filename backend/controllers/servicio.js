@@ -392,44 +392,35 @@ const reservarHabitacion = async (req, res) => {
 //cancelar reserva (aliminar en cascada)
 const cancelarReserva = async (req, res) => {
     try {
+        
         const { id_servicio } = req.body;
         const servicio = await Servicio.findOne({
             where: { id: id_servicio },
-            attributes: ['id', 'id_habitacion']
+            attributes: ['id', 'id_habitacion','fecha']
         });
-        // if (findService) {
-
-        //     //actualizar 
-
-
-
-        //     const updateHabitacion = await Habitacion.update({
-        //         id_estado: 1
-        //     },
-        //         {
-        //             where: {
-        //                 id: findService.id_habitacion
-        //             }
-        //         });
-
-        //     const deleteService = await Servicio.destroy({
-        //         where: {
-        //             id: findService.id,
-        //         },
-        //     });
-
-        //     return res.json({
-        //         ok: true,
-        //         msg: "Reserva cancelada",
-        //     });
-        // } else {
-        //     res.json({
+        const getHabitacion = await Habitacion.findOne({
+            where: { id: servicio.id_habitacion },
+            attributes: ['id', 'id_estado']
+        });
+        
         if (!servicio) {
             return res.status(200).json({
                 ok: false,
                 msg: 'No existe el servicio'
             });
         }
+        getHabitacion.id_estado=1;
+        getHabitacion.save();
+
+        const addRegistro = await Registro.create({
+            id_servicio:id_servicio,
+            id_habitacion: servicio.id_habitacion,
+            fecha: sequelize.literal("CURRENT_DATE"),
+            fecha_entrada: servicio.fecha,
+            observacion: `Habitacion ${servicio.id_habitacion} reserva cancelada`
+        });
+
+        
         // Quitar todo respecto a servicio_promociones (registros y ventas)
         const servicio_promociones = await Servicio_promocion.findAll({
             where: { id_servicio: servicio.id }
@@ -445,8 +436,12 @@ const cancelarReserva = async (req, res) => {
             balance.ventas -= promocion.precio;
             balance.save();
             // Eliminamos el registro de tabla servicio_promocion
+            
             servicio_promocion.destroy();
+            
+
         });
+        
         servicio.destroy();
         return res.status(200).json({
             ok: true,

@@ -23,7 +23,7 @@ const Registro = sequelize.define('registro', {
     monto: {
         type: Sequelize.INTEGER
     },
-    obervacion: {
+    observacion: {
         type: Sequelize.TEXT
     },
 }, {
