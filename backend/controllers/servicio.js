@@ -469,11 +469,19 @@ const desalojarHabitacion = async (req, res) => {
             where: {
                 id,
             },
-            attributes: ["id", "hr_salida", 'id_habitacion'],
+            attributes: ["id", "hr_salida", 'id_habitacion','fecha'],
         });
         console.log(findService)
         if (!findService.hr_salida) {
 
+            const addRegistro = await Registro.create({
+                id_servicio:id,
+                id_habitacion: findService.id_habitacion,
+                fecha: sequelize.literal("CURRENT_DATE"),
+                fecha_entrada: findService.fecha,
+                observacion: `Habitacion ${findService.id_habitacion} desalojada`
+            });
+            
             const serSalida = await Servicio.update(
                 {
                     hr_salida: sequelize.literal("CURRENT_TIME")
@@ -498,7 +506,7 @@ const desalojarHabitacion = async (req, res) => {
             //cambiar estado a aseo
             console.log("se cambio el estado");
             //al desalojar hay que cambiar los valores de
-
+            
             return res.json({
                 ok: true,
                 msg: "Habitacion desalojada",
