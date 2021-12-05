@@ -1,6 +1,7 @@
 const { response } = require("express");
 const sequelize = require("../database/database");
 
+// Modelos
 const Tipo_habitacion = require('../models/tipo_habitacion');
 const Cliente = require("../models/cliente");
 const Habitacion = require("../models/habitaciones");
@@ -14,14 +15,15 @@ const Servicio_promociones = require("../models/servicio_promociones");
 const Inventario = require("../models/inventario");
 const Producto = require("../models/producto");
 const Balance_aux = require("../models/balance_aux");
-const descInv = require("../helpers/desc-inv");
+const Registro = require("../models/registro");
 
 // Helpers
 const cantidad_extras = require('../helpers/cantidad_extras');
+const descInv = require("../helpers/desc-inv");
 
-//habitaciones disponibles
-//habitaciones ocupadas
-//habitaciones en aseo
+// habitaciones disponibles
+// habitaciones ocupadas
+// habitaciones en aseo
 
 const estadoHabitaciones = async (req, res) => {
     try {
@@ -204,6 +206,14 @@ const reservarHabitacion = async (req, res) => {
         let error = false;
         let msg;
 
+        // Variables para tabla registro
+        let registro_idServicio = 0;
+        let registro_idHabitacion = 0;
+        let registro_fechaEntrada = '';
+        let registro_fechaTransaccion = '';
+        let registro_monto = 0;
+        let registro_observacion = '';
+
         // Si el estado es disponible entonces registro el cliente
         if (consultarEstado) {
             const arreglo = [];
@@ -241,12 +251,17 @@ const reservarHabitacion = async (req, res) => {
                 fecha: sequelize.literal("CURRENT_DATE"),
                 hr_entrada: sequelize.literal("CURRENT_TIME"),
                 total: 0,
-                id_cliente1: arreglo[0], //deberia tener los id de el arreglo
+                id_cliente1: arreglo[0],
                 id_cliente2: arreglo[1],
             });
 
+            // Para tabla registro
+            registro_idServicio = newService.id;
+            registro_idHabitacion = id;
+            registro_fechaEntrada = sequelize.literal("CURRENT_DATE");
+
             // Agregar servicio
-            for await(let service of servicios) {
+            for await (let service of servicios) {
                 const findPromocion = await Promocion.findOne({
                     where: {
                         id: service.id_promocion,
@@ -274,6 +289,8 @@ const reservarHabitacion = async (req, res) => {
                     balance_aux.ventas += findPromocion.precio;
                     console.log('-----------------Balance_aux ventas: ', balance_aux.ventas);
                     await balance_aux.save();
+                    // Para tabla registro
+                    registro_monto += findPromocion.precio;
                 } else {
                     return res.json({
                         ok: false,
@@ -328,6 +345,8 @@ const reservarHabitacion = async (req, res) => {
                         balance_aux.caja += ingresos;
                         await balance_aux.save();
                     }
+                    // Para tabla registro
+                    registro_monto += ingresos;
                 };
             }
 
@@ -342,6 +361,14 @@ const reservarHabitacion = async (req, res) => {
                     },
                 }
             );
+
+            await Registro.create({
+                id_servicio: registro_idServicio,
+                id_habitacion: registro_idHabitacion,
+                fecha_entrada: registro_fechaEntrada,
+                monto: registro_monto,
+                observacion: registro_observacion
+            });
 
             return res.status(200).json({
                 ok: error ? false : true,
@@ -579,7 +606,7 @@ const calcularTotalServicio = async (req, res) => {
 //     const stockProduct = await Inventario.findOne({
 //         where: {
 //             id_producto:id,
-            
+
 //         },
 //         attributes: [
 //             'cantidad'
@@ -605,60 +632,60 @@ const calcularTotalServicio = async (req, res) => {
 //si hay stock eliminarlo de inventario
 
 
-const getServicio = async (req, res = response ) => {
-    try{
-        const {id} = req.body;
+const getServicio = async (req, res = response) => {
+    try {
+        const { id } = req.body;
 
         const findService = await Servicio.findOne({
-            where:{
+            where: {
                 id
             },
-            attributes:['id_habitacion','id_cliente1', 'id_cliente2'],
-            include:[
+            attributes: ['id_habitacion', 'id_cliente1', 'id_cliente2'],
+            include: [
                 Promocion,
                 {
-                model: Pedido,
-                include:[Producto]
-            }]
+                    model: Pedido,
+                    include: [Producto]
+                }]
         });
 
-        if(findService){
+        if (findService) {
             //datos cliente
             const findCliente1 = await Cliente.findOne({
-                where:{
-                    id:findService.id_cliente1
+                where: {
+                    id: findService.id_cliente1
                 }
             });
             const findCliente2 = await Cliente.findOne({
-                where:{
-                    id:findService.id_cliente2
+                where: {
+                    id: findService.id_cliente2
                 }
             });
 
-            const cliente1= findCliente1;
-            const cliente2= findCliente2;
+            const cliente1 = findCliente1;
+            const cliente2 = findCliente2;
 
-            
+
             return res.json({
-                ok:true,
+                ok: true,
                 findService,
                 cliente1,
                 cliente2
-                
+
             });
         }
-        else{
+        else {
             return res.json({
-                ok:false,
-                msg:'No se encontro el servicio'
+                ok: false,
+                msg: 'No se encontro el servicio'
             });
         }
-               
+
     }
-    catch(e){
+    catch (e) {
         return res.json({
-            ok:false,
-            msg:'Error, contacte con administración'
+            ok: false,
+            msg: 'Error, contacte con administración'
         });
     }
 };

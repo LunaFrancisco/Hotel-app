@@ -4,12 +4,13 @@ const sequelize = require('../database/database');
 const Registro = sequelize.define('registro', {
     id: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
         primaryKey: true
     },
-    id_servicio:{
+    id_servicio: {
         type: Sequelize.INTEGER
     },
-    
     id_habitacion: {
         type: Sequelize.INTEGER
     },
@@ -22,13 +23,9 @@ const Registro = sequelize.define('registro', {
     monto: {
         type: Sequelize.INTEGER
     },
-    estado: {
-        type: Sequelize.TEXT
-    },
     obervacion: {
         type: Sequelize.TEXT
     },
-
 }, {
     timestamps: false
 });
