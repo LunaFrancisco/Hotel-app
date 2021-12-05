@@ -170,14 +170,29 @@ const habilitarHabitacion = async (req, res) => {
         const habitacion = await Habitacion.findOne({
             where: { id }
         });
+        console.log(habitacion)
         if (habitacion.id_estado === 3) {
             habitacion.id_estado = 1;
             habitacion.save();
+            
+            //registro de aseo 
+            const addRegistro = await Registro.create({
+                
+                id_habitacion: id,
+                fecha: sequelize.literal("CURRENT_DATE"),
+                
+                observacion: `Habitacion ${id} aseada`
+            });
+
+            
+            
             return res.status(200).json({
                 ok: true,
                 msg: 'Habitacion habilitada correctamente'
             });
         }
+
+
         return res.status(200).json({
             ok: true,
             msg: 'La habitacion no esta en estado de aseo'
