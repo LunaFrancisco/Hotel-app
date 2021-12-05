@@ -374,6 +374,7 @@ const reservarHabitacion = async (req, res) => {
             await Registro.create({
                 id_servicio: registro_idServicio,
                 id_habitacion: registro_idHabitacion,
+                fecha: registro_fechaEntrada,
                 fecha_entrada: registro_fechaEntrada,
                 monto: registro_monto,
                 observacion: registro_observacion
