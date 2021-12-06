@@ -13,9 +13,8 @@ const cantidad_extras = require("../helpers/cantidad_extras");
 const descInv = require("../helpers/desc-inv");
 
 const agregarPedido = async (req, res = response) => {
-    const { id_servicio, extras, metodo_de_pago } = req.body;
-
     try {
+        const { id_servicio, extras, metodo_de_pago } = req.body;
         const findServicio = await Servicio.findOne({
             where: { id: id_servicio }
         });
@@ -32,6 +31,11 @@ const agregarPedido = async (req, res = response) => {
                 msg: "No hay extras seleccionados",
             });
         }
+        const addPedido = await Pedido.create({
+            id_servicio: id_servicio,
+            id_tipo_pago: metodo_de_pago,
+            estado: "Pendiente",
+        });
         // Transformamos extras a un objeto
         const objCantidadExtras = cantidad_extras(extras);
         // [
@@ -40,11 +44,6 @@ const agregarPedido = async (req, res = response) => {
         //     { id_producto: '3', cantidad: 3 },
         //     { id_producto: '4', cantidad: 4 }
         // ]
-        const addPedido = await Pedido.create({
-            id_servicio: id_servicio,
-            id_tipo_pago: metodo_de_pago,
-            estado: "Pendiente",
-        });
         for (let extra of objCantidadExtras) {
             await Detalle_pedido.create({
                 id_pedido: addPedido.id,
@@ -67,19 +66,15 @@ const agregarPedido = async (req, res = response) => {
             });
             const ingresos = producto.precio * extra.cantidad;
             balance_aux.ventas += ingresos;
-            await balance_aux.save();
             if (metodo_de_pago === 1) {
                 balance_aux.caja += ingresos;
-                await balance_aux.save();
             }
-            // Para tabla registro
-            registro_monto += ingresos;
+            await balance_aux.save();
         };
         return res.json({
             ok: true,
             msg: "Pedido creado con exito",
         });
-
     } catch (e) {
         return res.status(200).json({
             ok: false,
