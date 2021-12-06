@@ -164,14 +164,14 @@ const listarHabitaciones = async (req, res) => {
 
 const habilitarHabitacion = async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.body; // id habitacion
         const habitacion = await Habitacion.findOne({
             where: { id }
         });
         if (habitacion.id_estado === 3) {
             habitacion.id_estado = 1;
             habitacion.save();
-            //registro de aseo 
+            // Registro de aseo 
             const addRegistro = await Registro.create({
                 id_habitacion: id,
                 fecha: sequelize.literal("CURRENT_DATE"),
@@ -401,57 +401,53 @@ const reservarHabitacion = async (req, res) => {
 
 const cancelarReserva = async (req, res) => {
     try {
-
         const { id_servicio } = req.body;
-        const servicio = await Servicio.findOne({
-            where: { id: id_servicio },
-            attributes: ['id', 'id_habitacion', 'fecha']
-        });
-        const getHabitacion = await Habitacion.findOne({
-            where: { id: servicio.id_habitacion },
-            attributes: ['id', 'id_estado']
-        });
 
+        // Obtenemos servicio
+        const servicio = await Servicio.findOne({
+            where: { id: id_servicio }
+        });
+        // Obtenemos habitacion
+        const getHabitacion = await Habitacion.findOne({
+            where: { id: servicio.id_habitacion }
+        });
         if (!servicio) {
             return res.status(200).json({
                 ok: false,
                 msg: 'No existe el servicio'
             });
         }
+
+        // Cambiamos habitacion a estado disponible
         getHabitacion.id_estado = 1;
         getHabitacion.save();
 
-        const addRegistro = await Registro.create({
-            id_servicio: id_servicio,
-            id_habitacion: servicio.id_habitacion,
-            fecha: sequelize.literal("CURRENT_DATE"),
-            fecha_entrada: servicio.fecha,
-            observacion: `Habitacion ${servicio.id_habitacion} reserva cancelada`
-        });
-
-
-        // Quitar todo respecto a servicio_promociones (registros y ventas)
+        // Quitar todo respecto a servicio_promociones (y de tabla AUX)
         const servicio_promociones = await Servicio_promocion.findAll({
             where: { id_servicio: servicio.id }
         });
-        servicio_promociones.forEach(async servicio_promocion => {
-            // Quitar de ventas el precio respectivo
+        for await (let servicio_promocion of servicio_promociones) {
+            // Quitamos de ventas aux el precio de cada promocion si es que pagó en efectivo
             const promocion = await Promocion.findOne({
                 where: { id: servicio_promocion.id_promocion }
             });
             const balance = await Balance_aux.findOne({
                 where: { id: 1 }
             });
-            balance.ventas -= promocion.precio;
-            balance.save();
-            // Eliminamos el registro de tabla servicio_promocion
-
+            if (promocion.id_tipo_pago === 1) {
+                balance.ventas -= promocion.precio;
+                await balance.save();
+            }
             servicio_promocion.destroy();
-
-
+        };
+        // Registro para tabla registro
+        const addRegistro = await Registro.create({
+            id_servicio: id_servicio,
+            id_habitacion: servicio.id_habitacion,
+            fecha: sequelize.literal("CURRENT_DATE"),
+            fecha_entrada: servicio.fecha,
+            observacion: `Habitacion ${servicio.id_habitacion}, reserva cancelada`
         });
-
-        servicio.destroy();
         return res.status(200).json({
             ok: true,
             msg: 'Habitacion cancelada'
@@ -464,19 +460,15 @@ const cancelarReserva = async (req, res) => {
     }
 };
 
-//desalojar habitacion (cambiar estado)
 const desalojarHabitacion = async (req, res) => {
-    const { id } = req.body;
+    const { id } = req.body; // id servicio
     try {
         const findService = await Servicio.findOne({
-            where: {
-                id,
-            },
+            where: { id },
             attributes: ["id", "hr_salida", 'id_habitacion', 'fecha'],
         });
-        console.log(findService)
         if (!findService.hr_salida) {
-
+            // Registro para tabla registro
             const addRegistro = await Registro.create({
                 id_servicio: id,
                 id_habitacion: findService.id_habitacion,
@@ -495,7 +487,6 @@ const desalojarHabitacion = async (req, res) => {
                     attributes: ["id", "id_habitacion"],
                 }
             );
-            //console.log(findService.id_habitacion);
             const setEstado = await Habitacion.update(
                 {
                     id_estado: 3
@@ -506,8 +497,6 @@ const desalojarHabitacion = async (req, res) => {
                     attributes: ["id"],
                 }
             );
-            //cambiar estado a aseo
-            console.log("se cambio el estado");
             //al desalojar hay que cambiar los valores de
 
             return res.json({
@@ -518,7 +507,7 @@ const desalojarHabitacion = async (req, res) => {
         else {
             res.json({
                 ok: false,
-                msg: 'habitacion ya esta desalojada'
+                msg: 'habitacion ya está desalojada'
             })
         }
     } catch (e) {
