@@ -5,28 +5,27 @@ import { Row, Col, Card, CardBody, ButtonGroup, Button } from 'reactstrap';
 import ReactApexChart from 'react-apexcharts';
 import "./dashboard.scss";
 
-export default () => {
-    const generateDummy = (length, max = 100000, min = 0) => Array(length).fill(null).map(item => Math.round((Math.random() * (max - min) + min)))
+export default ({ data }) => {
     const series = [
         {
             name: 'Caja',
             type: 'column',
-            data: generateDummy(3)
+            data: data.map(item => item.ventas - item.retiros - item.gastos),
         },
         {
             name: 'Ventas',
             type: 'line',
-            data: generateDummy(3)
+            data: data.map(item => item.ventas),
         },
         {
             name: 'Gastos',
             type: 'line',
-            data: generateDummy(3)
+            data: data.map(item => item.gastos),
         },
         {
             name: 'Retiros',
             type: 'line',
-            data: generateDummy(3)
+            data: data.map(item => item.retiros),
         },
     ]
 
@@ -64,7 +63,7 @@ export default () => {
             }
         },
         colors: ['#5664d2', '#1cbb8c', '#ff3d60', '#fcb92c'],
-        labels: ['Octubre', 'Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre'],
+        labels: data.map(item => item.fecha),
     }
 
     return (

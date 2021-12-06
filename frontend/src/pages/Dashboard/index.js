@@ -1,5 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, useState, useEffect } from "react";
 import { Container, Row, Col } from "reactstrap";
+import { timeFormat, moneyFormat } from "../../helpers/formatters";
+import { get } from '../../api'
 
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
@@ -19,102 +21,100 @@ import RevenueByLocations from "./RevenueByLocations";
 import ChatBox from "./ChatBox";
 import LatestTransactions from "./LatestTransactions";
 
-class Dashboard extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            breadcrumbItems: [
-                { title: "Dashboard", link: "#" },
-            ],
-            reports: [
-                { icon: "ri-stack-line", title: "Number of Sales", value: "1452", rate: "2.4%", desc: "From previous period" },
-                { icon: "ri-store-2-line", title: "Sales Revenue", value: "$ 38452", rate: "2.4%", desc: "From previous period" },
-                { icon: "ri-briefcase-4-line", title: "Average Price", value: "$ 15.4", rate: "2.4%", desc: "From previous period" },
-            ]
-        }
-    }
+export default () => {
+    const [data, setData] = useState([])
+    const [registros, setRegistros] = useState([])
+    const breadcrumbItems = [
+        { title: "Dashboard", link: "#" },
+    ]
 
-    render() {
-        return (
-            <React.Fragment>
-                <div className="page-content">
-                    <Container fluid>
+    useEffect(() => {
+        get('api/caja/info').then(res => {
+            setData(res.informacion)
+        })
 
-                        <Breadcrumbs title="Dashboard" breadcrumbItems={this.state.breadcrumbItems} />
-                        <Row>
-                            <MiniWidgets
-                                title="Caja"
-                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
-                                // icon="ri-stack-line"
-                                rate={0}
-                                desc="Desde el mes anterior"
-                            />
-                            <MiniWidgets
-                                title="Ventas"
-                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
-                                // icon="ri-stack-line"
-                                rate={0}
-                                desc="Desde el mes anterior"
-                            />
-                            <MiniWidgets
-                                title="Gastos"
-                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
-                                // icon="ri-add-fill"
-                                rate={0}
-                                desc="Desde el mes anterior"
-                                negative
-                            />
-                            <MiniWidgets
-                                title="Retiros"
-                                value={`$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`}
-                                // icon=" ri-add-fill"
-                                rate={0}
-                                desc="Desde el mes anterior"
-                                negative
-                            />
+        get('api/registros').then(res => {
+            setData(res.allRegistros)
+        })
+    }, [])
 
-                            <Col xl={12}>
-                                <CajaGraph />
-                            </Col>
+    return (
+        <React.Fragment>
+            <div className="page-content">
+                <Container fluid>
 
-                            <Col xl={8}>
-                                <UsersTable />
-                            </Col>
+                    <Breadcrumbs title="Dashboard" breadcrumbItems={breadcrumbItems} />
+                    <Row>
+                        <MiniWidgets
+                            title="Caja"
+                            value={moneyFormat((data[data.length - 1]?.ventas || 0) - (data[data.length - 1]?.gastos || 0) - (data[data.length - 1]?.retiros || 0))}
+                            // icon="ri-stack-line"
+                            rate={0}
+                            desc="Desde el mes anterior"
+                        />
+                        <MiniWidgets
+                            title="Ventas"
+                            value={moneyFormat(data[data.length - 1]?.ventas || 0)}
+                            // icon="ri-stack-line"
+                            rate={0}
+                            desc="Desde el mes anterior"
+                        />
+                        <MiniWidgets
+                            title="Gastos"
+                            value={moneyFormat(data[data.length - 1]?.gastos || 0)}
+                            // icon="ri-add-fill"
+                            rate={0}
+                            desc="Desde el mes anterior"
+                            negative
+                        />
+                        <MiniWidgets
+                            title="Retiros"
+                            value={moneyFormat(data[data.length - 1]?.retiros || 0)}
+                            // icon=" ri-add-fill"
+                            rate={0}
+                            desc="Desde el mes anterior"
+                            negative
+                        />
 
-                            <Col xl={4}>
-                                <RecentlyRegistros />
-                            </Col>
+                        <Col xl={12}>
+                            <CajaGraph data={data} />
+                        </Col>
 
-                            {/* <Col xl={4}>
+                        <Col xl={8}>
+                            <UsersTable />
+                        </Col>
 
-                                <SalesAnalytics />
+                        <Col xl={4}>
+                            <RecentlyRegistros data={registros} />
+                        </Col>
 
-                                <EarningReports />
+                        {/* <Col xl={4}>
 
-                            </Col> */}
-                        </Row>
+                            <SalesAnalytics />
+
+                            <EarningReports />
+
+                        </Col> */}
+                    </Row>
 
 
-                        {/* <Row>
-                            <Sources />
+                    {/* <Row>
+                        <Sources />
 
-                            <RecentlyActivity />
+                        <RecentlyActivity />
 
-                            <RevenueByLocations />
+                        <RevenueByLocations />
 
-                        </Row>
+                    </Row>
 
-                        <Row>
-                            <ChatBox />
+                    <Row>
+                        <ChatBox />
 
-                            <LatestTransactions />
-                        </Row> */}
+                        <LatestTransactions />
+                    </Row> */}
 
-                    </Container>
-                </div>
-            </React.Fragment>
-        );
-    }
+                </Container>
+            </div>
+        </React.Fragment>
+    );
 }
-
-export default Dashboard;

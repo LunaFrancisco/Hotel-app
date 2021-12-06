@@ -12,7 +12,7 @@ router.get('/allGastos', allGastos);
 router.get('/allRetiros', allRetiros);
 router.post('/cierre', cierreCaja);
 router.get('/', informacionCaja);
-router.get('/info',informacionMensual );
+router.get('/info', informacionMensual);
 
 
 

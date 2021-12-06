@@ -23,6 +23,7 @@ export default () => {
         gastos: 0,
         retiros: 0
     })
+    const [registros, setRegistros] = useState([])
     const breadcrumbItems = [
         { title: "Caja", link: "#" },
     ]
@@ -47,16 +48,15 @@ export default () => {
         get('api/caja').then(res => {
             setStats(res.caja[0])
         })
-    }, [])
 
-    const data = Array(16).fill(null).map(item => ({
-        amount: `$ ${Math.round(Math.random() * 10000).toLocaleString("es-CL")}`,
-        state: renderState(Math.round(Math.random() * 2) + 1), id: Math.round(Math.round(Math.random() * 5014)),
-        room: Math.round(Math.round(Math.random() * 32)),
-        checkin_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
-        transaction_date: `${timeFormat(Math.round(Math.round(Math.random() * 31)))}-10-2021 ${timeFormat(Math.round(Math.round(Math.random() * 23)))}:${timeFormat(Math.round(Math.round(Math.random() * 59)))}`,
-        obs: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam, perferendis. Nobis voluptate, assumenda quae magni reiciendis unde asperiores enim eum.'
-    }))
+        get('api/registros').then(res => {
+            setRegistros(res.allRegistros.map(item => ({
+                ...item,
+                estado: renderState(1),
+                monto: moneyFormat(item.monto),
+            })))
+        })
+    }, [])
 
     const columns = [
         {
@@ -65,22 +65,22 @@ export default () => {
             sort: true,
         },
         {
-            dataField: 'room',
+            dataField: 'id_habitacion',
             text: 'N° Habitación',
             sort: true
         },
         {
-            dataField: 'checkin_date',
+            dataField: 'fecha_entrada',
             text: 'Fecha de entrada',
             sort: true
         },
         {
-            dataField: 'transaction_date',
+            dataField: 'fecha',
             text: 'Fecha de transacción',
             sort: true
         },
         {
-            dataField: 'amount',
+            dataField: 'monto',
             text: 'Monto',
             sort: true
         },
@@ -90,7 +90,7 @@ export default () => {
             sort: true
         },
         {
-            dataField: 'obs',
+            dataField: 'observacion',
             text: 'Observación',
             sort: true
         },
@@ -245,7 +245,7 @@ export default () => {
                                             Listado de todos los registros realizados en el turno
                                         </p>
                                         <Table
-                                            data={data}
+                                            data={registros}
                                             columns={columns}
                                         />
                                     </CardBody>

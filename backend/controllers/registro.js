@@ -15,7 +15,7 @@ const getRegistros = async (req, res = response) => {
     });    
 
           return res.json({
-            ok: false,
+            ok: true,
             allRegistros,
           });     
 
