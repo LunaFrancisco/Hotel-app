@@ -21,7 +21,7 @@
             ]
         },
         {
-            "id_promocion": 2, // $16.000
+            "id_promocion": 4, // $26.900
             "id_productos": [
                 10, // papas fritas
                 11  // galleta
@@ -37,4 +37,4 @@
     "metodo_de_pago": 1
 }
 
-$40.700
+$51.600

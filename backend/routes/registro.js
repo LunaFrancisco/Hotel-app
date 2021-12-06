@@ -6,6 +6,6 @@ const router = Router();
 
 const { getRegistros } = require('../controllers/registro');
 
-router.get('/', getRegistros);
+router.get('/getRegistros', getRegistros);
 
 module.exports = router;
