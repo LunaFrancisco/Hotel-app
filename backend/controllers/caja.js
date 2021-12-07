@@ -21,7 +21,8 @@ const calcularTotalVentas = async (req, res) => {
   try {
     const findVentas = await Pedido.findAll();
   } catch (e) {
-    res.json({
+    console.log(e);
+    return res.json({
       ok: false,
       msg: "Ha ocurrido un error, por favor contacte al administrador",
     });
@@ -64,7 +65,8 @@ const newRetiro = async (req, res) => {
       });
     }
   } catch (e) {
-    res.json({
+    console.log(e);
+    return res.json({
       ok: false,
       msg: "Ha ocurrido un error, por favor contacte al administrador",
     });
@@ -105,7 +107,8 @@ const newGasto = async (req, res) => {
       });
     }
   } catch (e) {
-    res.json({
+    console.log(e);
+    return res.json({
       ok: false,
       msg: "Ha ocurrido un error, por favor contacte al administrador",
     });
@@ -126,7 +129,8 @@ const allRetiros = async (req, res) => {
       findRetiros,
     });
   } catch (e) {
-    res.json({
+    console.log(e);
+    return res.json({
       ok: false,
       msg: "Ha ocurrido un error, por favor contacte al administrador",
     });
@@ -145,6 +149,7 @@ const allGastos = async (req, res) => {
       findGastos,
     });
   } catch (e) {
+    console.log(e);
     res.json({
       ok: false,
       msg: "Ha ocurrido un error, por favor contacte al administrador",
@@ -152,29 +157,25 @@ const allGastos = async (req, res) => {
   }
 };
 
-//realizar cierre de caja
 const cierreCaja = async (req, res) => {
   const { id_usuario } = req.body;
   try {
-    const getBalance = await Balance_aux.findOne({
-      where: { id: 1 },
-      // attributes:['id','ventas','gastos','retiros','caja','id_balance']
+    const balance_aux = await Balance_aux.findOne({
+      where: { id: 1 } 
     });
-    console.log(getBalance.id_balance);
 
     const updateBalance = await Balance.update(
       {
         id_usuario: id_usuario,
-        ventas_total: getBalance.ventas,
-        retiros_total: getBalance.retiros,
-        gastos_total: getBalance.gastos,
-        caja_final: getBalance.caja,
+        ventas_total: balance_aux.ventas,
+        retiros_total: balance_aux.retiros,
+        gastos_total: balance_aux.gastos,
+        caja_final: balance_aux.caja,
         fecha: sequelize.literal("CURRENT_DATE"),
       },
-
       {
         where: {
-          id: getBalance.id_balance,
+          id: balance_aux.id_balance,
         },
         attributes: ["caja_final"],
       }
@@ -183,42 +184,36 @@ const cierreCaja = async (req, res) => {
     const getValue = await Balance.findOne(
       {
         where: {
-          id: getBalance.id_balance,
+          id: balance_aux.id_balance,
         },
       },
       {
         attributes: ["caja_final"],
       }
     );
-    console.log(getValue.caja_final);
-    const newBalance = await Balance.create(
-      {
-        // id_usuario:null,
+    const newBalance = await Balance.create({
+        id_usuario: null,
         caja_anterior: getValue.caja_final,
-        // ventas_total:null,
-        // retiros_total: null,
-        // gastos_total: null,
-        // caja_final:null,
-        // fecha : null
-      },
-      {
-        attributes: ["id"],
-      }
-    );
-
-    //actualizo la tabla aux a cero menos la caja
-    getBalance.ventas = 0;
-    getBalance.retiros = 0;
-    getBalance.gastos = 0;
-    getBalance.id_balance = newBalance.id;
-    getBalance.save();
+        ventas_total:null,
+        retiros_total: null,
+        gastos_total: null,
+        caja_final: null,
+        fecha: sequelize.literal("CURRENT_DATE")
+    });
+    // Actualizo la tabla aux a cero menos la caja
+    balance_aux.ventas = 0;
+    balance_aux.retiros = 0;
+    balance_aux.gastos = 0;
+    balance_aux.id_balance = newBalance.id;
+    balance_aux.save();
 
     return res.json({
       ok: true,
       msg: "Balance realizado con exito",
     });
   } catch (e) {
-    res.json({
+    console.log(e);
+    return res.json({
       ok: false,
       msg: "Ha ocurrido un error, por favor contacte al administrador",
     });
@@ -247,10 +242,11 @@ const informacionCaja = async (req, res) => {
     ];
     return res.json({
       ok: true,
-      caja,
+      caja
     });
   } catch (e) {
-    res.json({
+    console.log(e);
+    return res.json({
       ok: false,
       msg: "error, contacte con el administrador",
     });
@@ -273,58 +269,59 @@ const informacionMensual = async (req, res) => {
       "Noviembre",
       "Diciembre",
     ];
-    
+
     const info = await Balance.findAll(
       {
-         attributes: [
-         [sequelize.fn('date_trunc', 'month', sequelize.col('fecha')),'fechamen'],
-         [sequelize.fn('sum', sequelize.col('ventas_total')), 'ventas'],
-         [sequelize.fn('sum', sequelize.col('gastos_total')), 'gastos'],
-         [sequelize.fn('sum', sequelize.col('retiros_total')), 'retiros']],
-    
-         group:  ['fechamen'],
-         order: [[sequelize.literal('fechamen'),'ASC']] 
+        attributes: [
+          [sequelize.fn('date_trunc', 'month', sequelize.col('fecha')), 'fechamen'],
+          [sequelize.fn('sum', sequelize.col('ventas_total')), 'ventas'],
+          [sequelize.fn('sum', sequelize.col('gastos_total')), 'gastos'],
+          [sequelize.fn('sum', sequelize.col('retiros_total')), 'retiros']],
+
+        group: ['fechamen'],
+        order: [[sequelize.literal('fechamen'), 'ASC']]
       }
     );
 
-    
-     let informacion = []
-     
-     //calculo mes actual
-     const d = new Date();
-    let mesActual =d.getMonth()
+
+    let informacion = []
+
+    //calculo mes actual
+    const d = new Date();
+    let mesActual = d.getMonth()
 
 
-     const cualquiernombre = info.map ( i =>{
-       
+    const cualquiernombre = info.map(i => {
+
       let date = i.dataValues.fechamen
-       let mes = new Date(i.dataValues.fechamen)
-      
-      
+      let mes = new Date(i.dataValues.fechamen)
+
+
       //  if (date != null && mes.getMonth() != mesActual ){
-       if (date != null ){
-        
+      if (date != null) {
+
         const fecha = new Date(i.dataValues.fechamen)
 
         informacion.push({
-          fecha : months[fecha.getMonth()],
-          ventas : i.dataValues.ventas,
+          fecha: months[fecha.getMonth()],
+          ventas: i.dataValues.ventas,
           retiros: i.dataValues.retiros,
           gastos: i.dataValues.gastos
         })
-        
-       }  
-          
-     });
- 
+
+      }
+
+    });
+
     return res.json({
       ok: true,
       informacion
 
     });
 
-    } catch (e) {
-    res.json({
+  } catch (e) {
+    console.log(e);
+    return res.json({
       ok: false,
       msg: "error, contacte con el administrador",
     });
