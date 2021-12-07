@@ -8,12 +8,10 @@ const Detalle_pedido = sequelize.define('detalle_pedido', {
         allowNull: false,
         primaryKey: true
     },
-    
     cantidad: {
         type: Sequelize.INTEGER
     }
 }, {
-
     timestamps: false
 });
 

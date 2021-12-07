@@ -35,6 +35,9 @@ const Servicio = sequelize.define('servicios', {
     id_cliente2: {
         type: Sequelize.INTEGER
     },
+    estado: {
+        type: Sequelize.STRING
+    }
 }, {
 
     timestamps: false

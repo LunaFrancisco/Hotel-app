@@ -20,6 +20,7 @@ const Registro = require("../models/registro");
 // Helpers
 const cantidad_extras = require('../helpers/cantidad_extras');
 const descInv = require("../helpers/desc-inv");
+const addInv = require("../helpers/add-inv");
 
 // habitaciones disponibles
 // habitaciones ocupadas
@@ -114,39 +115,53 @@ const listarHabitaciones = async (req, res) => {
                     'id'
                 ]
             }, {
-                model: Servicio,
-                attributes: [
-                    'id',
-                    'hr_entrada',
-                    'hr_salida'
-                ]
+                model: Servicio
             }],
             order: [
                 ['numero', 'ASC']
             ]
         });
         let array_final = [];
-        for (let habitacion of habitaciones) {
-            let id_servicio = habitacion.servicios[0]?.id
-            // Comprobamos si esta pagado dicho servicio
-            if (id_servicio) {
-                const registro_ServicioPromocion = await Servicio_promocion.findOne({
-                    where: { id_servicio },
-                    include: [{
-                        model: Promocion,
-                        attributes: [
-                            'horas'
-                        ],
-                    }],
-                });
-                let h = habitaciones.find(habitacion => habitacion.servicios[0]?.id === id_servicio);
-                h.dataValues.pagado = registro_ServicioPromocion.estado;
-                h.dataValues.horas = registro_ServicioPromocion.promocione.horas;
-                array_final.push(h.dataValues);
+        for await (let habitacion of habitaciones) {
+            const { servicios } = habitacion;
+            if (servicios.length > 0) {
+                for await (let servicio of servicios) {
+                    if (servicio.estado === 'Pendiente') {
+                        habitacion.servicios = servicio;
+                        array_final.push(habitacion);
+                        break;
+                    }
+                    else {
+                        habitacion.servicios = [];
+                        array_final.push(habitacion);
+                        break;
+                    }
+                }
             }
             else {
                 array_final.push(habitacion);
             }
+            // let id_servicio = habitacion.servicios[0]?.id
+            // // Comprobamos si esta pagado dicho servicio
+            // if (id_servicio) {
+            //     console.log(id_servicio)
+            //     const registro_ServicioPromocion = await Servicio_promocion.findOne({
+            //         where: { id_servicio },
+            //         include: [{
+            //             model: Promocion,
+            //             attributes: [
+            //                 'horas'
+            //             ],
+            //         }],
+            //     });
+            //     let h = habitaciones.find(habitacion => habitacion.servicios[0]?.id === id_servicio);
+            //     h.pagado = registro_ServicioPromocion?.estado;
+            //     h.horas = registro_ServicioPromocion?.promocione.horas;
+            //     array_final.push(h);
+            // }
+            // else {
+            //     array_final.push(habitacion);
+            // }
         };
         return res.status(200).json({
             ok: true,
@@ -260,6 +275,7 @@ const reservarHabitacion = async (req, res) => {
                 total: 0,
                 id_cliente1: arreglo[0],
                 id_cliente2: arreglo[1],
+                estado: 'Pendiente'
             });
 
             // Para tabla registro
@@ -323,7 +339,7 @@ const reservarHabitacion = async (req, res) => {
                     estado: "pendiente",
                     //total
                 });
-                for (let extra of objCantidadExtras) {
+                for await (let extra of objCantidadExtras) {
                     await Detalle_pedido.create({
                         id_pedido: addPedido.id,
                         id_producto: extra.id_producto,
@@ -411,12 +427,17 @@ const cancelarReserva = async (req, res) => {
         const getHabitacion = await Habitacion.findOne({
             where: { id: servicio.id_habitacion }
         });
+
         if (!servicio) {
             return res.status(200).json({
                 ok: false,
                 msg: 'No existe el servicio'
             });
         }
+
+        // Servicio estado cancelado
+        servicio.estado = 'Cancelado';
+        await servicio.save();
 
         // Cambiamos habitacion a estado disponible
         getHabitacion.id_estado = 1;
@@ -427,19 +448,47 @@ const cancelarReserva = async (req, res) => {
             where: { id_servicio: servicio.id }
         });
         for await (let servicio_promocion of servicio_promociones) {
+            // Devolvemos los bebestibles de la promocion a inventario
+            addInv(servicio_promocion.id_producto1, 1);
+            addInv(servicio_promocion.id_producto2, 1);
             // Quitamos de ventas aux el precio de cada promocion si es que pagó en efectivo
             const promocion = await Promocion.findOne({
                 where: { id: servicio_promocion.id_promocion }
             });
-            const balance = await Balance_aux.findOne({
+            const balance_aux = await Balance_aux.findOne({
                 where: { id: 1 }
             });
-            if (promocion.id_tipo_pago === 1) {
-                balance.ventas -= promocion.precio;
-                await balance.save();
+            if (servicio_promocion.id_tipo_pago === 1) {
+                balance_aux.caja -= promocion.precio;
             }
-            servicio_promocion.destroy();
+            balance_aux.ventas -= promocion.precio;
+            await balance_aux.save();
+            await servicio_promocion.destroy();
         };
+        // Quitar todo respecto a pedidos (Actualizar AUx e inventario)
+        const pedidos = await Pedido.findAll({
+            where: { id_servicio }
+        });
+        // Quitamos todas las relaciones en detalle_pedidos
+        for await (let pedido of pedidos) {
+            const detalle_pedidos = await Detalle_pedido.findAll({
+                where: { id_pedido: pedido.id }
+            });
+            for await (let detalle_pedido of detalle_pedidos) {
+                const producto = await Producto.findOne({
+                    where: { id: detalle_pedido.id_producto }
+                });
+                const balance_aux = await Balance_aux.findOne({
+                    where: { id: 1 }
+                });
+                if (pedido.id_tipo_pago === 1) {
+                    balance_aux.caja -= producto.precio;
+                }
+                balance_aux.ventas -= producto.precio;
+                await balance_aux.save();
+            }
+        }
+
         // Registro para tabla registro
         const addRegistro = await Registro.create({
             id_servicio: id_servicio,
@@ -497,8 +546,8 @@ const desalojarHabitacion = async (req, res) => {
                     attributes: ["id"],
                 }
             );
-            //al desalojar hay que cambiar los valores de
-
+            findService.estado = "Finalizado";
+            findService.save();
             return res.json({
                 ok: true,
                 msg: "Habitacion desalojada",

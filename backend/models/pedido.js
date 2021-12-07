@@ -10,21 +10,19 @@ const Pedido = sequelize.define('pedido', {
     },
     id_tipo_pago: {
         type: Sequelize.INTEGER
-        
+
     },
     estado: {
         type: Sequelize.TEXT
-        
+
     },
     total: {
         type: Sequelize.INTEGER
-       
+
     },
     id_servicio: {
         type: Sequelize.INTEGER
-       
     }
-    
 }, {
     timestamps: false
 });

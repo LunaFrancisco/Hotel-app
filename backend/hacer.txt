@@ -16,29 +16,27 @@
         {
             "id_promocion": 3, // $19.800
             "id_productos": [
-                5, // agua mineral con gas
-                6  // agua mineral sin gas
+                2, // agua mineral con gas
+                3  // agua mineral sin gas
             ]
         },
         {
             "id_promocion": 4, // $26.900
             "id_productos": [
-                10, // papas fritas
-                11  // galleta
+                4, // papas fritas
+                6  // galleta
             ]
         }
     ],
     "extras": [
-        1, // $2.200 coca-cola
+        1, // $2.200 coca-cola 
         5, // $1.500 agua mineral con gas
         7, // $500 te
         23 // $700 preservativos
     ],
     "metodo_de_pago": 1
 }
-
 $51.600
-
 {
     "id_servicio": 1,
     "extras": [
@@ -48,5 +46,10 @@ $51.600
     ],
     "metodo_de_pago": 1
 }
-
 $55.100
+
+cerrar caja: 
+1) se reinicia tabla aux
+2) se guarda en balance
+3) ver error del increment
+4) caja final = caja nueva
