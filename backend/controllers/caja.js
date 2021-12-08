@@ -337,6 +337,7 @@ const informacionMensual = async (req, res) => {
              
        return res.json({
          ok: true,
+         caja: info_aux.caja,
          informacion
          
         });
