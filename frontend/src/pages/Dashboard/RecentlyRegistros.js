@@ -25,7 +25,7 @@ export default ({ data }) => {
                                 </div>
                                 <div>
                                     <div>
-                                        <h5 className="font-size-13">{item.fecha} <small className="text-muted">{item.fecha}</small></h5>
+                                        <h5 className="font-size-13">{item.fecha} <small className="text-muted">{item.hora}</small></h5>
                                     </div>
 
                                     <div>

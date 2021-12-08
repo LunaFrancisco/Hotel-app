@@ -90,11 +90,11 @@ export default ({ rooms, onCheckout, onEnable, onCancel, onDesalojar }) => {
             text: 'Estado',
             sort: true
         },
-        {
-            dataField: 'paid',
-            text: 'Pagado',
-            sort: true
-        },
+        // {
+        //     dataField: 'paid',
+        //     text: 'Pagado',
+        //     sort: true
+        // },
         {
             dataField: 'entrada',
             text: 'Hora de entrada',

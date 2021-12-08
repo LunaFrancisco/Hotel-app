@@ -7,11 +7,11 @@ import "./dashboard.scss";
 
 export default ({ data }) => {
     const series = [
-        {
-            name: 'Caja',
-            type: 'column',
-            data: data.map(item => item.ventas - item.retiros - item.gastos),
-        },
+        // {
+        //     name: 'Caja',
+        //     type: 'column',
+        //     data: data.map(item => item.ventas - item.retiros - item.gastos),
+        // },
         {
             name: 'Ventas',
             type: 'line',
@@ -39,7 +39,7 @@ export default ({ data }) => {
             }
         },
         stroke: {
-            width: [0, 3, 3, 3],
+            width: [3, 3, 3],
             curve: 'smooth'
         },
         plotOptions: {
@@ -62,7 +62,7 @@ export default ({ data }) => {
                 }
             }
         },
-        colors: ['#5664d2', '#1cbb8c', '#ff3d60', '#fcb92c'],
+        colors: ['#1cbb8c', '#ff3d60', '#fcb92c'],
         labels: data.map(item => item.fecha),
     }
 
