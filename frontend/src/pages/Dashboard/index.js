@@ -41,7 +41,7 @@ export default () => {
                 return ({
                     ...item,
                     fecha: `${timeFormat(date.getDate())}/${timeFormat(date.getMonth())}/${date.getFullYear()}`,
-                    time: `${timeFormat(date.getHours())}:${timeFormat(date.getMinutes())}`
+                    hora: `${timeFormat(date.getHours())}:${timeFormat(date.getMinutes())}`
                 })
             }))
         })
