@@ -33,7 +33,7 @@ export default () => {
             setData(res.informacion)
         })
 
-        get('api/registros').then(res => {
+        get('api/registros/getRegistros').then(res => {
             setData(res.allRegistros)
         })
     }, [])

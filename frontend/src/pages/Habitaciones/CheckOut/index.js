@@ -95,7 +95,7 @@ export default () => {
         }
 
         if (!error) {
-            const response = await post('api/services/new', {
+            const response = await post('api/services/reservarHabitacion', {
                 id: id,
                 clientes: orderSummary.clients,
                 servicios: orderSummary.promotions.map(item => {
@@ -112,6 +112,10 @@ export default () => {
                 msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
                 ok: response.ok
             })
+
+            setTimeout(() => {
+                window.location = '/habitaciones'
+            }, 1000)
         }
     }
 
