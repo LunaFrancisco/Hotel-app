@@ -142,7 +142,7 @@ export default () => {
             confirmBtnText="Aceptar"
             cancelBtnText="Cancelar"
             onConfirm={async () => {
-                const response = await post('api/services/cancel', { id: reserva }, { 'Content-Type': 'application/json' })
+                const response = await post('api/services/cancel', { id_servicio: reserva }, { 'Content-Type': 'application/json' })
                 setResponsePopup({
                     msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
                     ok: response.ok
