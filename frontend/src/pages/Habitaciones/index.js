@@ -55,12 +55,15 @@ export default () => {
         const response = await get('api/services/listarHabitaciones')
 
         setRooms(response.listaHabitaciones.map((item) => {
-            let salida = item.servicios.length > 0 ? new Date(`01-01-2021 ${item.servicios[0]?.hr_entrada}`) : '-'
-            let entrada = item.servicios.length > 0 ? new Date(`01-01-2021 ${item.servicios[0]?.hr_entrada}`) : '-'
-            if (salida != '-') {
-                salida.setHours(salida.getHours() + item.horas)
-                salida = `${salida.getHours()}:${salida.getMinutes()}:${salida.getSeconds()}`
+            console.log(item.servicios)
+            let salida = item.servicios.length > 0 && item.servicios[0]?.hr_salida ? new Date(`01-01-2021 ${item.servicios[0]?.hr_salida}`) : '-'
+            let entrada = item.servicios.length > 0 && item.servicios[0]?.hr_entrada ? new Date(`01-01-2021 ${item.servicios[0]?.hr_entrada}`) : '-'
+            if (entrada != '-') {
                 entrada = `${entrada.getHours()}:${entrada.getMinutes()}:${entrada.getSeconds()}`
+            }
+            if (salida != '-') {
+                // salida.setHours(salida.getHours() + item.horas)
+                salida = `${salida.getHours()}:${salida.getMinutes()}:${salida.getSeconds()}`
             }
 
             return ({
@@ -69,8 +72,8 @@ export default () => {
                 state: item.estado.id,
                 paid: item.paid ?? false,
                 servicio: item.servicios[0]?.id,
-                entrada: entrada,
-                salida: salida,
+                entrada: item.estado.id == 1 ? '-' : entrada,
+                salida: item.estado.id == 1 ? '-' : salida,
             })
         }))
     }, [refresh])
@@ -117,7 +120,7 @@ export default () => {
             confirmBtnText="Aceptar"
             cancelBtnText="Cancelar"
             onConfirm={async () => {
-                const response = await post('api/services/desalojar', { id: reserva }, { 'Content-Type': 'application/json' })
+                const response = await post('api/services/desalojarHabitacion', { id: reserva }, { 'Content-Type': 'application/json' })
                 setResponsePopup({
                     msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
                     ok: response.ok
