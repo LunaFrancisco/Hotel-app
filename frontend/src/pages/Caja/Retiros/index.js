@@ -26,7 +26,7 @@ export default ({ cajaRefresh, setCajaRefresh }) => {
             id: item.id,
             amount: `$ ${Math.round(item.monto).toLocaleString("es-CL")}`,
             obs: item.descripcion,
-            checkin_date: dateFormat(item.fecha),
+            checkin_date: item.fecha ? dateFormat(new Date(item.fecha)) : '-',
         })))
 
     }, [refresh])

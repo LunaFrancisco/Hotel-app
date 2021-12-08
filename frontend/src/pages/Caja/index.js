@@ -55,8 +55,8 @@ export default () => {
                 ...item,
                 estado: renderState(1),
                 monto: moneyFormat(item.monto),
-                fecha: dateFormat(new Date(item.fecha)),
-                fecha_entrada: dateFormat(new Date(item.fecha_entrada)),
+                fecha: item.fecha ? dateFormat(new Date(item.fecha)) : '-',
+                fecha_entrada: item.fecha_entrada ? dateFormat(new Date(item.fecha_entrada)) : '-',
             })))
         })
     }, [refresh])
