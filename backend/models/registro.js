@@ -8,6 +8,9 @@ const Registro = sequelize.define('registro', {
         allowNull: false,
         primaryKey: true
     },
+    id_usuario: {
+        type: Sequelize.INTEGER
+    },
     id_servicio: {
         type: Sequelize.INTEGER
     },
