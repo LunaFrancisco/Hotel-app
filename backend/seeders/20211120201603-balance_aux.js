@@ -15,18 +15,13 @@ module.exports = {
         await queryInterface.bulkInsert('balance_aux', [
             {
                 id: 1,
-                ventas:5000,
-                gastos:0,
-                retiros:0,
-                caja:55000,
-                id_balance:19
-              
+                ventas: 0,
+                gastos: 0,
+                retiros: 0,
+                caja: 55000,
+                id_balance: 2
             }
-
-
         ], {});
-
-       
     },
 
     down: async (queryInterface, Sequelize) => {
