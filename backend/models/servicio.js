@@ -39,7 +39,6 @@ const Servicio = sequelize.define('servicios', {
         type: Sequelize.STRING
     }
 }, {
-
     timestamps: false
 });
 

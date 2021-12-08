@@ -138,6 +138,7 @@ const loginUsuario = async (req, res) => {
         const id = findUser.dataValues.id;
 
         //const tipo = findUser.dataValues.roles[0].dataValues.rol;
+        const id_usurario = findUser.id;
         const tipo = findUser.dataValues.roles[0].dataValues.rol;
         const tipo_id = findUser.dataValues.roles[0].dataValues.id;
         //const { passwordhash, tipo } = result.rows[0];
@@ -149,7 +150,7 @@ const loginUsuario = async (req, res) => {
             });
         }
         // Generar JWT
-        const token = await generarJWT(rut, tipo);
+        const token = await generarJWT(rut, tipo, findUser.id);
         return res.json({
             ok: true,
             msg: 'Login',

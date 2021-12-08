@@ -703,14 +703,46 @@ const getServicio = async (req, res = response) => {
     }
 };
 
+const editarServicio = async (req, res = response) => {
+    try {
+        return res.json({
+            ok: true,
+            msg: 'editarServicio'
+        });
+    }
+    catch (e) {
+        return res.json({
+            ok: false,
+            msg: 'Error, contacte con administración'
+        });
+    }
+};
+
+const pruebaJWT = async (req, res = response) => {
+    try {
+        return res.json({
+            ok: true,
+            rut: req.rut_usuario,
+            tipo: req.tipo,
+            id_usuario: req.id_usuario
+        });
+    } catch (error) {
+        return res.json({
+            ok: false,
+            msg: 'Error, contacte con administración'
+        });
+    }
+};
+
 module.exports = {
+    estadoHabitaciones,
     listarHabitaciones,
     habilitarHabitacion,
-    estadoHabitaciones,
     reservarHabitacion,
-    estadoHabitaciones,
     cancelarReserva,
     desalojarHabitacion,
     listarPromociones,
     getServicio,
+    editarServicio,
+    pruebaJWT,
 };
