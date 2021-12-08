@@ -282,24 +282,37 @@ const informacionMensual = async (req, res) => {
         order: [[sequelize.literal('fechamen'), 'ASC']]
       }
     );
+    const info_aux = await Balance_aux.findOne(
 
+      {where: {id:1},
+         attributes: ['ventas','retiros','gastos','caja']
+      }
+    );
 
-    let informacion = []
+    console.log(info_aux.ventas)
+    // let infoActual = [{
+    //   ventas : info_aux.ventas,
+    //   retiros : info_aux.retiros,
+    //   gastos :info_aux.gastos,
+    //   caja : info_aux.caja,
+    //   }]
+    
+     let informacion = []
+     
+     //calculo mes actual
+     const d = new Date();
+    let mesActual =d.getMonth()
 
-    //calculo mes actual
-    const d = new Date();
-    let mesActual = d.getMonth()
-
-
-    const cualquiernombre = info.map(i => {
-
+    
+      info.map ( i =>{
+       
       let date = i.dataValues.fechamen
-      let mes = new Date(i.dataValues.fechamen)
-
-
-      //  if (date != null && mes.getMonth() != mesActual ){
-      if (date != null) {
-
+       let mes = new Date(i.dataValues.fechamen)
+      
+      
+       if (date != null && mes.getMonth() != mesActual ){
+      //  if (date != null ){
+        
         const fecha = new Date(i.dataValues.fechamen)
 
         informacion.push({
@@ -309,17 +322,26 @@ const informacionMensual = async (req, res) => {
           gastos: i.dataValues.gastos
         })
 
+        
       }
-
+       
+      else if(date != null && mes.getMonth() == mesActual){
+        informacion.push({
+          fecha : months[mes.getMonth()],
+          ventas : parseInt(i.dataValues.ventas) + parseInt(info_aux.ventas) ,
+          retiros: parseInt(i.dataValues.retiros)+ parseInt(info_aux.retiros),
+          gastos: parseInt(i.dataValues.gastos)+ parseInt(info_aux.gastos)
+        })
+      }
     });
-
-    return res.json({
-      ok: true,
-      informacion
-
-    });
-
-  } catch (e) {
+             
+       return res.json({
+         ok: true,
+         informacion
+         
+        });
+      }
+   catch (e) {
     console.log(e);
     return res.json({
       ok: false,
