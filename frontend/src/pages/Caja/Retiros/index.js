@@ -3,6 +3,7 @@ import { Button, Row, Col, Label, Input } from 'reactstrap'
 import Table from '../../../components/Common/InventarioTable'
 import SweetAlert from "react-bootstrap-sweetalert";
 import { get, post } from '../../../api'
+import { dateFormat } from "../../../helpers/formatters";
 
 export default ({ cajaRefresh, setCajaRefresh }) => {
     const [addPopup, setAddPopup] = useState(false)
@@ -25,7 +26,7 @@ export default ({ cajaRefresh, setCajaRefresh }) => {
             id: item.id,
             amount: `$ ${Math.round(item.monto).toLocaleString("es-CL")}`,
             obs: item.descripcion,
-            checkin_date: 'TODO',
+            checkin_date: dateFormat(item.fecha),
         })))
 
     }, [refresh])
@@ -111,7 +112,7 @@ export default ({ cajaRefresh, setCajaRefresh }) => {
                     }}
                 >
                     <Row>
-                        <Col lg={12}>
+                        {/* <Col lg={12}>
                             <div className="mb-4">
                                 <Label
                                     htmlFor="fecha"
@@ -129,7 +130,7 @@ export default ({ cajaRefresh, setCajaRefresh }) => {
                                     onChange={(value) => handleFormChange(value, 'fecha')}
                                 />
                             </div>
-                        </Col>
+                        </Col> */}
                         <Col lg={12}>
                             <div className="mb-4">
                                 <Label

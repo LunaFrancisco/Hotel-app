@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button, Badge } from "reactstrap"
 import Tooltip from "../../components/Common/Tooltip";
-import { timeFormat, moneyFormat } from "../../helpers/formatters";
+import { timeFormat, moneyFormat, dateFormat } from "../../helpers/formatters";
 import { get } from "../../api";
 
 //Import Breadcrumb
@@ -54,6 +54,8 @@ export default () => {
                 ...item,
                 estado: renderState(1),
                 monto: moneyFormat(item.monto),
+                fecha: dateFormat(new Date(item.fecha)),
+                fecha_entrada: dateFormat(new Date(item.fecha_entrada)),
             })))
         })
     }, [])
@@ -84,11 +86,11 @@ export default () => {
             text: 'Monto',
             sort: true
         },
-        {
-            dataField: 'state',
-            text: 'Estado',
-            sort: true
-        },
+        // {
+        //     dataField: 'state',
+        //     text: 'Estado',
+        //     sort: true
+        // },
         {
             dataField: 'observacion',
             text: 'Observación',
