@@ -190,6 +190,7 @@ const habilitarHabitacion = async (req, res) => {
             const addRegistro = await Registro.create({
                 id_habitacion: id,
                 fecha: sequelize.literal("CURRENT_DATE"),
+                fecha_entrada: sequelize.literal("CURRENT_DATE"),
                 observacion: `Habitacion ${id} aseada`
             });
             // Descontar sabanas y toallas
