@@ -49,7 +49,7 @@ export default () => {
     }
 
     useEffect(() => {
-        get('api/registros').then(res => {
+        get('api/registros/getRegistros').then(res => {
             setData(res.allRegistros.map(item => ({
                 ...item,
                 estado: renderState(1),

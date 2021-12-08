@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
     Input,
     Card,
@@ -13,12 +13,13 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import Switch from 'react-switch'
 import SummaryContext from '../../pages/Habitaciones/CheckOut/SummaryContext'
 
-export default ({ inventario, active, added, addPromotions, promotion, paid }) => {
+export default ({ idx, inventario, active, added, addPromotions, editPromotion, deletePRomotion, promotion, paid }) => {
     const { setPaid } = useContext(SummaryContext)
     const [addPopup, setAddPopup] = useState(false)
     const [editPopup, setEditPopup] = useState(false)
-    const { id, hours, price, description, included } = promotion
-    const [beberages, setBeberages] = useState(Array(included.length).fill({}))
+    const [beberages, setBeberages] = useState(Array(promotion.included.length).fill({}))
+    const [addedBeberages, setAddedBeberages] = useState(promotion.beberages)
+
     const beberageChange = (idx, value) => {
         let temp = beberages
         temp[idx] = {
@@ -52,8 +53,6 @@ export default ({ inventario, active, added, addPromotions, promotion, paid }) =
         2: inventario.filter(item => item.tipo_producto.tipo === 'Bebida'),
     }
 
-    console.log(paid)
-
     return <Card className={classnames("border rounded shipping-address", {
         'active': active
     })}>
@@ -71,19 +70,19 @@ export default ({ inventario, active, added, addPromotions, promotion, paid }) =
                     className="me-1 mb-sm-8 mb-2"
                     checkedIcon={<DollarSymbol />}
                     onColor="#38a4f8"
-                    onChange={() => setPaid(id)}
+                    onChange={() => setPaid(promotion.id)}
                     checked={paid}
                 />
             }
             <h5 className="font-size-14 mb-4">
-                Promoción {hours} {hours > 1 ? `horas` : `hora`}
+                Promoción {promotion.hours} {promotion.hours > 1 ? `horas` : `hora`}
             </h5>
 
             <h5 className="font-size-14">
-                ${price.toLocaleString("es-CL")}
+                ${promotion.price.toLocaleString("es-CL")}
             </h5>
             <p className="mb-1">
-                {description}
+                {promotion.description}
             </p>
             {/* <p className="mb-0">Mo. 012-345-6789</p> */}
         </CardBody>
@@ -105,8 +104,13 @@ export default ({ inventario, active, added, addPromotions, promotion, paid }) =
                 onCancel={() => setAddPopup(false)}
             >
                 {
-                    included.map((item, idx) => (
-                        <div className="my-2">
+                    promotion.included.length === 0 && <div className="my-2">
+                        <p>Esta promoción no incluye bebestibles</p>
+                    </div>
+                }
+                {
+                    promotion.included.map((item, idx) => (
+                        <div className="my-2" key={`bebestible-add-${idx}`}>
                             <CardTitle className="h4 mt-4">
                                 Bebestible {idx + 1}
                             </CardTitle>
@@ -119,7 +123,7 @@ export default ({ inventario, active, added, addPromotions, promotion, paid }) =
                                         <div className="mx-4">
                                             {
                                                 options[type.id].map((option, sub_idx) => (
-                                                    <div className="form-check">
+                                                    <div className="form-check" key={`bebestible-add-${idx}-inventario-${option.id}`}>
                                                         <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option.id} onChange={(value) => beberageChange(idx, value)} />
                                                         <Label className="form-check-label" id={sub_idx}>
                                                             {option.nombre}
@@ -134,6 +138,63 @@ export default ({ inventario, active, added, addPromotions, promotion, paid }) =
                         </div>
                     ))
                 }
+            </SweetAlert>
+        ) : null
+        }
+        {editPopup ? (
+            <SweetAlert
+                showCancel={false}
+                showConfirm={false}
+                title="Editar promoción"
+                onConfirm={() => {
+                    addPromotions({
+                        ...promotion,
+                        beberages
+                    })
+                    setEditPopup(false)
+                }}
+                onCancel={() => setEditPopup(false)}
+            >
+                {
+                    promotion.included.length === 0 && <div className="my-2">
+                        <p>Esta promoción no incluye bebestibles</p>
+                    </div>
+                }
+                {
+                    promotion.included.map((item, idx) => (
+                        <div className="my-2" key={`bebestible-edit-${idx}`}>
+                            <CardTitle className="h4 mt-4">
+                                Bebestible {idx + 1}
+                            </CardTitle>
+                            {
+                                item.map(type => (
+                                    <React.Fragment>
+                                        <p className="card-title-desc mb-0 mt-2">
+                                            {type.type}
+                                        </p>
+                                        <div className="mx-4">
+                                            {
+                                                options[type.id].map((option, sub_idx) => (
+                                                    <div className="form-check" key={`bebestible-edit-${idx}-inventario-${option.id}`}>
+                                                        <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option.id} onChange={(value) => beberageChange(idx, value)} checked={promotion.beberages[idx]?.value?.id === option.id} />
+                                                        <Label className="form-check-label" id={sub_idx}>
+                                                            {option.nombre}
+                                                        </Label>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                    </React.Fragment>
+                                ))
+                            }
+                        </div>
+                    ))
+                }
+                <p style={{ display: 'flex', zIndex: 1, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1.25em auto 0px' }}>
+                    <button onClick={() => setEditPopup(false)} className="btn btn-lg btn-danger" style={{ marginRight: '8px' }} >Cancelar</button>
+                    <button onClick={() => { }} className="btn btn-lg btn-danger" style={{ marginRight: '8px' }}>Eliminar</button>
+                    <button onClick={() => { }} className="btn btn-lg btn-success" style={{ marginRight: '8px', borderColor: 'rgb(76, 174, 76)', boxShadow: 'rgba(0, 0, 0, 0.075) 0px 1px 1px inset, rgba(76, 174, 76, 0.6) 0px 0px 8px' }}>Editar</button>
+                </p>
             </SweetAlert>
         ) : null
         }

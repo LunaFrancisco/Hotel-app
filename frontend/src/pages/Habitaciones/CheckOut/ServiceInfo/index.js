@@ -81,6 +81,16 @@ export default ({ inventario }) => {
         promotions: [...orderSummary.promotions, promotion]
     })
 
+    const editPromotion = (idx, promotion) => setOrderSummary({
+        ...orderSummary,
+        promotions: [...orderSummary.promotions, promotion]
+    })
+
+    const deletePromotion = (idx, promotion) => setOrderSummary({
+        ...orderSummary,
+        promotions: [...orderSummary.promotions, promotion]
+    })
+
     return <div>
         <CardTitle className="h4">
             Añadir promociones
@@ -90,7 +100,7 @@ export default ({ inventario }) => {
         </p>
         <Row>
             {
-                promotions.map((promotion) => (<Col lg={4} sm={6}>
+                promotions.map((promotion) => (<Col lg={4} sm={6} key={promotion.id}>
                     <CardPromocion
                         inventario={inventario}
                         promotion={promotion}
@@ -109,18 +119,20 @@ export default ({ inventario }) => {
         </p>
         <Row>
             {
-                orderSummary.promotions.map((promotion) => (<Col lg={4} sm={6}>
+                orderSummary.promotions.map((promotion, idx) => (<Col lg={4} sm={6} key={`${promotion.id}-${idx}`}>
                     <CardPromocion
+                        idx={idx}
                         inventario={inventario}
                         promotion={promotion}
-                        addPromotions={addPromotions}
+                        editPromotion={editPromotion}
+                        deletePromotion={deletePromotion}
                         added={true}
                         active={true} />
                 </Col>))
             }
         </Row>
 
-        <CardTitle className="h4">
+        {/* <CardTitle className="h4">
             Promociones pagadas
         </CardTitle>
         <p className="card-title-desc">
@@ -137,6 +149,6 @@ export default ({ inventario }) => {
                         active={true} />
                 </Col>))
             }
-        </Row>
+        </Row> */}
     </div>
 }

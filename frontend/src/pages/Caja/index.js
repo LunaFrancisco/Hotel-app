@@ -49,7 +49,7 @@ export default () => {
             setStats(res.caja[0])
         })
 
-        get('api/registros').then(res => {
+        get('api/registros/getRegistros').then(res => {
             setRegistros(res.allRegistros.map(item => ({
                 ...item,
                 estado: renderState(1),
