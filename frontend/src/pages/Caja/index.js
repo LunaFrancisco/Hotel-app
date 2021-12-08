@@ -15,6 +15,7 @@ import { get, post } from '../../api'
 
 export default () => {
     const [activeTab, setActiveTab] = useState(0)
+    const [refresh, setRefresh] = useState(false)
     const [cierreCajaPopup, setCierreCajaPopup] = useState(false)
     const [responsePopup, setResponsePopup] = useState(null)
     const [stats, setStats] = useState({
@@ -56,7 +57,7 @@ export default () => {
                 monto: moneyFormat(item.monto),
             })))
         })
-    }, [])
+    }, [refresh])
 
     const columns = [
         {
@@ -137,6 +138,7 @@ export default () => {
                                 ok: response.ok
                             })
                             setCierreCajaPopup(false)
+                            setRefresh(!refresh)
                         }}
                         onCancel={() => setCierreCajaPopup(false)}
                     >
@@ -275,7 +277,7 @@ export default () => {
                                         <p className="card-title-desc">
                                             Listado de todas los gasots
                                         </p>
-                                        <GastosTable />
+                                        <GastosTable cajaRefresh={refresh} setCajaRefresh={setRefresh} />
                                     </CardBody>
                                 </Card>
                             </Col>
@@ -289,7 +291,7 @@ export default () => {
                                         <p className="card-title-desc">
                                             Listado de todas los retiros
                                         </p>
-                                        <RetirosTable />
+                                        <RetirosTable cajaRefresh={refresh} setCajaRefresh={setRefresh} />
                                     </CardBody>
                                 </Card>
                             </Col>

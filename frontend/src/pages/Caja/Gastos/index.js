@@ -4,7 +4,7 @@ import Table from '../../../components/Common/InventarioTable'
 import SweetAlert from "react-bootstrap-sweetalert";
 import { get, post } from '../../../api'
 
-export default () => {
+export default ({ cajaRefresh, setCajaRefresh }) => {
     const [addPopup, setAddPopup] = useState(false)
     const [refresh, setRefresh] = useState(false)
     const [responsePopup, setResponsePopup] = useState(null)
@@ -111,6 +111,7 @@ export default () => {
                         setForm(initialForm)
                         setAddPopup(false)
                         setRefresh(!refresh)
+                        setCajaRefresh(!cajaRefresh)
                     }}
                     onCancel={() => {
                         setForm(initialForm)
