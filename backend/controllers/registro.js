@@ -27,6 +27,22 @@ const getRegistros = async (req, res = response) => {
   }
 };
 
+const RegistrosTurno = async (req, res = response) => {
+  try {
+    return res.json({
+      ok: true,
+      msg: 'RegistrosTurno',
+    });
+  } catch (e) {
+    console.log(e);
+    return res.json({
+      ok: false,
+      msg: "Error contacte a administrador",
+    });
+  }
+};
+
 module.exports = {
-  getRegistros
+  getRegistros,
+  RegistrosTurno
 };

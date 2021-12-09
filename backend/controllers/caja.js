@@ -101,7 +101,7 @@ const newGasto = async (req, res) => {
         await Registro.create({
           fecha: sequelize.fn('NOW'),        
           id_usuario: req.id_usuario,
-          observacion: `Gasto nuevo por $${monto}. Descripción: " ${descripcion}`
+          observacion: `Gasto nuevo por $${monto}. Descripción: "${descripcion}"`
       });
       //registro en tabla retiro
       const newGasto = await Gasto_caja.create({

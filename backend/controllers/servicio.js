@@ -766,6 +766,80 @@ const editarServicio = async (req, res = response) => {
     }
 };
 
+const editarPromocion = async (req, res = response) => {
+    try {
+        const { id_servicio, id_promocion, id_producto1, id_producto2 } = req.body;
+        const servicio = await Servicio.findOne({
+            where: { id: id_servicio }
+        });
+        const servicio_promocion = await Servicio_promociones.findOne({
+            where: {
+                id_servicio,
+                id_promocion
+            }
+        });
+        if (!servicio_promocion) {
+            return res.json({
+                ok: false,
+                msg: 'No se han encontrado los datos seleccionados'
+            });
+        }
+        // Primero devolvemos los producto actuales de la promocion
+        addInv(servicio_promocion.id_producto1, 1);
+        addInv(servicio_promocion.id_producto2, 1);
+        // Descontamos de caja si es con efectivo y ventas
+        const balance_aux = await Balance_aux.findOne({
+            where: { id: 1 }
+        });
+        const productoAntiguo1 = await Producto.findOne({
+            where: { id: servicio_promocion.id_producto1 }
+        });
+        const productoAntiguo2 = await Producto.findOne({
+            where: { id: servicio_promocion.id_producto2 }
+        });
+        if (servicio_promocion.id_tipo_pago === 1) {
+            balance_aux.caja -= productoAntiguo1.precio;
+            balance_aux.caja -= productoAntiguo2.precio;
+        }
+        balance_aux.ventas -= productoAntiguo1.precio;
+        balance_aux.ventas -= productoAntiguo2.precio;
+        await balance_aux.save();
+        // Agremos los nuevos producto a la promocion
+        const productoNuevo1 = await Producto.findOne({
+            where: { id: id_producto1 }
+        });
+        const productoNuevo2 = await Producto.findOne({
+            where: { id: id_producto2 }
+        });
+        servicio_promocion.id_producto1 = id_producto1;
+        servicio_promocion.id_producto2 = id_producto2;
+        servicio_promocion.save();
+        // Descontamos los nuevos productos de inventario
+        descInv(id_producto1, 1);
+        descInv(id_producto2, 1);
+        // Creamos el registro
+        await Registro.create({
+            id_servicio: id_servicio,
+            id_habitacion: servicio.id_habitacion,
+            id_usuario: req.id_usuario,
+            fecha: sequelize.literal("CURRENT_TIMESTAMP"),
+            fecha_entrada: servicio.fecha,
+            observacion: `Productos del servicio de la habitación ${servicio.id_habitacion} han sido cambiados. Nuevos: ${productoNuevo1.nombre} - ${productoNuevo2.nombre}`
+        });
+        return res.json({
+            ok: true,
+            msg: 'La promoción ha sido actualizada'
+        });
+    }
+    catch (e) {
+        console.log(e);
+        return res.json({
+            ok: false,
+            msg: 'Error, contacte con administración'
+        });
+    }
+};
+
 module.exports = {
     estadoHabitaciones,
     listarHabitaciones,
@@ -776,4 +850,5 @@ module.exports = {
     listarPromociones,
     getServicio,
     editarServicio,
+    editarPromocion
 };
