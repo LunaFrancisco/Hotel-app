@@ -16,6 +16,7 @@ const {
   calcularExtras,
   editarServicio,
   pruebaJWT,
+  editarPromocion,
 } = require("../controllers/servicio");
 
 const { validarCampos } = require("../middlewares/validar-campos");
@@ -35,6 +36,7 @@ router.get("/listarHabitaciones", listarHabitaciones);
 router.put("/habilitarHabitacion", validarJWT, habilitarHabitacion);
 router.get("/listarPromociones", listarPromociones);
 router.get("/editarServicio", editarServicio);
+router.put("/editarPromocion", editarPromocion);
 // router.post(
 //     '/',
 //     [

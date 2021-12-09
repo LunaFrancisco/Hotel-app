@@ -40,13 +40,10 @@ const getRegistrosTurno = async (req, res = response) => {
       },
       order:[['fecha','DESC']],
     });
-    console.log(getBalance.fecha)
-
 
     var startDate = getBalance.fecha
     var endDate = new Date();
-    console.log(endDate)
-
+  
     const allRegistros = await Registro.findAll({
       attributes: [
         'id', 'id_servicio', 'id_habitacion', 'fecha', 'fecha_entrada', 'monto', 'observacion'
@@ -75,6 +72,9 @@ const getRegistrosTurno = async (req, res = response) => {
     });
   }
 };
+
+
+
 
 module.exports = {
   getRegistros,
