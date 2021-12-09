@@ -189,7 +189,7 @@ const habilitarHabitacion = async (req, res) => {
             // Registro de aseo 
             const addRegistro = await Registro.create({
                 id_habitacion: id,
-                id_usuario:req.id_usuario,
+                id_usuario: req.id_usuario,
                 fecha: sequelize.literal("CURRENT_TIMESTAMP"),
                 fecha_entrada: null,
                 observacion: `Habitacion ${id} aseada`
@@ -237,7 +237,7 @@ const reservarHabitacion = async (req, res) => {
         let registro_fechaTransaccion = '';
         let registro_monto = 0;
         let registro_observacion = '';
-        
+
 
         // Si el estado es disponible entonces registro el cliente
         if (consultarEstado) {
@@ -295,39 +295,41 @@ const reservarHabitacion = async (req, res) => {
                     },
                 });
                 if (findPromocion) {
-                    //consultar stock del producto
-                    let addPromo = await Servicio_promocion.create({
-                        id_promocion: service.id_promocion,
-                        id_servicio: newService.id,
-                        id_tipo_pago: metodo_de_pago,
-                        //id_producto1: service.id_producto1,
-                        id_producto1: service.id_productos[0],
-                        id_producto2: service.id_productos[1],
-                        //id_producto2: service.id_producto2,
-                        estado: false,
-                    });
-                    // Descontamos los productos de inventario
-                    descInv(service.id_productos[0], 1);
-                    descInv(service.id_productos[1], 1);
-                    // Agregamos la venta en tabla balance_aux (CAJA Y VENTAS)
-                    let balance_aux = await Balance_aux.findOne({
-                        where: { id: 1 }
-                    });
-                    if (metodo_de_pago === 1) {
-                        balance_aux.caja += findPromocion.precio;
+                    if (findPromocion.id !== 1) {
+                        // Consultar stock del producto
+                        let addPromo = await Servicio_promocion.create({
+                            id_promocion: service.id_promocion,
+                            id_servicio: newService.id,
+                            id_tipo_pago: metodo_de_pago,
+                            //id_producto1: service.id_producto1,
+                            id_producto1: service.id_productos[0],
+                            id_producto2: service.id_productos[1],
+                            //id_producto2: service.id_producto2,
+                            estado: false,
+                        });
+                        // Descontamos los productos de inventario
+                        descInv(service.id_productos[0], 1);
+                        descInv(service.id_productos[1], 1);
+                        // Agregamos la venta en tabla balance_aux (CAJA Y VENTAS)
+                        let balance_aux = await Balance_aux.findOne({
+                            where: { id: 1 }
+                        });
+                        if (metodo_de_pago === 1) {
+                            balance_aux.caja += findPromocion.precio;
+                        }
+                        balance_aux.ventas += findPromocion.precio;
+                        await balance_aux.save();
+                        // Para tabla registro
+                        const producto1 = await Producto.findOne({
+                            where: { id: service.id_productos[0] }
+                        });
+                        const producto2 = await Producto.findOne({
+                            where: { id: service.id_productos[1] }
+                        });
+                        registro_monto += findPromocion.precio;
+                        registro_observacion += ` Promocion ${n_promocion}: ${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
+                        n_promocion += 1;
                     }
-                    balance_aux.ventas += findPromocion.precio;
-                    await balance_aux.save();
-                    // Para tabla registro
-                    const producto1 = await Producto.findOne({
-                        where: { id: service.id_productos[0] }
-                    });
-                    const producto2 = await Producto.findOne({
-                        where: { id: service.id_productos[1] }
-                    });
-                    registro_monto += findPromocion.precio;
-                    registro_observacion += ` Promocion ${n_promocion}: ${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
-                    n_promocion += 1;
                 } else {
                     return res.json({
                         ok: false,
@@ -401,7 +403,7 @@ const reservarHabitacion = async (req, res) => {
                     },
                 }
             );
-        
+
             await Registro.create({
                 id_servicio: registro_idServicio,
                 id_usuario: req.id_usuario,
@@ -722,7 +724,7 @@ const getServicio = async (req, res = response) => {
 
 const editarServicio = async (req, res = response) => {
     try {
-        
+
 
         return res.json({
             ok: true,

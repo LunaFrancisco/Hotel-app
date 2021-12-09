@@ -53,3 +53,11 @@ cerrar caja:
 2) se guarda en balance
 3) ver error del increment
 4) caja final = caja nueva
+
+{
+  "id_servicio": 1,
+  "promocion": {
+    "id_promocion": 1, // $12.800
+    "id_productos": [1, 2] // cocacola, fanta
+  }
+}

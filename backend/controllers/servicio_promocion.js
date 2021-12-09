@@ -1,14 +1,18 @@
 const { response } = require("express");
 const sequelize = require("../database/database");
-const descInv = require("../helpers/desc-inv");
-const Balance_aux = require("../models/balance_aux");
-const Producto = require("../models/producto");
-const Promocion = require("../models/promocion");
-const Registro = require("../models/registro");
-const Servicio = require("../models/servicio");
 
 // Models
 const Servicio_promociones = require("../models/servicio_promociones");
+const Servicio = require("../models/servicio");
+const Registro = require("../models/registro");
+const Promocion = require("../models/promocion");
+const Balance_aux = require("../models/balance_aux");
+const Producto = require("../models/producto");
+
+// Helpers
+const descInv = require("../helpers/desc-inv");
+const addInv = require("../helpers/add-inv");
+const Balance = require("../models/balance");
 
 const agregarPromocion = async (req, res = response) => {
     try {
@@ -62,6 +66,7 @@ const agregarPromocion = async (req, res = response) => {
         });
         await Registro.create({
             id_usuario: req.id_usuario,
+            id_servicio: id_servicio,
             id_habitacion: servicio.id_habitacion,
             fecha: sequelize.literal("CURRENT_TIMESTAMP"),
             fecha_entrada: sequelize.literal("CURRENT_TIMESTAMP"),
@@ -81,6 +86,64 @@ const agregarPromocion = async (req, res = response) => {
     }
 };
 
+const eliminarPromocion = async (req, res = response) => {
+    try {
+        const { id_servicio, id_promocion } = req.body
+        const servicio_promocion = await Servicio_promociones.findOne({
+            where: {
+                id_servicio,
+                id_promocion
+            }
+        });
+        const promocion = await Promocion.findOne({
+            where: { id: id_promocion }
+        })
+        if (!servicio_promocion) {
+            return res.status(200).json({
+                ok: true,
+                msg: 'No existe el servicio y/o promoción seleccionada'
+            });
+        }
+        servicio_promocion.destroy();
+        // Devolvemos a inventario los producto de la promocion
+        addInv(servicio_promocion.id_producto1, 1);
+        addInv(servicio_promocion.id_producto2, 1);
+        // Descontamos de ventas y caja el precio de la promocion eliminada
+        const balance_aux = await Balance_aux.findOne({
+            where: { id: 1 }
+        });
+        if (servicio_promocion.id_tipo_pago === 1) {
+            balance_aux.caja -= promocion.precio
+        }
+        balance_aux.ventas -= promocion.precio;
+        await balance_aux.save();
+        // Para tabla registro
+        const servicio = await Servicio.findOne({
+            where: { id: id_servicio }
+        });
+        await Registro.create({
+            id_usuario: req.id_usuario,
+            id_servicio: id_servicio,
+            id_habitacion: servicio.id_habitacion,
+            fecha: sequelize.literal("CURRENT_TIMESTAMP"),
+            fecha_entrada: sequelize.literal("CURRENT_TIMESTAMP"),
+            monto: promocion.precio * -1,
+            observacion: `La promoción ${id_promocion} ha sido eliminada del servicio de la habitación ${servicio.id_habitacion}`
+        });
+        return res.status(200).json({
+            ok: true,
+            msg: 'Promocion eliminada correctamente'
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(200).json({
+            ok: false,
+            msg: "Error al agregar promoción, hable con el administrador"
+        });
+    }
+};
+
 module.exports = {
-    agregarPromocion
+    agregarPromocion,
+    eliminarPromocion
 };
