@@ -32,7 +32,8 @@ const calcularTotalVentas = async (req, res) => {
 
 //registrar retiro
 const newRetiro = async (req, res) => {
-  const { monto, descripcion } = req.body;
+  let { monto, descripcion } = req.body;
+  monto = parseInt(monto);
   try {
     //primero hay que ver que el monto no sea mayor a el dinero en caja
     const compareCaja = await Balance_aux.findOne({
@@ -83,7 +84,8 @@ const newRetiro = async (req, res) => {
 };
 //registrar gasto
 const newGasto = async (req, res) => {
-  const { monto, descripcion } = req.body;
+  let { monto, descripcion } = req.body;
+  monto = parseInt(monto);
   try {
     const compareCaja = await Balance_aux.findOne({
       where: {
