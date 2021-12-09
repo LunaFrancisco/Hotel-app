@@ -287,13 +287,13 @@ const reservarHabitacion = async (req, res) => {
             registro_fechaEntrada = sequelize.literal("CURRENT_TIMESTAMP");
 
             // Agregar servicio
+            let n_promocion = 1;
             for await (let service of servicios) {
                 const findPromocion = await Promocion.findOne({
                     where: {
                         id: service.id_promocion,
                     },
                 });
-                let n_promocion = 1;
                 if (findPromocion) {
                     //consultar stock del producto
                     let addPromo = await Servicio_promocion.create({
