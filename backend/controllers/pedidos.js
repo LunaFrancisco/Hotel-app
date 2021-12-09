@@ -1,5 +1,5 @@
 const { response } = require("express");
-
+const sequelize = require("sequelize");
 // Models
 const Servicio = require("../models/servicio");
 const Pedido = require("../models/pedido");
@@ -7,6 +7,7 @@ const Detalle_pedido = require("../models/detalle_pedido");
 const Inventario = require("../models/inventario");
 const Balance_aux = require("../models/balance_aux");
 const Producto = require("../models/producto");
+const Registro = require("../models/registro");
 
 // Helpers
 const cantidad_extras = require("../helpers/cantidad_extras");
@@ -82,8 +83,8 @@ const agregarPedido = async (req, res = response) => {
       id_usuario: req.id_usuario,
       id_servicio,
       id_habitacion: findServicio.id_habitacion,
-      fecha: sequelize.fn("NOW"),
       fecha_entrada: findServicio.fecha_entrada,
+      fecha: sequelize.fn("NOW"),
       monto,
       observacion: `Pedido agregado`,
     });
@@ -138,6 +139,11 @@ const eliminarPedido = async (req, res = response) => {
           }
           balance_aux.ventas -= producto.precio;
           await balance_aux.save();
+          await Registro.create({
+            fecha: sequelize.fn('NOW'),        
+            id_usuario: req.id_usuario,
+            observacion: `Se cancelo el producto ${detalle_pedido.nombre}`
+        });
         } else {
           const delPedido = await Detalle_pedido.destroy({
             where: {
@@ -145,6 +151,15 @@ const eliminarPedido = async (req, res = response) => {
               id_producto,
             },
           });
+        
+          await Registro.create({
+            id_servicio,
+            id_habitacion: findService.id_habitacion,
+            fecha_entrada: findService.fecha,
+            fecha: sequelize.fn('NOW'),        
+            id_usuario: req.id_usuario,
+            observacion: `Se cancelo el producto ${producto.nombre}`
+        });
         }
 
         res.json({
