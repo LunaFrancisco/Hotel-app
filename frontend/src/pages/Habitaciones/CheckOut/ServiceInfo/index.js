@@ -81,14 +81,18 @@ export default ({ inventario }) => {
         promotions: [...orderSummary.promotions, promotion]
     })
 
-    const editPromotion = (idx, promotion) => setOrderSummary({
-        ...orderSummary,
-        promotions: [...orderSummary.promotions, promotion]
-    })
+    const editPromotion = (idx, promotion) => {
+        const promotions = [...orderSummary.promotions]
+        promotions[idx] = promotion
+        setOrderSummary({
+            ...orderSummary,
+            promotions
+        })
+    }
 
-    const deletePromotion = (idx, promotion) => setOrderSummary({
+    const deletePromotion = (idx) => setOrderSummary({
         ...orderSummary,
-        promotions: [...orderSummary.promotions, promotion]
+        promotions: [...orderSummary.promotions.slice(0, idx), ...orderSummary.promotions.slice(idx + 1)]
     })
 
     return <div>
@@ -121,7 +125,7 @@ export default ({ inventario }) => {
             {
                 orderSummary.promotions.map((promotion, idx) => (<Col lg={4} sm={6} key={`${promotion.id}-${idx}`}>
                     <CardPromocion
-                        idx={idx}
+                        current_idx={idx}
                         inventario={inventario}
                         promotion={promotion}
                         editPromotion={editPromotion}

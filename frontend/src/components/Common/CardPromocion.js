@@ -13,12 +13,26 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import Switch from 'react-switch'
 import SummaryContext from '../../pages/Habitaciones/CheckOut/SummaryContext'
 
-export default ({ idx, inventario, active, added, addPromotions, editPromotion, deletePRomotion, promotion, paid }) => {
+export default ({ current_idx, inventario, active, added, addPromotions, editPromotion, deletePromotion, promotion, paid }) => {
     const { setPaid } = useContext(SummaryContext)
     const [addPopup, setAddPopup] = useState(false)
+    const [refresh, setRefresh] = useState(false)
     const [editPopup, setEditPopup] = useState(false)
-    const [beberages, setBeberages] = useState(Array(promotion.included.length).fill({}))
-    const [addedBeberages, setAddedBeberages] = useState(promotion.beberages)
+    const [beberages, setBeberages] = useState(current_idx != null ? promotion.beberages : Array(promotion.included.length).fill({}))
+    const [options, setOptions] = useState({})
+
+    useEffect(() => {
+        if (addPopup) {
+            setBeberages(Array(promotion.included.length).fill({}))
+        }
+    }, [addPopup])
+
+    useEffect(() => {
+        setOptions({
+            1: inventario.filter(item => item.tipo_producto.tipo === 'Licores'),
+            2: inventario.filter(item => item.tipo_producto.tipo === 'Bebida'),
+        })
+    }, [inventario])
 
     const beberageChange = (idx, value) => {
         let temp = beberages
@@ -27,6 +41,7 @@ export default ({ idx, inventario, active, added, addPromotions, editPromotion, 
             value: inventario.find(item => item.id == value.target.value)
         }
         setBeberages(temp)
+        setRefresh(!refresh)
     }
 
     function DollarSymbol() {
@@ -47,11 +62,6 @@ export default ({ idx, inventario, active, added, addPromotions, editPromotion, 
             </div>
         );
     };
-
-    const options = {
-        1: inventario.filter(item => item.tipo_producto.tipo === 'Licores'),
-        2: inventario.filter(item => item.tipo_producto.tipo === 'Bebida'),
-    }
 
     return <Card className={classnames("border rounded shipping-address", {
         'active': active
@@ -95,11 +105,16 @@ export default ({ idx, inventario, active, added, addPromotions, editPromotion, 
                 confirmBtnText="Añadir"
                 cancelBtnText="Cancelar"
                 onConfirm={() => {
-                    addPromotions({
-                        ...promotion,
-                        beberages
-                    })
-                    setAddPopup(false)
+                    const form = document.querySelector('#beberages')
+                    if (form.checkValidity()) {
+                        addPromotions({
+                            ...promotion,
+                            beberages
+                        })
+                        setAddPopup(false)
+                    } else {
+                        form.reportValidity()
+                    }
                 }}
                 onCancel={() => setAddPopup(false)}
             >
@@ -108,36 +123,40 @@ export default ({ idx, inventario, active, added, addPromotions, editPromotion, 
                         <p>Esta promoción no incluye bebestibles</p>
                     </div>
                 }
-                {
-                    promotion.included.map((item, idx) => (
-                        <div className="my-2" key={`bebestible-add-${idx}`}>
-                            <CardTitle className="h4 mt-4">
-                                Bebestible {idx + 1}
-                            </CardTitle>
-                            {
-                                item.map(type => (
-                                    <React.Fragment>
-                                        <p className="card-title-desc mb-0 mt-2">
-                                            {type.type}
-                                        </p>
-                                        <div className="mx-4">
-                                            {
-                                                options[type.id].map((option, sub_idx) => (
-                                                    <div className="form-check" key={`bebestible-add-${idx}-inventario-${option.id}`}>
-                                                        <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option.id} onChange={(value) => beberageChange(idx, value)} />
-                                                        <Label className="form-check-label" id={sub_idx}>
-                                                            {option.nombre}
-                                                        </Label>
-                                                    </div>
-                                                ))
-                                            }
-                                        </div>
-                                    </React.Fragment>
-                                ))
-                            }
-                        </div>
-                    ))
-                }
+                <form id={`beberages`}>
+                    {
+                        promotion.included.map((item, idx) => (
+                            <div className="my-2" key={`bebestible-add-${idx}`}>
+                                <CardTitle className="h4 mt-4">
+                                    Bebestible {idx + 1}
+                                </CardTitle>
+                                {
+                                    item.map(type => (
+                                        <React.Fragment>
+                                            <p className="card-title-desc mb-0 mt-2">
+                                                {type.type}
+                                            </p>
+                                            <div className="mx-4">
+                                                {
+                                                    options[type.id].map((option, sub_idx) => {
+                                                        return (
+                                                            <div className="form-check" key={`bebestible-add-${idx}-inventario-${option.id}`}>
+                                                                <Input required id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} checked={beberages[idx]?.value?.id == option.id} onChange={(value) => beberageChange(idx, value)} value={option.id} />
+                                                                <Label className="form-check-label" id={sub_idx}>
+                                                                    {option.nombre}
+                                                                </Label>
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        </React.Fragment>
+                                    ))
+                                }
+                            </div>
+                        ))
+                    }
+                </form>
             </SweetAlert>
         ) : null
         }
@@ -160,40 +179,53 @@ export default ({ idx, inventario, active, added, addPromotions, editPromotion, 
                         <p>Esta promoción no incluye bebestibles</p>
                     </div>
                 }
-                {
-                    promotion.included.map((item, idx) => (
-                        <div className="my-2" key={`bebestible-edit-${idx}`}>
-                            <CardTitle className="h4 mt-4">
-                                Bebestible {idx + 1}
-                            </CardTitle>
-                            {
-                                item.map(type => (
-                                    <React.Fragment>
-                                        <p className="card-title-desc mb-0 mt-2">
-                                            {type.type}
-                                        </p>
-                                        <div className="mx-4">
-                                            {
-                                                options[type.id].map((option, sub_idx) => (
-                                                    <div className="form-check" key={`bebestible-edit-${idx}-inventario-${option.id}`}>
-                                                        <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option.id} onChange={(value) => beberageChange(idx, value)} checked={promotion.beberages[idx]?.value?.id === option.id} />
-                                                        <Label className="form-check-label" id={sub_idx}>
-                                                            {option.nombre}
-                                                        </Label>
-                                                    </div>
-                                                ))
-                                            }
-                                        </div>
-                                    </React.Fragment>
-                                ))
-                            }
-                        </div>
-                    ))
-                }
+                <form id={`beberages`}>
+                    {
+                        promotion.included.map((item, idx) => (
+                            <div className="my-2" key={`bebestible-edit-${idx}`}>
+                                <CardTitle className="h4 mt-4">
+                                    Bebestible {idx + 1}
+                                </CardTitle>
+                                {
+                                    item.map(type => (
+                                        <React.Fragment>
+                                            <p className="card-title-desc mb-0 mt-2">
+                                                {type.type}
+                                            </p>
+                                            <div className="mx-4">
+                                                {
+                                                    options[type.id].map((option, sub_idx) => (
+                                                        <div className="form-check" key={`bebestible-edit-${idx}-inventario-${option.id}`}>
+                                                            <Input id={sub_idx} className="form-check-input" type="radio" name={`bebestible-${idx + 1}`} value={option.id} checked={beberages[idx]?.value?.id == option.id} onChange={(value) => beberageChange(idx, value)} />
+                                                            <Label className="form-check-label" id={sub_idx}>
+                                                                {option.nombre}
+                                                            </Label>
+                                                        </div>
+                                                    ))
+                                                }
+                                            </div>
+                                        </React.Fragment>
+                                    ))
+                                }
+                            </div>
+                        ))
+                    }
+                </form>
                 <p style={{ display: 'flex', zIndex: 1, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1.25em auto 0px' }}>
                     <button onClick={() => setEditPopup(false)} className="btn btn-lg btn-danger" style={{ marginRight: '8px' }} >Cancelar</button>
-                    <button onClick={() => { }} className="btn btn-lg btn-danger" style={{ marginRight: '8px' }}>Eliminar</button>
-                    <button onClick={() => { }} className="btn btn-lg btn-success" style={{ marginRight: '8px', borderColor: 'rgb(76, 174, 76)', boxShadow: 'rgba(0, 0, 0, 0.075) 0px 1px 1px inset, rgba(76, 174, 76, 0.6) 0px 0px 8px' }}>Editar</button>
+                    <button onClick={() => deletePromotion(current_idx)} className="btn btn-lg btn-danger" style={{ marginRight: '8px' }}>Eliminar</button>
+                    <button onClick={() => {
+                        const form = document.querySelector('#beberages')
+                        if (form.checkValidity()) {
+                            editPromotion({
+                                ...promotion,
+                                beberages
+                            })
+                            setEditPopup(false)
+                        } else {
+                            form.reportValidity()
+                        }
+                    }} className="btn btn-lg btn-success" style={{ marginRight: '8px', borderColor: 'rgb(76, 174, 76)', boxShadow: 'rgba(0, 0, 0, 0.075) 0px 1px 1px inset, rgba(76, 174, 76, 0.6) 0px 0px 8px' }}>Editar</button>
                 </p>
             </SweetAlert>
         ) : null
