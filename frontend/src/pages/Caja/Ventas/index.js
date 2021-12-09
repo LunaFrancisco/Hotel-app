@@ -1,6 +1,6 @@
 import { Badge } from "reactstrap"
 import React, { Component, useState, useEffect } from "react"
-import { timeFormat, moneyFormat } from "../../../helpers/formatters";
+import { timeFormat, moneyFormat, dateFormat } from "../../../helpers/formatters";
 import { get } from "../../../api";
 
 import Table from '../../../components/Common/InventarioTable'
@@ -24,9 +24,17 @@ export default () => {
     }
 
     useEffect(() => {
-        // get('/api/').then(res => {
-        //     setData(res.data)
-        // })
+        get('api/registros/getVentasTurno').then(res => {
+            setData(res.allRegistros.map(item => ({
+                ...item,
+                id_habitacion: item.id_habitacion || '-',
+                estado: renderState(1),
+                monto: item.monto ? moneyFormat(item.monto) : '-',
+                fecha: item.fecha ? dateFormat(new Date(item.fecha)) : '-',
+                fecha_entrada: item.fecha_entrada ? dateFormat(new Date(item.fecha_entrada)) : '-',
+                usuario: item.usuario.nombre + ' ' + item.usuario.apellido,
+            })))
+        })
     }, [])
 
     const columns = [
@@ -36,32 +44,32 @@ export default () => {
             sort: true,
         },
         {
-            dataField: 'room',
+            dataField: 'usuario',
+            text: 'Usuario',
+            sort: true
+        },
+        {
+            dataField: 'id_habitacion',
             text: 'N° Habitación',
             sort: true
         },
         {
-            dataField: 'checkin_date',
+            dataField: 'fecha_entrada',
             text: 'Fecha de entrada',
             sort: true
         },
         {
-            dataField: 'transaction_date',
+            dataField: 'fecha',
             text: 'Fecha de transacción',
             sort: true
         },
         {
-            dataField: 'amount',
+            dataField: 'monto',
             text: 'Monto',
             sort: true
         },
         {
-            dataField: 'state',
-            text: 'Estado',
-            sort: true
-        },
-        {
-            dataField: 'obs',
+            dataField: 'observacion',
             text: 'Observación',
             sort: true
         },
