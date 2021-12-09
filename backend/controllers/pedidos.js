@@ -18,6 +18,11 @@ const agregarPedido = async (req, res = response) => {
         const findServicio = await Servicio.findOne({
             where: { id: id_servicio }
         });
+
+        // En caso de algun error estas variables se modifican y se envian al cliente
+        let error = false;
+        let msg;
+
         if (!findServicio) {
             return res.status(200).json({
                 ok: false,
@@ -57,7 +62,7 @@ const agregarPedido = async (req, res = response) => {
             // Descontamos de inventario
             const resp = await descInv(extra.id_producto, extra.cantidad);
             if (!resp) {
-                error = true
+                error = true;
                 msg = `El producto ${producto.nombre} no tiene stock suficiente`;
                 break;
             }
@@ -71,9 +76,9 @@ const agregarPedido = async (req, res = response) => {
             }
             await balance_aux.save();
         };
-        return res.json({
-            ok: true,
-            msg: "Pedido creado con exito",
+        return res.status(200).json({
+            ok: error ? false : true,
+            msg: error ? msg : "Pedido creado",
         });
     } catch (e) {
         return res.status(200).json({

@@ -33,6 +33,9 @@ const Registro = require('../models/registro');
 Cliente.hasMany(Lista_negra, { foreignKey: 'id_cliente', sourceKey: 'id', onDelete: 'CASCADE' });
 Lista_negra.belongsTo(Cliente, { foreignKey: 'id_cliente', sourceKey: 'id', onDelete: 'CASCADE' });
 
+Usuario.hasMany(Registro, { foreignKey: 'id_usuario', sourceKey: 'id', onDelete: 'CASCADE' });
+Registro.belongsTo(Usuario, { foreignKey: 'id_usuario', sourceKey: 'id', onDelete: 'CASCADE' });
+
 
 tipo_producto.hasMany(Producto, { foreignKey: 'id_tipo', sourceKey: 'id', onDelete: 'CASCADE' });
 Producto.belongsTo(tipo_producto, { foreignKey: 'id_tipo', sourceKey: 'id', onDelete: 'CASCADE' });

@@ -8,7 +8,6 @@ const { reservarHabitacion,estadoHabitaciones,cancelarReserva, desalojarHabitaci
 const { validarCampos } = require('../middlewares/validar-campos');
 const validarJWT = require('../helpers/validar-jwt');
 
-
 router.post(
     '/reservarHabitacion',
     reservarHabitacion
@@ -70,6 +69,5 @@ router.get('/listarHabitaciones', listarHabitaciones);
 router.put('/habilitarHabitacion', habilitarHabitacion);
 router.get('/listarPromociones', listarPromociones);
 router.get('/editarServicio', editarServicio);
-router.get('/pruebaJWT', validarJWT, pruebaJWT);
 
 module.exports = router;
