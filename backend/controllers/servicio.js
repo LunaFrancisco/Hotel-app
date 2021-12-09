@@ -524,6 +524,8 @@ const cancelarReserva = async (req, res) => {
                 const balance_aux = await Balance_aux.findOne({
                     where: { id: 1 }
                 });
+                // Devolvemos la cantidad de productos a inventario
+                addInv(producto.id, detalle_pedido.cantidad);
                 if (pedido.id_tipo_pago === 1) {
                     balance_aux.caja -= producto.precio;
                 }
