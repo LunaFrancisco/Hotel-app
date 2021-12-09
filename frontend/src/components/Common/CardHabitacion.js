@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import Tooltip from './Tooltip'
 
-export default ({ img, room: { paid, state, number, id, servicio }, onCheckout, onEnable, onCancel }) => {
+export default ({ img, room: { paid, state, number, id, servicio }, onCheckout, onEnable, onCancel, onDesalojar }) => {
     const states = {
         1: 'bg-color-success',
         2: 'bg-color-warning',

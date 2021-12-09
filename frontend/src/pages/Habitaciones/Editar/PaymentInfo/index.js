@@ -37,6 +37,8 @@ export default ({ handleComplete }) => {
                                 className="card-radio-input"
                                 value="1"
                                 onChange={onChange}
+                                disabled
+                                checked={orderSummary.metodo_de_pago == "1"}
                             />
 
                             <div className="card-radio">
@@ -57,6 +59,8 @@ export default ({ handleComplete }) => {
                                 className="card-radio-input"
                                 value="2"
                                 onChange={onChange}
+                                disabled
+                                checked={orderSummary.metodo_de_pago == "2"}
                             />
 
                             <div className="card-radio">
@@ -158,11 +162,11 @@ export default ({ handleComplete }) => {
                     </div>
                 </form>
             </div> */}
-            <div className="mt-4 text-end">
+            {/* <div className="mt-4 text-end">
                 <Button onClick={handleComplete} to="#" className="btn btn-success">
                     Completar reserva
                 </Button>
-            </div>
+            </div> */}
         </div>
     </Fragment>
 }

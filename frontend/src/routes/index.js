@@ -106,6 +106,7 @@ import KanbanBoard from "../pages/KanbanBoard/index";
 // MOTEL
 import Habitaciones from '../pages/Habitaciones'
 import HabitacionesCheckout from '../pages/Habitaciones/CheckOut'
+import HabitacionesEdit from '../pages/Habitaciones/Editar'
 import Inventario from '../pages/Inventario'
 import Bodega from '../pages/Bodega'
 import Registros from '../pages/Registros'
@@ -116,6 +117,7 @@ const authProtectedRoutes = [
 
     // Motel
     { path: '/habitaciones/:id/check-out', component: HabitacionesCheckout },
+    { path: '/habitaciones/:id/editar', component: HabitacionesEdit },
     { path: '/habitaciones', component: Habitaciones },
 
     { path: '/inventario', component: Inventario },

@@ -9,7 +9,7 @@ import {
 import Tooltip from '../../components/Common/Tooltip'
 import Table from '../../components/Common/InventarioTable'
 
-export default ({ rooms, onCheckout, onEnable, onCancel, onDesalojar }) => {
+export default ({ rooms, onCheckout, onEnable, onCancel, onDesalojar, onEdit }) => {
     const states = {
         1: 'Disponible',
         2: 'Ocupado',
@@ -43,7 +43,7 @@ export default ({ rooms, onCheckout, onEnable, onCancel, onDesalojar }) => {
         {
             room.state === 2 && <React.Fragment>
                 <Tooltip id={'room-' + idx + '-edit-button'} title="Editar reserva">
-                    <Button color="link" className="text-warning">
+                    <Button onClick={() => onEdit(room.servicio)} color="link" className="text-warning">
                         <i className="ri-pencil-fill"></i>
                     </Button>
                 </Tooltip>

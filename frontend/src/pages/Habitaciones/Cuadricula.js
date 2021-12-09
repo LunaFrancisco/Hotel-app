@@ -6,7 +6,7 @@ import img1 from "../../assets/images/small/img-1.jpg";
 
 import CardHabitacion from '../../components/Common/CardHabitacion'
 
-export default ({ rooms, onCheckout, onEnable, onCancel }) => {
+export default ({ rooms, onCheckout, onEnable, onCancel, onEdit, onDesalojar }) => {
     return <Row>
         {rooms.map((room) => <Col mg={3} xl={2} key={`habitación-cuadricula-${room.id}`}>
             <CardHabitacion
@@ -15,6 +15,8 @@ export default ({ rooms, onCheckout, onEnable, onCancel }) => {
                 onCheckout={onCheckout}
                 onCancel={onCancel}
                 onEnable={onEnable}
+                onEdit={onEdit}
+                onDesalojar={onDesalojar}
             />
         </Col>)}
     </Row>

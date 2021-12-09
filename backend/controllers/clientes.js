@@ -102,6 +102,7 @@ const actualizarCliente = async (req, res) => {
      }
 
   } catch (error) {
+      console.log(error)
     res.json({
       ok: false,
       msg: "No se pudo actualizar el cliente",

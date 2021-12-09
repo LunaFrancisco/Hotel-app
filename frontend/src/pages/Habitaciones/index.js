@@ -17,6 +17,7 @@ import Tabla from "./Tabla";
 import MiniWidgets from "../../components/Common/MiniWidgets";
 import { get, put, post } from '../../api'
 import SweetAlert from "react-bootstrap-sweetalert";
+import { timeFormat } from '../../helpers/formatters';
 
 export default () => {
     const breadcrumbItems = [
@@ -59,11 +60,11 @@ export default () => {
             let salida = item.servicios.length > 0 && item.servicios[0]?.hr_salida ? new Date(`01-01-2021 ${item.servicios[0]?.hr_salida}`) : '-'
             let entrada = item.servicios.length > 0 && item.servicios[0]?.hr_entrada ? new Date(`01-01-2021 ${item.servicios[0]?.hr_entrada}`) : '-'
             if (entrada != '-') {
-                entrada = `${entrada.getHours()}:${entrada.getMinutes()}:${entrada.getSeconds()}`
+                entrada = `${timeFormat(entrada.getHours())}:${timeFormat(entrada.getMinutes())}:${timeFormat(entrada.getSeconds())}`
             }
             if (salida != '-') {
                 // salida.setHours(salida.getHours() + item.horas)
-                salida = `${salida.getHours()}:${salida.getMinutes()}:${salida.getSeconds()}`
+                salida = `${timeFormat(salida.getHours())}:${timeFormat(salida.getMinutes())}:${timeFormat(salida.getSeconds())}`
             }
 
             return ({
@@ -80,6 +81,10 @@ export default () => {
 
     const onCheckout = (id) => {
         history.push(`/habitaciones/${id}/check-out`)
+    }
+
+    const onEdit = (id) => {
+        history.push(`/habitaciones/${id}/editar`)
     }
 
     const onEnable = async (id) => {
@@ -234,13 +239,14 @@ export default () => {
                     <Tabla
                         rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
+                        onEdit={onEdit}
                         onCancel={onCancel}
                         onDesalojar={onDesalojar}
                         onEnable={onEnable} />
                     : <Cuadricula
                         rooms={rooms.filter(item => currentFilter === null || currentFilter === item.state)}
                         onCheckout={onCheckout}
-                        onCancel={onCancel}
+                        onEdit={onEdit}
                         onCancel={onCancel}
                         onDesalojar={onDesalojar}
                         onEnable={onEnable} />

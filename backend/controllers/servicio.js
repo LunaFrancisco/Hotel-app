@@ -693,7 +693,7 @@ const calcularTotalServicio = async (req, res) => {
 
 const getServicio = async (req, res = response) => {
     try {
-        const { id } = req.body;
+        const { id } = req.query;
 
         const findService = await Servicio.findOne({
             where: {
