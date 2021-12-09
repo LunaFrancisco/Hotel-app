@@ -189,8 +189,9 @@ const habilitarHabitacion = async (req, res) => {
             // Registro de aseo 
             const addRegistro = await Registro.create({
                 id_habitacion: id,
-                fecha: sequelize.literal("CURRENT_DATE"),
-                fecha_entrada: sequelize.literal("CURRENT_DATE"),
+                id_usuario:req.id_usuario,
+                fecha: sequelize.literal("CURRENT_TIMESTAMP"),
+                fecha_entrada: null,
                 observacion: `Habitacion ${id} aseada`
             });
             // Descontar sabanas y toallas
@@ -236,6 +237,7 @@ const reservarHabitacion = async (req, res) => {
         let registro_fechaTransaccion = '';
         let registro_monto = 0;
         let registro_observacion = '';
+        
 
         // Si el estado es disponible entonces registro el cliente
         if (consultarEstado) {
@@ -271,7 +273,7 @@ const reservarHabitacion = async (req, res) => {
 
             const newService = await Servicio.create({
                 id_habitacion: id,
-                fecha: sequelize.literal("CURRENT_DATE"),
+                fecha: sequelize.literal("CURRENT_TIMESTAMP"),
                 hr_entrada: sequelize.literal("CURRENT_TIME"),
                 total: 0,
                 id_cliente1: arreglo[0],
@@ -282,7 +284,7 @@ const reservarHabitacion = async (req, res) => {
             // Para tabla registro
             registro_idServicio = newService.id;
             registro_idHabitacion = id;
-            registro_fechaEntrada = sequelize.literal("CURRENT_DATE");
+            registro_fechaEntrada = sequelize.literal("CURRENT_TIMESTAMP");
 
             // Agregar servicio
             for await (let service of servicios) {
@@ -387,9 +389,10 @@ const reservarHabitacion = async (req, res) => {
                     },
                 }
             );
-
+        
             await Registro.create({
                 id_servicio: registro_idServicio,
+                id_usuario: req.id_usuario,
                 id_habitacion: registro_idHabitacion,
                 fecha: registro_fechaEntrada,
                 fecha_entrada: registro_fechaEntrada,
@@ -494,7 +497,8 @@ const cancelarReserva = async (req, res) => {
         const addRegistro = await Registro.create({
             id_servicio: id_servicio,
             id_habitacion: servicio.id_habitacion,
-            fecha: sequelize.literal("CURRENT_DATE"),
+            id_usuario: req.id_usuario,
+            fecha: sequelize.literal("CURRENT_TIMESTAMP"),
             fecha_entrada: servicio.fecha,
             observacion: `Habitacion ${servicio.id_habitacion}, reserva cancelada`
         });
@@ -522,7 +526,8 @@ const desalojarHabitacion = async (req, res) => {
             const addRegistro = await Registro.create({
                 id_servicio: id,
                 id_habitacion: findService.id_habitacion,
-                fecha: sequelize.literal("CURRENT_DATE"),
+                id_usuario: req.id_usuario,
+                fecha: sequelize.literal("CURRENT_TIMESTAMP"),
                 fecha_entrada: findService.fecha,
                 observacion: `Habitacion ${findService.id_habitacion} desalojada`
             });
@@ -705,6 +710,8 @@ const getServicio = async (req, res = response) => {
 
 const editarServicio = async (req, res = response) => {
     try {
+        
+
         return res.json({
             ok: true,
             msg: 'editarServicio'

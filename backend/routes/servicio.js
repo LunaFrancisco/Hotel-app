@@ -1,42 +1,41 @@
 // host + /api/auth
 
-const { Router } = require('express');
-const { check } = require('express-validator');
+const { Router } = require("express");
+const { check } = require("express-validator");
 const router = Router();
 
-const { reservarHabitacion,estadoHabitaciones,cancelarReserva, desalojarHabitacion, listarHabitaciones, habilitarHabitacion, listarPromociones, getServicio, calcularExtras, editarServicio, pruebaJWT } = require('../controllers/servicio');
-const { validarCampos } = require('../middlewares/validar-campos');
-const validarJWT = require('../helpers/validar-jwt');
+const {
+  reservarHabitacion,
+  estadoHabitaciones,
+  cancelarReserva,
+  desalojarHabitacion,
+  listarHabitaciones,
+  habilitarHabitacion,
+  listarPromociones,
+  getServicio,
+  calcularExtras,
+  editarServicio,
+  pruebaJWT,
+} = require("../controllers/servicio");
 
+const { validarCampos } = require("../middlewares/validar-campos");
+const validarJWT = require("../helpers/validar-jwt");
 
-router.post(
-    '/reservarHabitacion',
-    reservarHabitacion
-);
+router.post("/reservarHabitacion", validarJWT, reservarHabitacion);
 
-router.get(
-    '/state',
-    estadoHabitaciones
-);
+router.get("/state", estadoHabitaciones);
 
-router.post(
-    '/cancel',
-    cancelarReserva
-);
+router.post("/cancel", validarJWT,cancelarReserva);
 
-router.post(
-    '/desalojarHabitacion',
-    desalojarHabitacion
-);
-router.get(
-    '/',
-    estadoHabitaciones
-);
-router.get(
-    '/getService',
-    getServicio
-);
+router.post("/desalojarHabitacion", validarJWT, desalojarHabitacion);
+router.get("/", estadoHabitaciones);
+router.get("/getService", getServicio);
 
+router.get("/listarHabitaciones", listarHabitaciones);
+router.put("/habilitarHabitacion", validarJWT, habilitarHabitacion);
+router.get("/listarPromociones", listarPromociones);
+router.get("/editarServicio", editarServicio);
+router.get("/pruebaJWT", validarJWT, pruebaJWT);
 // router.post(
 //     '/',
 //     [
@@ -60,16 +59,9 @@ router.get(
 //     buscarServicio
 // );
 
-
 // router.put(
 //     '/updateUser',
 //     updateUsuario
 // );
-
-router.get('/listarHabitaciones', listarHabitaciones);
-router.put('/habilitarHabitacion', habilitarHabitacion);
-router.get('/listarPromociones', listarPromociones);
-router.get('/editarServicio', editarServicio);
-router.get('/pruebaJWT', validarJWT, pruebaJWT);
 
 module.exports = router;
