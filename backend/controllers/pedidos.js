@@ -12,6 +12,7 @@ const Producto = require("../models/producto");
 const cantidad_extras = require("../helpers/cantidad_extras");
 const descInv = require("../helpers/desc-inv");
 const addInv = require("../helpers/add-inv");
+
 const agregarPedido = async (req, res = response) => {
   try {
     const { id_servicio, extras, metodo_de_pago } = req.body;
@@ -90,6 +91,7 @@ const agregarPedido = async (req, res = response) => {
     return res.status(200).json({
       ok: error ? false : true,
       msg: error ? msg : "Pedido creado",
+      id_pedido: addPedido.id
     });
   } catch (e) {
     return res.status(200).json({
