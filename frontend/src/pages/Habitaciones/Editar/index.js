@@ -221,29 +221,7 @@ export default () => {
         }
 
         if (!error) {
-            const response = await post('api/services/reservarHabitacion', {
-                id: id,
-                clientes: orderSummary.clients,
-                servicios: orderSummary.promotions.map(item => {
-                    return {
-                        id_promocion: item.id,
-                        id_productos: item.beberages.map(item => item.value.id)
-                    }
-                }),
-                extras: orderSummary.extras.map(item => item.id),
-                metodo_de_pago: orderSummary.metodo_de_pago
-            }, { 'Content-Type': 'application/json' })
-
-            setResponsePopup({
-                msg: response.errors ? <>{Object.keys(response.errors).map(item => <>- {response.errors[item].msg}<br /></>)}</> : response.msg,
-                ok: response.ok
-            })
-
-            if (response.ok) {
-                setTimeout(() => {
-                    window.location = '/habitaciones'
-                }, 1000)
-            }
+            window.location = '/habitaciones'
         }
     }
 

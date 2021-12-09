@@ -94,7 +94,14 @@ export default ({ id_servicio, inventario }) => {
         })
     }
 
-    const editPromotion = (idx, promotion) => {
+    const editPromotion = async (idx, promotion) => {
+        const response = await put(`api/services/editarPromocion`, {
+            id_servicio,
+            id_promocion: promotion.id,
+            id_producto1: promotion.beberages[0]?.value?.id,
+            id_producto2: promotion.beberages[1]?.value?.id,
+        }, { 'Content-Type': 'application/json' })
+        console.log(response)
         const promotions = [...orderSummary.promotions]
         promotions[idx] = promotion
         setOrderSummary({

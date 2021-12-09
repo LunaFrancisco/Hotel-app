@@ -162,11 +162,11 @@ export default ({ handleComplete }) => {
                     </div>
                 </form>
             </div> */}
-            {/* <div className="mt-4 text-end">
+            <div className="mt-4 text-end">
                 <Button onClick={handleComplete} to="#" className="btn btn-success">
-                    Completar reserva
+                    Guardar reserva
                 </Button>
-            </div> */}
+            </div>
         </div>
     </Fragment>
 }
