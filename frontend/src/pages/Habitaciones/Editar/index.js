@@ -238,7 +238,7 @@ export default () => {
     }
 
     const handleServiceChange = async () => {
-        console.log(orderSummary.findService)
+        return true
     }
 
     const summaryContext = { orderSummary, setOrderSummary, payment, setPayment, setPaid, handleComplete }
