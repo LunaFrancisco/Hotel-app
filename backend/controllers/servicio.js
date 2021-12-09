@@ -293,6 +293,7 @@ const reservarHabitacion = async (req, res) => {
                         id: service.id_promocion,
                     },
                 });
+                let n_promocion = 1;
                 if (findPromocion) {
                     //consultar stock del producto
                     let addPromo = await Servicio_promocion.create({
@@ -325,7 +326,8 @@ const reservarHabitacion = async (req, res) => {
                         where: { id: service.id_productos[1] }
                     });
                     registro_monto += findPromocion.precio;
-                    registro_observacion += ` Promocion: ${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
+                    registro_observacion += ` Promocion ${n_promocion}: ${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
+                    n_promocion += 1;
                 } else {
                     return res.json({
                         ok: false,
