@@ -47,6 +47,13 @@ export default () => {
         })
     }, [])
 
+    function get_variation(x1, x2) {
+        x1 = x1 == null ? 0 : x1;
+        x2 = x2 == null ? 0 : x2;
+        return x1 == 0 && x2 == 0 ? 0 : (x1 == 0 ? -100 : (x2 == 0 ? 100 : (
+            ((x1 - x2) / x2) * 100)));
+    }
+
     return (
         <React.Fragment>
             <div className="page-content">
@@ -66,14 +73,14 @@ export default () => {
                             title="Ventas"
                             value={moneyFormat(data[data.length - 1]?.ventas || 0)}
                             // icon="ri-stack-line"
-                            rate={0}
+                            rate={get_variation(data[data.length - 1]?.ventas, data[data.length - 2]?.ventas)}
                             desc="Desde el mes anterior"
                         />
                         <MiniWidgets
                             title="Gastos"
                             value={moneyFormat(data[data.length - 1]?.gastos || 0)}
                             // icon="ri-add-fill"
-                            rate={0}
+                            rate={get_variation(data[data.length - 1]?.gastos, data[data.length - 2]?.gastos)}
                             desc="Desde el mes anterior"
                             negative
                         />
@@ -81,7 +88,7 @@ export default () => {
                             title="Retiros"
                             value={moneyFormat(data[data.length - 1]?.retiros || 0)}
                             // icon=" ri-add-fill"
-                            rate={0}
+                            rate={get_variation(data[data.length - 1]?.retiros, data[data.length - 2]?.retiros)}
                             desc="Desde el mes anterior"
                             negative
                         />

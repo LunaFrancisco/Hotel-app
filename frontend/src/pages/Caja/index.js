@@ -63,6 +63,13 @@ export default () => {
         })
     }, [refresh])
 
+    function get_variation(x1, x2) {
+        x1 = x1 == null ? 0 : x1;
+        x2 = x2 == null ? 0 : x2;
+        return x1 == 0 && x2 == 0 ? 0 : (x1 == 0 ? -100 : (x2 == 0 ? 100 : (
+            ((x1 - x2) / x2) * 100)));
+    }
+
     const columns = [
         {
             dataField: 'id',
@@ -154,21 +161,21 @@ export default () => {
                             title="Caja"
                             value={moneyFormat(stats.caja)}
                             // icon="ri-stack-line"
-                            rate={0}
+                            // rate={0}
                             desc="Desde el turno anterior"
                         />
                         <MiniWidgets
                             title="Ventas"
                             value={moneyFormat(stats.ventas)}
                             // icon="ri-stack-line"
-                            rate={0}
+                            // rate={0}
                             desc="Desde el turno anterior"
                         />
                         <MiniWidgets
                             title="Gastos"
                             value={moneyFormat(stats.gastos)}
                             // icon="ri-add-fill"
-                            rate={0}
+                            // rate={0}
                             desc="Desde el turno anterior"
                             negative
                         />
@@ -176,7 +183,7 @@ export default () => {
                             title="Retiros"
                             value={moneyFormat(stats.retiros)}
                             // icon=" ri-add-fill"
-                            rate={0}
+                            // rate={0}
                             desc="Desde el turno anterior"
                             negative
                         />
