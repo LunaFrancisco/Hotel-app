@@ -318,7 +318,14 @@ const reservarHabitacion = async (req, res) => {
                     balance_aux.ventas += findPromocion.precio;
                     await balance_aux.save();
                     // Para tabla registro
+                    const producto1 = await Producto.findOne({
+                        where: { id: service.id_productos[0] }
+                    });
+                    const producto2 = await Producto.findOne({
+                        where: { id: service.id_productos[1] }
+                    });
                     registro_monto += findPromocion.precio;
+                    registro_observacion += ` Promocion: ${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
                 } else {
                     return res.json({
                         ok: false,
@@ -342,6 +349,7 @@ const reservarHabitacion = async (req, res) => {
                     estado: "pendiente",
                     //total
                 });
+                let numerito = 1;
                 for await (let extra of objCantidadExtras) {
                     await Detalle_pedido.create({
                         id_pedido: addPedido.id,
@@ -375,6 +383,8 @@ const reservarHabitacion = async (req, res) => {
                     }
                     // Para tabla registro
                     registro_monto += ingresos;
+                    registro_observacion += ` Extra ${numerito}: ${producto.nombre}.`
+                    numerito += 1;
                 };
             }
 
