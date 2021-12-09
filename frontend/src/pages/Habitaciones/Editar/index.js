@@ -365,6 +365,7 @@ export default () => {
                                             } else if (activeTab === 2) {
                                                 ready = await handleServiceChange()
                                             } else if (activeTab === 3) {
+                                                ready = await handleServiceChange()
                                             }
                                             if (ready) activeTab === 4 || setActiveTab(activeTab + 1);
                                         }}>Guardar</Link></li>
