@@ -71,6 +71,7 @@ export default () => {
         <Table
             data={data}
             columns={columns}
+            order="desc"
         />
     )
 }

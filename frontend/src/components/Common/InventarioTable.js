@@ -14,10 +14,10 @@ import "./datatables.scss"
 
 
 
-export default ({ data, columns }) => {
+export default ({ data, columns, order = 'asc' }) => {
     const defaultSorted = [{
         dataField: 'id',
-        order: 'asc'
+        order: order
     }];
 
     const page = 1

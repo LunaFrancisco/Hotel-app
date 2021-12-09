@@ -53,8 +53,9 @@ export default () => {
         get('api/registros/getRegistros').then(res => {
             setRegistros(res.allRegistros.map(item => ({
                 ...item,
+                id_habitacion: item.id_habitacion || '-',
                 estado: renderState(1),
-                monto: moneyFormat(item.monto),
+                monto: item.monto ? moneyFormat(item.monto) : '-',
                 fecha: item.fecha ? dateFormat(new Date(item.fecha)) : '-',
                 fecha_entrada: item.fecha_entrada ? dateFormat(new Date(item.fecha_entrada)) : '-',
                 usuario: item.usuario.nombre + ' ' + item.usuario.apellido,
@@ -252,6 +253,7 @@ export default () => {
                                         <Table
                                             data={registros}
                                             columns={columns}
+                                            order="desc"
                                         />
                                     </CardBody>
                                 </Card>

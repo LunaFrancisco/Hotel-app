@@ -79,6 +79,7 @@ export default ({ cajaRefresh, setCajaRefresh }) => {
             <Table
                 data={data}
                 columns={columns}
+                order="desc"
             />
             {responsePopup != null && <SweetAlert
                 title={responsePopup.ok ? 'Éxito' : 'Error'}
