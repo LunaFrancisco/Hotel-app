@@ -51,14 +51,6 @@ export default ({ inventario }) => {
                 options: inventario.filter(item => item.tipo_producto.tipo === 'Comida').map(map_products)
             },
             {
-                label: 'Ropa',
-                options: inventario.filter(item => item.tipo_producto.tipo === 'Ropa').map(map_products)
-            },
-            {
-                label: 'Utencilios',
-                options: inventario.filter(item => item.tipo_producto.tipo === 'Utencilios').map(map_products)
-            },
-            {
                 label: 'Otros',
                 options: inventario.filter(item => item.tipo_producto.tipo === 'Otros').map(map_products)
             },
