@@ -30,6 +30,7 @@ app.use('/api/caja', require('./routes/caja'));
 app.use('/api/promociones', require('./routes/promociones'));
 app.use('/api/pedidos', require('./routes/pedidos'));
 app.use('/api/registros', require('./routes/registro'));
+app.use('/api/servicio_promocion', require('./routes/servicio_promocion'));
 
 
 // Escuchar peticiones
