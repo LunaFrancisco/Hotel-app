@@ -327,7 +327,7 @@ const reservarHabitacion = async (req, res) => {
                             where: { id: service.id_productos[1] }
                         });
                         registro_monto += findPromocion.precio;
-                        registro_observacion += ` Promocion ${n_promocion}: ${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
+                        registro_observacion += ` Promocion ${n_promocion}: $${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
                         n_promocion += 1;
                     }
                     else {
@@ -352,7 +352,7 @@ const reservarHabitacion = async (req, res) => {
                         await balance_aux.save();
                         // Para tabla registro
                         registro_monto += findPromocion.precio;
-                        registro_observacion += ` Promocion ${n_promocion}: ${findPromocion.precio}`
+                        registro_observacion += ` Promocion ${n_promocion}: $${findPromocion.precio}`
                         n_promocion += 1;
                     }
                 } else {

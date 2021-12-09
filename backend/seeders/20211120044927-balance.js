@@ -209,7 +209,7 @@ module.exports = {
             {}
         );
 
-        await sequelize.query('ALTER SEQUENCE balance_id_seq RESTART WITH 19;')
+        await sequelize.query('ALTER SEQUENCE balance_id_seq RESTART WITH 20;');
     },
 
     down: async (queryInterface, Sequelize) => {
