@@ -6,9 +6,9 @@ import {
 } from "reactstrap";
 import CardPromocion from '../../../../components/Common/CardPromocionEditar'
 import SummaryContext from '../SummaryContext'
-import { get } from '../../../../api'
+import { get, post, put, del } from '../../../../api'
 
-export default ({ inventario }) => {
+export default ({ id_servicio, inventario }) => {
     const { orderSummary, setOrderSummary } = useContext(SummaryContext)
     const [promotions, setPromotions] = useState([])
 
@@ -78,10 +78,21 @@ export default ({ inventario }) => {
 
     }, [])
 
-    const addPromotions = (promotion) => setOrderSummary({
-        ...orderSummary,
-        promotions: [...orderSummary.promotions, promotion]
-    })
+    const addPromotions = async (promotion) => {
+        const response = await post(`api/servicio_promocion/agregarPromocion`, {
+            id_servicio,
+            promocion: {
+                id_promocion: promotion.id,
+                id_productos: promotion.beberages.map(item => item.value.id),
+                id_tipo_pago: orderSummary.metodo_de_pago
+            }
+        }, { 'Content-Type': 'application/json' })
+        console.log(response)
+        setOrderSummary({
+            ...orderSummary,
+            promotions: [...orderSummary.promotions, promotion]
+        })
+    }
 
     const editPromotion = (idx, promotion) => {
         const promotions = [...orderSummary.promotions]
@@ -92,10 +103,16 @@ export default ({ inventario }) => {
         })
     }
 
-    const deletePromotion = (idx) => setOrderSummary({
-        ...orderSummary,
-        promotions: [...orderSummary.promotions.slice(0, idx), ...orderSummary.promotions.slice(idx + 1)]
-    })
+    const deletePromotion = async (idx) => {
+        const response = await del(`api/servicio_promocion/eliminarPromocion`, {
+            id_servicio,
+            id_promocion: orderSummary.promotions[idx].id
+        }, { 'Content-Type': 'application/json' })
+        setOrderSummary({
+            ...orderSummary,
+            promotions: [...orderSummary.promotions.slice(0, idx), ...orderSummary.promotions.slice(idx + 1)]
+        })
+    }
 
     return <div>
         <CardTitle className="h4">

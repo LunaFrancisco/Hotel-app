@@ -32,11 +32,12 @@ const agregarPromocion = async (req, res = response) => {
         const promocionAntigua = await Servicio_promociones.findOne({
             where: { id_servicio }
         });
+        const id_tipo_pago = promocionAntigua?.id_tipo_pago || 1;
         await Servicio_promociones.create({
             id_servicio,
             id_producto1: promocion.id_productos[0],
             id_producto2: promocion.id_productos[1],
-            id_tipo_pago: promocionAntigua.id_tipo_pago,
+            id_tipo_pago: id_tipo_pago,
             estado: false,
             id_promocion: promocion.id_promocion
         });
@@ -49,7 +50,7 @@ const agregarPromocion = async (req, res = response) => {
         });
         balance_aux.ventas += promocionData.precio;
         await balance_aux.save();
-        if (promocionAntigua.id_tipo_pago === 1) {
+        if (id_tipo_pago === 1) {
             balance_aux.caja += promocionData.precio;
             await balance_aux.save();
         }

@@ -57,6 +57,7 @@ export default () => {
                 monto: moneyFormat(item.monto),
                 fecha: item.fecha ? dateFormat(new Date(item.fecha)) : '-',
                 fecha_entrada: item.fecha_entrada ? dateFormat(new Date(item.fecha_entrada)) : '-',
+                usuario: item.usuario.nombre + ' ' + item.usuario.apellido,
             })))
         })
     }, [refresh])
@@ -66,6 +67,11 @@ export default () => {
             dataField: 'id',
             text: 'ID',
             sort: true,
+        },
+        {
+            dataField: 'usuario',
+            text: 'Usuario',
+            sort: true
         },
         {
             dataField: 'id_habitacion',
@@ -87,11 +93,6 @@ export default () => {
             text: 'Monto',
             sort: true
         },
-        // {
-        //     dataField: 'state',
-        //     text: 'Estado',
-        //     sort: true
-        // },
         {
             dataField: 'observacion',
             text: 'Observación',

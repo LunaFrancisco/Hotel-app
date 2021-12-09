@@ -237,7 +237,7 @@ export default () => {
                                         </TabPane>
                                     </TabContent>
                                     <ul className="pager wizard twitter-bs-wizard-pager-link">
-                                        <li className={activeTab === 1 ? "previous disabled" : "previous"}><Link to="#" onClick={() => { setActiveTab(activeTab - 1); }}>Anterior</Link></li>
+                                        <li className={activeTab === 1 ? "previous disabled" : "previous"}><Link to="#" onClick={() => { activeTab === 1 || setActiveTab(activeTab - 1); }}>Anterior</Link></li>
                                         <li className={activeTab === 4 ? "next disabled" : "next"}><Link to="#" onClick={() => { activeTab === 4 || setActiveTab(activeTab + 1); }}>Siguiente</Link></li>
                                     </ul>
                                 </div>

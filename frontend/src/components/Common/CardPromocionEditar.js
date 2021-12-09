@@ -214,7 +214,7 @@ export default ({ current_idx, inventario, active, added, addPromotions, editPro
                 <p style={{ display: 'flex', zIndex: 1, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', width: '100%', margin: '1.25em auto 0px' }}>
                     <button onClick={() => setEditPopup(false)} className="btn btn-lg btn-danger" style={{ marginRight: '8px' }} >Cancelar</button>
                     <button onClick={() => deletePromotion(current_idx)} className="btn btn-lg btn-danger" style={{ marginRight: '8px' }}>Eliminar</button>
-                    <button onClick={() => {
+                    {/* <button onClick={() => {
                         const form = document.querySelector('#beberages')
                         if (form.checkValidity()) {
                             editPromotion({
@@ -225,7 +225,7 @@ export default ({ current_idx, inventario, active, added, addPromotions, editPro
                         } else {
                             form.reportValidity()
                         }
-                    }} className="btn btn-lg btn-success" style={{ marginRight: '8px', borderColor: 'rgb(76, 174, 76)', boxShadow: 'rgba(0, 0, 0, 0.075) 0px 1px 1px inset, rgba(76, 174, 76, 0.6) 0px 0px 8px' }}>Editar</button>
+                    }} className="btn btn-lg btn-success" style={{ marginRight: '8px', borderColor: 'rgb(76, 174, 76)', boxShadow: 'rgba(0, 0, 0, 0.075) 0px 1px 1px inset, rgba(76, 174, 76, 0.6) 0px 0px 8px' }}>Editar</button> */}
                 </p>
             </SweetAlert>
         ) : null

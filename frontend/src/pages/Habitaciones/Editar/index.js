@@ -76,6 +76,81 @@ export default () => {
         console.log(promociones)
         console.log(response)
 
+        let promotions = response.findService.promociones.map(item => {
+            let temp = item
+            temp.beberages = []
+
+            if (temp?.servicio_promociones.id_producto1 != null) {
+                temp.beberages.push({
+                    value: response_inventario.inventario.find(item => item.id == temp.servicio_promociones.id_producto1),
+                })
+            }
+
+            if (temp?.servicio_promociones.id_producto2 != null) {
+                temp.beberages.push({
+                    value: response_inventario.inventario.find(item => item.id == temp.servicio_promociones.id_producto2),
+                })
+            }
+
+            const included = []
+            if (temp.trago && temp.bebida) {
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    },
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    },
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+            } else if (temp.trago) {
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    }
+                ])
+                included.push([
+                    {
+                        id: 1,
+                        type: 'Trago',
+                    }
+                ])
+            } else if (temp.bebida) {
+                included.push([
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+                included.push([
+                    {
+                        id: 2,
+                        type: 'Bebida',
+                    }
+                ])
+            }
+
+            return {
+                ...temp,
+                hours: temp.horas,
+                price: temp.precio,
+                description: temp.descripcion,
+                included
+            }
+        })
+
         let extras = []
 
         for (let pedido of response.findService.pedidos) {
@@ -94,6 +169,7 @@ export default () => {
             }
         }
 
+
         setOrderSummary({
             clients: [
                 {
@@ -107,9 +183,9 @@ export default () => {
                     rut: response.cliente2.rut
                 },
             ],
-            promotions: [],
+            promotions: promotions,
             extras,
-            metodo_de_pago: response.findService.promociones[0].servicio_promociones.id_tipo_pago
+            metodo_de_pago: response?.findService?.promociones[0]?.servicio_promociones?.id_tipo_pago || 2
         })
 
         // setOrderSummary({
@@ -283,7 +359,7 @@ export default () => {
                                             aria-labelledby="v-pills-payment-tab"
                                         >
                                             <SummaryContext.Provider value={summaryContext}>
-                                                <ServiceInfo inventario={inventario} />
+                                                <ServiceInfo id_servicio={id} inventario={inventario} />
                                             </SummaryContext.Provider>
                                         </TabPane>
                                         <TabPane
@@ -303,7 +379,7 @@ export default () => {
                                         </TabPane>
                                     </TabContent>
                                     <ul className="pager wizard twitter-bs-wizard-pager-link">
-                                        <li className={activeTab === 1 ? "previous disabled" : "previous"}><Link to="#" onClick={() => { setActiveTab(activeTab - 1); }}>Anterior</Link></li>
+                                        <li className={activeTab === 1 ? "previous disabled" : "previous"}><Link to="#" onClick={() => { activeTab === 1 || setActiveTab(activeTab - 1); }}>Anterior</Link></li>
                                         <li className={activeTab === 4 ? "next disabled " : "next success"}><Link to="#" onClick={async () => {
                                             let ready = false
                                             if (activeTab === 1) {
