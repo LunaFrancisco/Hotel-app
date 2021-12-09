@@ -815,8 +815,8 @@ const editarPromocion = async (req, res = response) => {
         servicio_promocion.id_producto2 = id_producto2;
         servicio_promocion.save();
         // Descontamos los nuevos productos de inventario
-        descInv(id_producto1, 1);
-        descInv(id_producto2, 1);
+        await descInv(id_producto1, 1);
+        await descInv(id_producto2, 1);
         // Creamos el registro
         await Registro.create({
             id_servicio: id_servicio,
