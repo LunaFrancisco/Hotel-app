@@ -250,7 +250,7 @@ export default () => {
                                         />
                                     </div>
                                 </Col>
-                                <Col lg={12}>
+                                {!edit && <Col lg={12}>
                                     <div className="mb-4">
                                         <Label
                                             htmlFor="password"
@@ -269,7 +269,7 @@ export default () => {
                                             validate={{ required: { value: !edit, errorMessage: 'La contraseña es requerida' }, minLength: { value: 5, errorMessage: 'La contraseña debe tener al menos 5 caracteres' } }}
                                         />
                                     </div>
-                                </Col>
+                                </Col>}
                                 <Col lg={12}>
                                     <div className="mb-4">
                                         <Label
