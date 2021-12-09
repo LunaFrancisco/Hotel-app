@@ -73,10 +73,55 @@ const getRegistrosTurno = async (req, res = response) => {
   }
 };
 
+const getRegistrosVentasTurno = async (req, res = response) => {
+  try {
+
+    const getBalance = await Balance.findOne({
+      where:{
+        fecha:{ [Op.ne]: null} 
+      },
+      order:[['fecha','DESC']],
+    });
+
+    var startDate = getBalance.fecha
+    var endDate = new Date();
+  
+    const allRegistros = await Registro.findAll({
+      attributes: [
+        'id', 'id_servicio', 'id_habitacion', 'fecha', 'fecha_entrada', 'monto', 'observacion'
+      ],
+      where:{
+        monto:{ [Op.ne]: null} 
+      },
+      include: [{
+        model: Usuario
+      }],
+      order: [['fecha', 'DESC']]
+    },
+    {
+      where:{
+        $and:[{ fecha: {gte: startDate} },
+          { fecha: {lt: endDate} }]
+      }
+    }
+    );
+    return res.json({
+      ok: true,
+      allRegistros,
+    });
+  } catch (e) {
+    console.log(e);
+    return res.json({
+      ok: false,
+      msg: "Error contacte a administrador",
+    });
+  }
+};
 
 
 
 module.exports = {
   getRegistros,
-  getRegistrosTurno
+  getRegistrosTurno,
+  getRegistrosVentasTurno
 };
