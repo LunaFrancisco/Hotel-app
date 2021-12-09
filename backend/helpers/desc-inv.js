@@ -6,7 +6,7 @@ const descInv = async (id_producto, cantidad) => {
     });
     if (producto.cantidad > cantidad) {
         producto.cantidad -= cantidad;
-        producto.save();
+        await producto.save();
         return true;
     }
     else {

@@ -34,9 +34,9 @@ router.get("/getService", getServicio);
 
 router.get("/listarHabitaciones", listarHabitaciones);
 router.put("/habilitarHabitacion", validarJWT, habilitarHabitacion);
-router.get("/listarPromociones", listarPromociones);
-router.get("/editarServicio", editarServicio);
-router.put("/editarPromocion", editarPromocion);
+router.get("/listarPromociones", validarJWT, listarPromociones);
+router.get("/editarServicio", validarJWT, editarServicio);
+router.put("/editarPromocion", validarJWT, editarPromocion);
 // router.post(
 //     '/',
 //     [
