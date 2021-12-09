@@ -314,7 +314,7 @@ const reservarHabitacion = async (req, res) => {
                         let balance_aux = await Balance_aux.findOne({
                             where: { id: 1 }
                         });
-                        if (metodo_de_pago === 1) {
+                        if (parseInt(metodo_de_pago) === 1) {
                             balance_aux.caja += findPromocion.precio;
                         }
                         balance_aux.ventas += findPromocion.precio;
@@ -328,6 +328,31 @@ const reservarHabitacion = async (req, res) => {
                         });
                         registro_monto += findPromocion.precio;
                         registro_observacion += ` Promocion ${n_promocion}: ${findPromocion.precio} - ${producto1.nombre} - ${producto2.nombre}.`
+                        n_promocion += 1;
+                    }
+                    else {
+                        let addPromo = await Servicio_promocion.create({
+                            id_promocion: service.id_promocion,
+                            id_servicio: newService.id,
+                            id_tipo_pago: metodo_de_pago,
+                            //id_producto1: service.id_producto1,
+                            id_producto1: service.id_productos[0],
+                            id_producto2: service.id_productos[1],
+                            //id_producto2: service.id_producto2,
+                            estado: false,
+                        });
+                        // Agregamos la venta en tabla balance_aux (CAJA Y VENTAS)
+                        let balance_aux = await Balance_aux.findOne({
+                            where: { id: 1 }
+                        });
+                        if (parseInt(metodo_de_pago) === 1) {
+                            balance_aux.caja += findPromocion.precio;
+                        }
+                        balance_aux.ventas += findPromocion.precio;
+                        await balance_aux.save();
+                        // Para tabla registro
+                        registro_monto += findPromocion.precio;
+                        registro_observacion += ` Promocion ${n_promocion}: ${findPromocion.precio}`
                         n_promocion += 1;
                     }
                 } else {
@@ -381,7 +406,7 @@ const reservarHabitacion = async (req, res) => {
                     const ingresos = producto.precio * extra.cantidad;
                     balance_aux.ventas += ingresos;
                     await balance_aux.save();
-                    if (metodo_de_pago === 1) {
+                    if (parseInt(metodo_de_pago) === 1) {
                         balance_aux.caja += ingresos;
                         await balance_aux.save();
                     }
