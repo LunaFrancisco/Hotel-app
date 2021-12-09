@@ -85,7 +85,7 @@ export default ({ id_servicio, inventario }) => {
 
     const removeExtra = async (value) => {
         const producto = orderSummary.extras[value]
-        const response = await post('api/pedidos/agregarPedido', {
+        const response = await post('api/pedidos/eliminarPedido', {
             id_servicio,
             id_pedido: producto.id_pedido,
             id_producto: producto.id,
