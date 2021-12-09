@@ -79,6 +79,12 @@ export default ({ img, room: { paid, state, number, id, servicio }, onCheckout, 
                             </ButtonHabitacion>
                         </Tooltip>
 
+                        <Tooltip id={'cuadricula-' + id + '-desalojar-button'} title="Desalojar habitación" center>
+                            <ButtonHabitacion onClick={() => onDesalojar(servicio)} color="info">
+                                <i className="ri-logout-box-r-fill"></i>
+                            </ButtonHabitacion>
+                        </Tooltip>
+
                         <Tooltip id={'cuadricula-' + id + '-cancel-button'} title="Cancelar Reserva" center>
                             <ButtonHabitacion onClick={() => onCancel(servicio)} color="danger">
                                 <i className="ri-delete-bin-5-fill"></i>
