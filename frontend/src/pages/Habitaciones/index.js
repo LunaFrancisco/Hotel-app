@@ -60,10 +60,11 @@ export default () => {
             let salida = item.servicios.length > 0 && item.servicios[0]?.hr_salida ? new Date(`01-01-2021 ${item.servicios[0]?.hr_salida}`) : '-'
             let entrada = item.servicios.length > 0 && item.servicios[0]?.hr_entrada ? new Date(`01-01-2021 ${item.servicios[0]?.hr_entrada}`) : '-'
             if (entrada != '-') {
+                entrada.setTime(entrada.getTime() - (3 * 60 * 60 * 1000))
                 entrada = `${timeFormat(entrada.getHours())}:${timeFormat(entrada.getMinutes())}:${timeFormat(entrada.getSeconds())}`
             }
             if (salida != '-') {
-                // salida.setHours(salida.getHours() + item.horas)
+                salida.setTime(salida.getTime() - (3 * 60 * 60 * 1000))
                 salida = `${timeFormat(salida.getHours())}:${timeFormat(salida.getMinutes())}:${timeFormat(salida.getSeconds())}`
             }
 
