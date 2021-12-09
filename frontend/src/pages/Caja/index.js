@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react"
 import { Row, Col, Card, CardBody, CardTitle, Button, Badge, Nav, NavItem, NavLink, TabPane, CardText, TabContent } from "reactstrap"
 import classnames from "classnames";
 import SweetAlert from "react-bootstrap-sweetalert";
-import { timeFormat, moneyFormat } from "../../helpers/formatters";
+import { timeFormat, moneyFormat, dateFormat } from "../../helpers/formatters";
 
 //Import Breadcrumb
 import Breadcrumbs from "../../components/Common/Breadcrumb"
@@ -55,6 +55,8 @@ export default () => {
                 ...item,
                 estado: renderState(1),
                 monto: moneyFormat(item.monto),
+                fecha: item.fecha ? dateFormat(new Date(item.fecha)) : '-',
+                fecha_entrada: item.fecha_entrada ? dateFormat(new Date(item.fecha_entrada)) : '-',
             })))
         })
     }, [refresh])
@@ -85,11 +87,11 @@ export default () => {
             text: 'Monto',
             sort: true
         },
-        {
-            dataField: 'state',
-            text: 'Estado',
-            sort: true
-        },
+        // {
+        //     dataField: 'state',
+        //     text: 'Estado',
+        //     sort: true
+        // },
         {
             dataField: 'observacion',
             text: 'Observación',

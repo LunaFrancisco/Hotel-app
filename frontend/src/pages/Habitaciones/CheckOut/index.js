@@ -113,9 +113,11 @@ export default () => {
                 ok: response.ok
             })
 
-            setTimeout(() => {
-                window.location = '/habitaciones'
-            }, 1000)
+            if (response.ok) {
+                setTimeout(() => {
+                    window.location = '/habitaciones'
+                }, 1000)
+            }
         }
     }
 

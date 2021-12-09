@@ -23,6 +23,7 @@ import LatestTransactions from "./LatestTransactions";
 
 export default () => {
     const [data, setData] = useState([])
+    const [caja, setCaja] = useState(0)
     const [registros, setRegistros] = useState([])
     const breadcrumbItems = [
         { title: "Dashboard", link: "#" },
@@ -31,10 +32,18 @@ export default () => {
     useEffect(() => {
         get('api/caja/info').then(res => {
             setData(res.informacion)
+            setCaja(res.caja)
         })
 
         get('api/registros/getRegistros').then(res => {
-            setData(res.allRegistros)
+            setRegistros(res.allRegistros.map(item => {
+                const date = new Date(item.fecha)
+                return ({
+                    ...item,
+                    fecha: `${timeFormat(date.getDate())}/${timeFormat(date.getMonth())}/${date.getFullYear()}`,
+                    hora: `${timeFormat(date.getHours())}:${timeFormat(date.getMinutes())}`
+                })
+            }))
         })
     }, [])
 
@@ -47,10 +56,11 @@ export default () => {
                     <Row>
                         <MiniWidgets
                             title="Caja"
-                            value={moneyFormat((data[data.length - 1]?.ventas || 0) - (data[data.length - 1]?.gastos || 0) - (data[data.length - 1]?.retiros || 0))}
-                            // icon="ri-stack-line"
-                            rate={0}
-                            desc="Desde el mes anterior"
+                            value={moneyFormat(caja)}
+                            showRate={false}
+                        // icon="ri-stack-line"
+                        // rate={0}
+                        // desc="Desde el mes anterior"
                         />
                         <MiniWidgets
                             title="Ventas"

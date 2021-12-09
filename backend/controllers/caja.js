@@ -15,6 +15,7 @@ const Retiro = require("../models/retiro");
 const Balance_aux = require("../models/balance_aux");
 const Gasto_caja = require("../models/gasto_caja");
 const Balance = require("../models/balance");
+const Registro = require("../models/registro");
 
 const calcularTotalVentas = async (req, res) => {
   const { id } = req.body;
@@ -31,7 +32,7 @@ const calcularTotalVentas = async (req, res) => {
 
 //registrar retiro
 const newRetiro = async (req, res) => {
-  const { id_usuario, monto, descripcion } = req.body;
+  const { monto, descripcion } = req.body;
   try {
     //primero hay que ver que el monto no sea mayor a el dinero en caja
     const compareCaja = await Balance_aux.findOne({
@@ -46,6 +47,14 @@ const newRetiro = async (req, res) => {
         msg: "El Retiro supera el monto de la caja",
       });
     } else {
+      //generar registro
+     
+      await Registro.create({
+        fecha: sequelize.fn('NOW'),        
+        id_usuario: req.id_usuario,
+        observacion: `retiro dinero caja por $${monto}`
+    });
+
       //actualizar los retiros
       compareCaja.retiros = compareCaja.retiros + monto;
       compareCaja.caja = compareCaja.caja - monto;
@@ -53,10 +62,10 @@ const newRetiro = async (req, res) => {
 
       //registro en tabla retiro
       const nuevoRetiro = await Retiro.create({
-        id_usuario,
+        id_usuario: req.id_usuario,
         monto,
         descripcion,
-        fecha: sequelize.literal("CURRENT_DATE"),
+        fecha: sequelize.fn('NOW'),
       });
 
       return res.json({
@@ -74,7 +83,7 @@ const newRetiro = async (req, res) => {
 };
 //registrar gasto
 const newGasto = async (req, res) => {
-  const { id_usuario, monto, descripcion } = req.body;
+  const { monto, descripcion } = req.body;
   try {
     const compareCaja = await Balance_aux.findOne({
       where: {
@@ -88,12 +97,18 @@ const newGasto = async (req, res) => {
         msg: "El Gasto supera el monto de la caja",
       });
     } else {
+        //generar registro
+        await Registro.create({
+          fecha: sequelize.fn('NOW'),        
+          id_usuario: req.id_usuario,
+          observacion: `Gasto nuevo por $${monto}. Descripción: " ${descripcion}`
+      });
       //registro en tabla retiro
       const newGasto = await Gasto_caja.create({
-        id_usuario,
+        id_usuario:req.id_usuario,
         monto,
         descripcion,
-        fecha: sequelize.literal("CURRENT_DATE"),
+        fecha: sequelize.fn("now"),
       });
 
       //actualizar los retiros
